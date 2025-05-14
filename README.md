@@ -1,2 +1,2 @@
-# ca_chinook
+# California Chinook
 Scripts and documentation for California Chinook microhaplotypes
