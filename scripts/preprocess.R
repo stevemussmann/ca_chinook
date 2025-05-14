@@ -20,6 +20,7 @@ if (is.null(opt$file)){
 	stop("Input sample sheet must be provided.", call.=FALSE)
 }
 
+# before running this script for the first time, modify the path in the line below so that it points to the location of sample-sheet-processing-functions.R on your computer
 source("/home/mussmann/local/src/microhap/mega-simple-microhap-snakeflow/preprocess/sample-sheet-processing-functions.R")
 
 create_samples_and_units(opt$file)
