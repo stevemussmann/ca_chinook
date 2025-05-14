@@ -15,6 +15,7 @@ git clone https://github.com/eriqande/california-chinook-microhaps.git
 3. Within the `california-chinook-microhaps` folder that you cloned to your computer, make a directory named `data`
 ```
 cd /path/to/california-chinook-microhaps ## Replace `/path/to` in this command with the actual path to the california-chinook-microhaps folder
+
 mkdir data
 ```
 
@@ -26,15 +27,16 @@ mkdir data
 
 ```
 .
-└── run001
+└── run001/
     ├── SampleSheet.csv
-    └── raw
+    └── raw/
         ├── CH-15342_S1_L001_R1_001.fastq.gz
         ├── CH-15342_S1_L001_R2_001.fastq.gz
         ├── CH-15343_S2_L001_R1_001.fastq.gz
         ├── CH-15343_S2_L001_R2_001.fastq.gz
         ├── CH-15344_S3_L001_R1_001.fastq.gz
-        └── CH-15344_S3_L001_R2_001.fastq.gz
+        ├── CH-15344_S3_L001_R2_001.fastq.gz
+        └── etc.
 ```
 
 3. Run the `preprocess.R` script to create the `samples.csv` and `units.csv` required by the snakemake pipeline
