@@ -19,6 +19,8 @@ cd /path/to/california-chinook-microhaps ## Replace `/path/to` in this command w
 mkdir data
 ```
 
+4. Install Rstudio on your computer.
+
 
 ## Running the Pipeline
 
@@ -65,8 +67,15 @@ cd /path/to/california-chinook-microhaps
 snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 4
 ```
 
-6. When finished, the pipeline will output microhaplotypes to the `california-chinook-microhaps/data/run001/Chinook/microhaplot` folder.
+6. When finished, the pipeline will output microhaplotypes to the `california-chinook-microhaps/data/run001/Chinook/microhaplot` folder. In this folder, run the `fixMicrohaplot.sh` script from the scripts folder in this repository. This will rename some functions within the `ui.R` and `server.R` scripts in this folder so that they are compatible with the most recent versions of the `ggiraph` R package.
+```
+cd /path/to/california-chinook-microhaps/data/run001/Chinook/microhaplot
+fixMicrohaplot.sh
+```
 
+7. Open Rstudio and then open the `server.R` script in Rstudio. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select the dataset you want to export from the "Select Data Set" dropdown box (i.e., `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds`). Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_observed_unfiltered_haplotype.csv`).
+
+8. Get the data file from the `california-chinook-microhaps` output that contains read counts for the sex-linked marker. 
 
 ## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
 
