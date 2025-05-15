@@ -4,7 +4,7 @@ Scripts and documentation for California Chinook microhaplotypes
 ## Dependencies and First-time Setup
 1. Create a Conda environment for running snakemake
 ```
-conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes
+conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools
 ```
 
 2. Clone the `eriqande/california-chinook-microhaps` to your computer. 
