@@ -4,7 +4,7 @@ Scripts and documentation for California Chinook microhaplotypes
 ## Dependencies and First-time Setup
 1. Create a Conda environment for running snakemake
 ```
-conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools
+conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse
 ```
 
 2. Clone the `eriqande/california-chinook-microhaps` to your computer. 
@@ -82,4 +82,8 @@ fixMicrohaplot.sh
 10. 
 
 ## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
+If you demultiplex with bcl2fastq, make sure you run without the `--no-lane-splitting` option. You may also need to reduce the number of allowed `--barcode-mismatches`
 
+```
+bcl2fastq --barcode-mismatches 0
+```
