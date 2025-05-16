@@ -73,11 +73,13 @@ cd /path/to/california-chinook-microhaps/data/run001/Chinook/microhaplot
 fixMicrohaplot.sh
 ```
 
-7. Open Rstudio and then open the `server.R` script in Rstudio. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select the dataset you want to export from the "Select Data Set" dropdown box (i.e., `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds`). Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_observed_unfiltered_haplotype.csv`).
+7. Open Rstudio and then open the `server.R` script in Rstudio. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds` from the "Select Data Set" dropdown box. Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_rosa_microhap_snplicon.csv`). Leave Rstudio and the shiny server open.
 
-8. Get the data file from the `california-chinook-microhaps` output that contains read counts for the sex-linked marker. This should be the `ordered-read-counts-table.csv` file in the `california-chinook-microhaps/data/run001/Chinook/idxstats/target_fastas/ROSA/rosawr` folder. This csv file should contain a column named `sdy_I183` which has read counts for the sex-linked marker. The number of reads sequenced per individual will be converted into female/male calls.
+8. Repeat the previous step to export `FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds` with an informative name (e.g., `run001_lfar_wrap_vgll3six6.csv`)
 
-9. 
+9. Get the data file from the `california-chinook-microhaps` output that contains read counts for the sex-linked marker. This should be the `ordered-read-counts-table.csv` file in the `california-chinook-microhaps/data/run001/Chinook/idxstats/target_fastas/ROSA/rosawr` folder. This csv file should contain a column named `sdy_I183` which has read counts for the sex-linked marker. The number of reads sequenced per individual will be converted into female/male calls.
+
+10. 
 
 ## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
 
