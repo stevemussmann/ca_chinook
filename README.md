@@ -82,7 +82,7 @@ fixMicrohaplot.sh
 10. 
 
 ## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
-If you demultiplex with bcl2fastq, make sure you run without the `--no-lane-splitting` option. You may also need to reduce the number of allowed `--barcode-mismatches`
+If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. This is because the [mega-simple-microhap-snakeflow](https://github.com/eriqande/mega-simple-microhap-snakeflow) pipeline expects a fastq file name format of `LibraryName_S1_L001_R1_001.fastq.gz`. Using the `--no-lane-splitting` option removes the 'L001' portion of the name and will cause the pipeline to fail. You may also need to reduce the number of allowed `--barcode-mismatches` if using 6-bp length barcodes.
 
 ```
 bcl2fastq --barcode-mismatches 0
