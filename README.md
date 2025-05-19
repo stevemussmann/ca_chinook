@@ -2,24 +2,50 @@
 Scripts and documentation for California Chinook microhaplotypes
 
 ## Dependencies and First-time Setup
+### mega-simple-microhap-snakeflow
 1. Create a Conda environment for running snakemake
 ```
 conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse vcftools zlib
 ```
 
-2. Clone the `eriqande/mega-simple-microhap-snakeflow` to your computer. 
+2. Create location in which you will install software for genotyping. Then change directories into the `~/local/src` folder that you just made.
+```
+mkdir -p ~/local/src ~/local/bin
+cd ~/local/src
+```
+
+3. Clone the `eriqande/mega-simple-microhap-snakeflow` to your computer. 
 ```
 git clone https://github.com/eriqande/mega-simple-microhap-snakeflow.git
 ```
 
-3. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`
+4. Patch the pipeline so that it doesn't attempt to install the `microhaplotextract` library every time the pipeline runs (or ever). We will instead install this package manually.
+```
+cd ~/local/src/mega-simple-microhap-snakeflow/workflow/script
+rm create_microhaplot_folder.R
+wget https://raw.githubusercontent.com/stevemussmann/ca_chinook/refs/heads/main/patches/create_microhaplot_folder.R
+```
+
+5. Activate the snakemake Conda environment that you made in Step 1 and install the `microhaplotextract` from the source zip file.
+```
+conda activate snakemake
+R --slave -e "devtools::install_local('microhaplot-just-for-extracting.zip', upgrade='never')"
+```
+
+7. We also need to copy some files to the `mega-simple-microhap-snakeflow` so that it doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server to `~/local/src/mega-simple-microhap-snakeflow`
+
+8. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`
 ```
 cd /path/to/mega-simple-microhap-snakeflow ## Replace `/path/to` in this command with the actual path to the mega-simple-microhap-snakeflow folder
 
 mkdir data
 ```
 
-4. Install Rstudio on your computer.
+### files from this repository
+
+
+### setting up Rstudio
+1. Install Rstudio on your computer.
 
 
 ## Running the Pipeline
