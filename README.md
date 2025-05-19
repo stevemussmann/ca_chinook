@@ -67,19 +67,28 @@ cd /path/to/california-chinook-microhaps
 snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 4
 ```
 
-6. When finished, the pipeline will output microhaplotypes to the `california-chinook-microhaps/data/run001/Chinook/microhaplot` folder. In this folder, run the `fixMicrohaplot.sh` script from the scripts folder in this repository. This will rename some functions within the `ui.R` and `server.R` scripts in this folder so that they are compatible with the most recent versions of the `ggiraph` R package.
+## Processing the Snakemake Pipeline Output
+1. When finished, the pipeline will output microhaplotypes to the `mega-simple-microhap-snakeflow/data/run001/Chinook/microhaplot` folder. In this folder, run the `fixMicrohaplot.sh` script from the scripts folder in this repository. This will rename some functions within the `ui.R` and `server.R` scripts in this folder so that they are compatible with the most recent versions of the `ggiraph` R package.
 ```
-cd /path/to/california-chinook-microhaps/data/run001/Chinook/microhaplot
+cd /path/to/mega-simple-microhap-snakeflow/data/run001/Chinook/microhaplot
 fixMicrohaplot.sh
 ```
 
-7. Open Rstudio and then open the `server.R` script in Rstudio. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds` from the "Select Data Set" dropdown box. Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_rosa_microhap_snplicon.csv`). Leave Rstudio and the shiny server open.
+2. Open Rstudio and then open the `server.R` script in Rstudio. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds` from the "Select Data Set" dropdown box. Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_rosa_microhap_snplicon.csv`). Leave Rstudio and the shiny server open.
 
-8. Repeat the previous step to export `FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds` with an informative name (e.g., `run001_lfar_wrap_vgll3six6.csv`)
+3. Repeat the previous step to export `FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds` with an informative name (e.g., `run001_lfar_wrap_vgll3six6.csv`)
 
-9. Get the data file from the `california-chinook-microhaps` output that contains read counts for the sex-linked marker. This should be the `ordered-read-counts-table.csv` file in the `california-chinook-microhaps/data/run001/Chinook/idxstats/target_fastas/ROSA/rosawr` folder. This csv file should contain a column named `sdy_I183` which has read counts for the sex-linked marker. The number of reads sequenced per individual will be converted into female/male calls.
+4. Get the .csv file from the `mega-simple-microhap-snakeflow` output that contains read counts for the sex-linked marker. This will be the `ordered-read-counts-table.csv` file in the `mega-simple-microhap-snakeflow/data/run001/Chinook/idxstats/target_fastas/ROSA/rosawr` folder. This .csv file should contain a column named `sdy_I183` which has read counts for the sex-linked marker. The number of reads sequenced per individual will be converted into female/male calls.
 
-10. 
+5. Get the .vcf file that contains the ROSA genotypes from the `mega-simple-microhap-snakeflow` output. This will be in the `mega-simple-microhap-snakeflow/data/run001/Chinook/vcfs/ROSA/target_fasta/rosawr` folder and will be named `variants-bcftools.vcf`.
+
+6. Filter the ROSA genotypes for sequencing depth and quality in vcftools. This is accomplished by running the `vcftools.sh` script on the ROSA .vcf genotypes file, specifying your input file (e.g., `variants-bcftools.vcf`) and your run number (e.g., `run001`) on the command line. For example:
+```
+./vcftools.sh variants-bcftools.vcf run001
+```
+This example will output a file named `CH_run001_greb1_q20dp5.vcf` which will be used as input for the R script.
+
+7. 
 
 ## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
 If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. This is because the [mega-simple-microhap-snakeflow](https://github.com/eriqande/mega-simple-microhap-snakeflow) pipeline expects a fastq file name format of `LibraryName_S1_L001_R1_001.fastq.gz`. Using the `--no-lane-splitting` option removes the 'L001' portion of the name and will cause the pipeline to fail. You may also need to reduce the number of allowed `--barcode-mismatches` if using 6-bp length barcodes.
