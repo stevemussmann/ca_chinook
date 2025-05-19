@@ -7,14 +7,14 @@ Scripts and documentation for California Chinook microhaplotypes
 conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse vcftools
 ```
 
-2. Clone the `eriqande/california-chinook-microhaps` to your computer. 
+2. Clone the `eriqande/mega-simple-microhap-snakeflow` to your computer. 
 ```
-git clone https://github.com/eriqande/california-chinook-microhaps.git
+git clone https://github.com/eriqande/mega-simple-microhap-snakeflow.git
 ```
 
-3. Within the `california-chinook-microhaps` folder that you cloned to your computer, make a directory named `data`
+3. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`
 ```
-cd /path/to/california-chinook-microhaps ## Replace `/path/to` in this command with the actual path to the california-chinook-microhaps folder
+cd /path/to/mega-simple-microhap-snakeflow ## Replace `/path/to` in this command with the actual path to the mega-simple-microhap-snakeflow folder
 
 mkdir data
 ```
