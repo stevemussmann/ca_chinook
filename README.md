@@ -355,6 +355,19 @@ Indiv,sdy_sex,hapstr,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62
 4330-004,Female,LNNLLNLLLLLL,100,T,T,A,A,...
 4330-005,Male,?NNLLNLLL??L,87.56476683937824,T,T,A,A,...
 ```
+
+### Reports Directory
+1. `extra_alleles.csv`
+2. `extra_alleles_individuals.csv`
+3. `extra_alleles_locus.csv`
+4. `extra_alleles_source.csv`
+5. `individual_depth.csv`
+6. `locus_depth.csv`
+7. `missingData.png`
+8. `nxa.csv`
+9. `nxaCount.csv`
+
+
 <hr>
 
 ## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
