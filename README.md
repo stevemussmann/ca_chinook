@@ -93,7 +93,7 @@ wget https://github.com/eriqande/microhaplotopia/archive/emc-edits.zip
 R --slave -e "devtools::install_local('emc-edits.zip', upgrade='never')"
 ```
 
-7. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that it doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server to `~/local/src/mega-simple-microhap-snakeflow`
+7. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that it doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found within the `GTseq_processing/CA_Chinook_microhaplotype_files` directory) to `~/local/src/mega-simple-microhap-snakeflow`
 
 8. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline. 
 ```
