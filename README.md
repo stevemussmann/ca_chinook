@@ -190,7 +190,7 @@ This will create the following directory structure. The `snakemake_output` folde
 p134
 └── run001
     ├── processing
-    |   └── microhaplot
+    │   └── microhaplot
     └── snakemake_output
 ```
 
@@ -237,8 +237,8 @@ cp ordered-read-counts-table.csv /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134
 ```
 processing
 ├── microhaplot
-|   ├── run001_lfar_wrap_vgll3six6.csv
-|   └── run001_rosa_microhap_snplicon.csv
+│   ├── run001_lfar_wrap_vgll3six6.csv
+│   └── run001_rosa_microhap_snplicon.csv
 ├── CH_run001_greb1_q20dp5.recode.vcf
 └── ordered-read-counts-table.csv
 ```
