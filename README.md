@@ -202,38 +202,39 @@ cp -r ~/local/src/mega-simple-microhap-snakeflow/data/$RUN/Chinook/microhaplot/ 
 cp -r ~/local/src/mega-simple-microhap-snakeflow/data/$RUN/Chinook/vcfs/ /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/.
 ```
 
-3. Go into the `p134/$RUN/snakemake_output/microhaplot` folder. Run the `fixMicrohaplot.sh` script from the scripts folder in this repository. This will rename some functions within the `ui.R` and `server.R` scripts in this folder so that they are compatible with the most recent versions of the `ggiraph` R package which is a dependency of the `microhaplot` R package.
-```
-cd  /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/microhaplot
-fixMicrohaplot.sh
-```
-
-4. Open Rstudio and then open the modified `server.R` script in Rstudio. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds` from the "Select Data Set" dropdown box. Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_rosa_microhap_snplicon.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section. Leave Rstudio and the shiny server open.
-   
-6. Repeat the previous step to export `FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds` with an informative name (e.g., `run001_lfar_wrap_vgll3six6.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section.
-
-7. Go to the directory that contains the .vcf file with ROSA genotypes. This will be in the `p134/$RUN/snakemake_output/vcfs/ROSA/target_fasta/rosawr` folder and will be named `variants-bcftools.vcf`.
+3. Go to the directory that contains the .vcf file with ROSA genotypes. This will be in the `p134/$RUN/snakemake_output/vcfs/ROSA/target_fasta/rosawr` folder and will be named `variants-bcftools.vcf`.
 ```
 cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/vcfs/ROSA/target_fasta/rosawr
 ```
 
-8. Filter the ROSA genotypes for sequencing depth and quality in vcftools. This is accomplished by running the `vcftools.sh` script on the ROSA .vcf genotypes file, specifying your input file (e.g., `variants-bcftools.vcf`) and your run number (e.g., `run001`) on the command line. This example will output a file named `CH_run001_greb1_q20dp5.recode.vcf` which will be used as input for the R script. For example:
+4. Filter the ROSA genotypes for sequencing depth and quality in vcftools. This is accomplished by running the `vcftools.sh` script on the ROSA .vcf genotypes file, specifying your input file (e.g., `variants-bcftools.vcf`) and your run number (e.g., `run001`) on the command line. This example will output a file named `CH_run001_greb1_q20dp5.recode.vcf` which will be used as input for the R script. For example:
 ```
 vcftools.sh variants-bcftools.vcf run001
 ```
 
-9. Copy the `CH_run001_greb1_q20dp5.recode.vcf` file to `p134/$RUN/processing/microhaplot`
+5. Copy the `CH_run001_greb1_q20dp5.recode.vcf` file to `p134/$RUN/processing/microhaplot`
 ```
 cp CH_run001_greb1_q20dp5.recode.vcf /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/processing/.
 ```
 
-10. Get the .csv file that contains read counts for the sex-linked marker. This will be the `ordered-read-counts-table.csv` file in the `p134/$RUN/Chinook/idxstats/target_fastas/ROSA/rosawr` folder. This .csv file should contain a column named `sdy_I183` which has read counts for the sex-linked marker. The number of reads sequenced per individual will be converted into female/male calls. Copy this file to the `p134/$RUN/processing` folder.
+6. Get the .csv file that contains read counts for the sex-linked marker. This will be the `ordered-read-counts-table.csv` file in the `p134/$RUN/Chinook/idxstats/target_fastas/ROSA/rosawr` folder. This .csv file should contain a column named `sdy_I183` which has read counts for the sex-linked marker. The number of reads sequenced per individual will be converted into female/male calls. Copy this file to the `p134/$RUN/processing` folder.
 ```
 cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/Chinook/idxstats/target_fastas/ROSA/rosawr
 cp ordered-read-counts-table.csv /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/processing/.
 ```
 
-11. Checkpoint: Your `processing` folder should be arranged as you see below. Verify this is accurate before proceeding.
+7. Go into the `p134/$RUN/snakemake_output/microhaplot` folder. Run the `fixMicrohaplot.sh` script from the scripts folder in this repository. This will rename some functions within the `ui.R` and `server.R` scripts in this folder so that they are compatible with the most recent versions of the `ggiraph` R package which is a dependency of the `microhaplot` R package.
+```
+cd  /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/microhaplot
+fixMicrohaplot.sh
+```
+
+8. Open Rstudio and then open the modified `server.R` script in Rstudio. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds` from the "Select Data Set" dropdown box. Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_rosa_microhap_snplicon.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section. Leave Rstudio and the shiny server open.
+   
+9. Repeat the previous step to export `FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds` with an informative name (e.g., `run001_lfar_wrap_vgll3six6.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section.
+
+
+10. Checkpoint: Your `processing` folder should be arranged as you see below. Verify this is accurate before proceeding.
 ```
 processing
 ├── microhaplot
@@ -243,7 +244,7 @@ processing
 └── ordered-read-counts-table.csv
 ```
 
-12. Run the `microhaplotopia.R` script from the `p134/$RUN/processing` directory. This will convert the files you generated and/or copied in the past several steps into a usable format.
+11. Run the `microhaplotopia.R` script from the `p134/$RUN/processing` directory. This will convert the files you generated and/or copied in the past several steps into a usable format.
 ```
 microhaplotopia.R -r CH_run001_greb1_q20dp5.recode.vcf
 ```
@@ -297,6 +298,11 @@ Options:
 ```
 
 Outputs from the `microhaplotopia.R` script are discussed in the next section.
+
+12. Convert the locus names in your final genotype .csv file.
+```
+
+```
 
 <hr>
 
