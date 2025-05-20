@@ -127,7 +127,7 @@ for file in ~/local/scripts/ca_chinook/scripts/*; do ln -s $file; done;
 
 3. Install microhaplot in Rstudio. Go to [https://github.com/ngthomas/microhaplot](https://github.com/ngthomas/microhaplot). Click on the `<> Code` button, then `Download Zip`.
 
-4. In Rstudio, go to `Tools` --> `Install Packages...`. Select "Package Archive File (.zip; .tar.gz)" from the drop-down menu. Navigate to the Pachage archive location using the "Browse..." button. Then click the Install button at the bottom of the dialog box.
+4. In Rstudio, go to `Tools` --> `Install Packages...`. Select `Package Archive File (.zip; .tar.gz)` from the drop-down menu. Navigate to the package archive location using the `Browse...` button. The file you are looking for should be named `microhaplot-master.zip`. Then click the `Install` button at the bottom of the dialog box.
 
 <hr>
 
