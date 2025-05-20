@@ -39,7 +39,7 @@ conda config --set auto_activate_base false
 
 5. Create location in which you will install software for genotyping. Then change directories into the `~/local/src` folder that you just made.
 ```
-mkdir -p ~/local/src ~/local/bin ~/local/scripts
+mkdir -p ~/local/src ~/local/bin
 ```
 
 6. Edit your bash profile to look for executables in the ~/local/bin folder.
@@ -103,20 +103,20 @@ mkdir ~/local/src/mega-simple-microhap-snakeflow/data
 ### setup files from this repository <a name="myscripts"></a>
 1. Clone this repository to the ~/local/scripts folder that you made earlier.
 ```
-cd ~/local/scripts
+cd ~/local/src
 git clone https://github.com/stevemussmann/ca_chinook.git
 ```
 
 2. Make all scripts executable
 ```
-cd ~/local/scripts/ca_chinook/scripts
+cd ~/local/src/ca_chinook/scripts
 chmod u+x *
 ```
 
 3. Link scripts in your ~/local/bin folder so they can be executed from anywhere on your computer.
 ```
 cd ~/local/bin
-for file in ~/local/scripts/ca_chinook/scripts/*; do ln -s $file; done;
+for file in ~/local/src/ca_chinook/scripts/*; do ln -s $file; done;
 ```
 
 
