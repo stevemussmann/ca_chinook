@@ -243,7 +243,7 @@ processing
 └── ordered-read-counts-table.csv
 ```
 
-12. Run the `microhaplotopia.R` scriptfrom the `p134/$RUN/processing` directory. This will convert the files you generated and/or copied in the past several steps into a usable format.
+12. Run the `microhaplotopia.R` script from the `p134/$RUN/processing` directory. This will convert the files you generated and/or copied in the past several steps into a usable format.
 ```
 microhaplotopia.R -r CH_run001_greb1_q20dp5.recode.vcf
 ```
@@ -268,7 +268,10 @@ Options:
         -G GREBINFO, --grebInfo=GREBINFO
                 info needed to generate greb1rosa haplotype string (default = ~/local/src/ca_chinook/example_files/greb1_roha_alleles_reordered_wr.txt)
 
-        -m MICROHAPLOT, --microhaplot=MICROHAPLOT
+        -f FINALOUT, --finalOut=FINALOUT
+                name for final output .csv file (default = haps_2col_final.csv)
+
+         -m MICROHAPLOT, --microhaplot=MICROHAPLOT
                 microhaplot directory name (default = microhaplot)
 
         -o OUTPUT, --output=OUTPUT
@@ -298,7 +301,60 @@ Outputs from the `microhaplotopia.R` script are discussed in the next section.
 <hr>
 
 ## Processed Outputs <a name="output"></a>
+The pipeline writes several files to the `output` and `reports` directories. After running `microhaplotopia.R` you should have the following in your `processing` folder:
+```
+processing
+├── CH_run001_greb1_q20dp5.recode.vcf
+├── microhaplot
+│   ├── run001_lfar_wrap_vgll3six6.csv
+│   └── run001_rosa_microhap_snplicon.csv
+├── ordered-read-counts-table.csv
+├── output
+│   ├── greb1rosa_all_hapstr.txt
+│   ├── haps_2col_final.csv
+│   └── sdy_calls.csv
+└── reports
+    ├── extra_alleles.csv
+    ├── extra_alleles_individuals.csv
+    ├── extra_alleles_locus.csv
+    ├── extra_alleles_source.csv
+    ├── individual_depth.csv
+    ├── locus_depth.csv
+    ├── missingData.png
+    ├── nxa.csv
+    └── nxaCount.csv
+```
+### Output Directory
+This directory contains the main outputs, including the final genotypes file.
+1. `greb1rosa_all_hapstr.txt` is a tab-delimited file that contains haplotype strings for the greb1rosa loci. See example below:
+```
+Indiv   hapstr
+4330-001        LNNLLNLLLLLL
+4330-002        ENNEENEEEEEH
+4330-003        LNNLLNLLLLLL
+4330-004        LNNLLNLLLLLL
+4330-005        ?NNLLNLLL??L
+```
 
+2. `sdy_calls.csv` is a comma-delimited file that contains the genetic sex calls (sdy_sex) for all individuals, and the number of times the sdy marker was identified among reads generated for each individual (sdy_I183).
+```
+Indiv,sdy_I183,sdy_sex
+4330-001,1379,Male
+4330-002,6,Male
+4330-003,1139,Male
+4330-004,2,Female
+4330-005,1113,Male
+```
+
+3. `haps_2col_final.csv` is a comma-delimited file that contains all genotype data for all individuals. The column percMicroHap reports the percentage of loci that amplified successfully for each individual.
+```
+Indiv,sdy_sex,hapstr,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62937268-62937373_2,NC_037104.1:55923357-55923657_1,NC_037104.1:55923357-55923657_2,...
+4330-001,Male,LNNLLNLLLLLL,92.74611398963731,T,T,A,A,...
+4330-002,Male,ENNEENEEEEEH,95.85492227979275,T,T,A,A,...
+4330-003,Male,LNNLLNLLLLLL,98.96373056994818,C,T,A,A,...
+4330-004,Female,LNNLLNLLLLLL,100,T,T,A,A,...
+4330-005,Male,?NNLLNLLL??L,87.56476683937824,T,T,A,A,...
+```
 <hr>
 
 ## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
