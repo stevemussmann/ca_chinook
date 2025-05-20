@@ -7,9 +7,9 @@ Scripts and documentation for California Chinook microhaplotypes
     * [Setup for mega-simple-microhap-snakeflow](#mega)
     * [Setup files from this repository](#myscripts)
     * [Setting up Rstudio](#rstudio)
-2. [Running the Pipeline](#pipeline)
+2. [Running the Snakemake Pipeline](#pipeline)
 3. [Processing the Snakemake Pipeline Output](#processing)
-4. [Pipeline Outputs](#output)
+4. [Processed Outputs](#output)
 5. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
 
 <hr>
@@ -131,7 +131,7 @@ for file in ~/local/scripts/ca_chinook/scripts/*; do ln -s $file; done;
 
 <hr>
 
-## Running the Pipeline <a name="pipeline"></a>
+## Running the Snakemake Pipeline <a name="pipeline"></a>
 
 1. Before sequencing, make an Illumina sample sheet (see `example_files/SampleSheet.csv`). Use this sample sheet to conduct the sequencing run on your Illumina sequencer. Optionally, you can also demultiplex using bcl2fastq if you did not use the sample sheet to automatically demultiplex files on the sequencer. [Go to bcl2fastq instructions.](#bcl2fastq)
 2. Create a folder within the `mega-simple-microhap-snakeflow/data` directory that is named according to your sequencing run number (e.g., run001). Within this folder, place the `SampleSheet.csv` file and a folder named `raw` that contains all of your `fastq.gz` files. See example below:
@@ -247,7 +247,7 @@ processing
 
 <hr>
 
-## Pipeline Outputs <a name="output"></a>
+## Processed Outputs <a name="output"></a>
 
 <hr>
 
