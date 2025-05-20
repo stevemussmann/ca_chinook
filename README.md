@@ -243,7 +243,57 @@ processing
 └── ordered-read-counts-table.csv
 ```
 
-12. 
+12. Run the `microhaplotopia.R` scriptfrom the `p134/$RUN/processing` directory. This will convert the files you generated and/or copied in the past several steps into a usable format.
+```
+microhaplotopia.R -r CH_run001_greb1_q20dp5.recode.vcf
+```
+Most settings can be left as default. The only thing you should have to specify is the name of the VCF file you created in step 8. However, below I provide a comprehensive list of settings that can be modified (if desired) from the command line. 
+```
+Usage: ./microhaplotopia.R [options]
+
+
+Options:
+        -a ALLELEBALANCE, --alleleBalance=ALLELEBALANCE
+                minimum allele balance threshold (default = 0.35)
+
+        -d HAPDEPTH, --hapDepth=HAPDEPTH
+                minimum haplotype sequencing depth (default = 4)
+
+        -D TOTDEPTH, --totDepth=TOTDEPTH
+                minimum locus sequencing depth (default = 8)
+
+        -g GREB1ROSAOUT, --greb1rosaOut=GREB1ROSAOUT
+                output file for greb1rosa haplotype string (default = greb1rosa_all_hapstr.txt)
+
+        -G GREBINFO, --grebInfo=GREBINFO
+                info needed to generate greb1rosa haplotype string (default = ~/local/src/ca_chinook/example_files/greb1_roha_alleles_reordered_wr.txt)
+
+        -m MICROHAPLOT, --microhaplot=MICROHAPLOT
+                microhaplot directory name (default = microhaplot)
+
+        -o OUTPUT, --output=OUTPUT
+                output directory name (default = output)
+
+        -r ROSA, --rosa=ROSA
+                ROSA VCF file (No default; required)
+
+        -R REPORTS, --reports=REPORTS
+                reports directory name (default = reports)
+
+        -s SDY, --sdy=SDY
+                sdy read count file (default = ordered-read-counts-table.csv)
+
+        -x MAXFEMALE, --maxFemale=MAXFEMALE
+                maximum sdy reads allowed to call female (default = 2)
+
+        -X MAXUNKNOWN, --maxUnknown=MAXUNKNOWN
+                maximum number of sdy reads for unknown (default = 5)
+
+        -h, --help
+                Show this help message and exit
+```
+
+Outputs from the `microhaplotopia.R` script are discussed in the next section.
 
 <hr>
 
