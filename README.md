@@ -39,7 +39,7 @@ conda config --set auto_activate_base false
 
 5. Create location in which you will install software for genotyping. Then change directories into the `~/local/src` folder that you just made.
 ```
-mkdir -p ~/local/src ~/local/bin
+mkdir -p ~/local/src ~/local/bin ~/local/scripts
 ```
 
 6. Edit your bash profile to look for executables in the ~/local/bin folder.
@@ -101,12 +101,33 @@ mkdir ~/local/src/mega-simple-microhap-snakeflow/data
 ```
 
 ### setup files from this repository <a name="myscripts"></a>
+1. Clone this repository to the ~/local/scripts folder that you made earlier.
+```
+cd ~/local/scripts
+git clone https://github.com/stevemussmann/ca_chinook.git
+```
+
+2. Make all scripts executable
+```
+cd ~/local/scripts/ca_chinook/scripts
+chmod u+x *
+```
+
+3. Link scripts in your ~/local/bin folder so they can be executed from anywhere on your computer.
+```
+cd ~/local/bin
+for file in ~/local/scripts/ca_chinook/scripts/*; do ln -s $file; done;
+```
 
 
 ### setting up Rstudio <a name="rstudio"></a>
-1. Install R and Rstudio on your computer from apps-to-go.
+1. Install R, Rstudio, and Rtools on your computer from apps-to-go. Packages should be named something like `IFW-R 4.4.2`, `IFW-RStudio-2024.09.1`, and `IFW-Rtools44`.
 
-2. Install microhaplot in Rstudio
+2. Launch Rstudio. Go to `Tools` --> `Global Options...`. Click on the `Packages` menu in the left pane. Uncheck the box for `Use secure download method for HTTP`.
+
+3. Install microhaplot in Rstudio. Go to [https://github.com/ngthomas/microhaplot](https://github.com/ngthomas/microhaplot). Click on the `<> Code` button, then `Download Zip`.
+
+4. In Rstudio, go to `Tools` --> `Install Packages...`. Select "Package Archive File (.zip; .tar.gz)" from the drop-down menu. Navigate to the Pachage archive location using the "Browse..." button. Then click the Install button at the bottom of the dialog box.
 
 <hr>
 
