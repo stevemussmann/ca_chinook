@@ -150,8 +150,7 @@ ulimit -n 4096
 
 5. From the `california-chinook-microhaps` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 4) up or down depending upon how many physical processor cores your computer has. This command will take a while, perhaps an hour or more, especially when running the pipeline for the first time. 
 ```
-cd /path/to/california-chinook-microhaps
-
+cd ~/local/src/mega-simple-microhap-snakeflow/
 snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 4
 ```
 
