@@ -61,7 +61,12 @@ echo "alias wget='wget --no-check-certificate'" >> ~/.bashrc
 conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse vcftools zlib liblzma-devel
 ```
 
-3. Clone the `eriqande/mega-simple-microhap-snakeflow` to your computer. 
+2. To make life easier while cloning github repositories, run the following:
+```
+git config --global http.sslverify false
+```
+
+4. Clone the `eriqande/mega-simple-microhap-snakeflow` to your computer. 
 ```
 cd ~/local/src
 git clone https://github.com/eriqande/mega-simple-microhap-snakeflow.git
@@ -90,7 +95,7 @@ R --slave -e "devtools::install_local('emc-edits.zip', upgrade='never')"
 
 7. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that it doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server to `~/local/src/mega-simple-microhap-snakeflow`
 
-8. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will 
+8. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline. 
 ```
 mkdir ~/local/src/mega-simple-microhap-snakeflow/data
 ```
@@ -143,7 +148,7 @@ If this reports a low number (e.g., 256), then set it to something sufficiently 
 ulimit -n 4096
 ```
 
-5. From the `california-chinook-microhaps` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 4) up or down depending upon how many physical processor cores your computer has. This can take a while, especially when running the pipeline for the first time. 
+5. From the `california-chinook-microhaps` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 4) up or down depending upon how many physical processor cores your computer has. This command will take a while, perhaps an hour or more, especially when running the pipeline for the first time. 
 ```
 cd /path/to/california-chinook-microhaps
 
