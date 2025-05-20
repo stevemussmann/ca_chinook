@@ -12,6 +12,8 @@ Scripts and documentation for California Chinook microhaplotypes
 4. [Pipeline Outputs](#output)
 5. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
 
+<hr>
+
 ## Dependencies and First-time Setup <a name="installation"></a>
 
 ### basic account configuration, conda installation, etc. <a name="condainstall"></a>
