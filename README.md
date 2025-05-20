@@ -134,7 +134,7 @@ for file in ~/local/scripts/ca_chinook/scripts/*; do ln -s $file; done;
 ## Running the Pipeline <a name="pipeline"></a>
 
 1. Before sequencing, make an Illumina sample sheet (see `example_files/SampleSheet.csv`). Use this sample sheet to conduct the sequencing run on your Illumina sequencer. Optionally, you can also demultiplex using bcl2fastq if you did not use the sample sheet to automatically demultiplex files on the sequencer. [Go to bcl2fastq instructions.](#bcl2fastq)
-2. Create a folder within the `california-chinook-microhaps/data` directory that is named according to your sequencing run number (e.g., run001). Within this folder, place the `SampleSheet.csv` file and a folder named `raw` that contains all of your `fastq.gz` files. See example below:
+2. Create a folder within the `mega-simple-microhap-snakeflow/data` directory that is named according to your sequencing run number (e.g., run001). Within this folder, place the `SampleSheet.csv` file and a folder named `raw` that contains all of your `fastq.gz` files. See example below:
 
 ```
 .
@@ -169,7 +169,7 @@ If this reports a low number (e.g., 256), then set it to something sufficiently 
 ulimit -n 4096
 ```
 
-5. From the `california-chinook-microhaps` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 4) up or down depending upon how many physical processor cores your computer has. This command will take a while, perhaps an hour or more, especially when running the pipeline for the first time. 
+5. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 4) up or down depending upon how many physical processor cores your computer has. This command will take a while, perhaps an hour or more, especially when running the pipeline for the first time. 
 ```
 cd ~/local/src/mega-simple-microhap-snakeflow/
 snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 4
