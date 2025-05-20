@@ -225,7 +225,7 @@ cp ordered-read-counts-table.csv /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134
 
 7. Go into the `p134/$RUN/snakemake_output/microhaplot` folder. Run the `fixMicrohaplot.sh` script from the scripts folder in this repository. This will rename some functions within the `ui.R` and `server.R` scripts in this folder so that they are compatible with the most recent versions of the `ggiraph` R package which is a dependency of the `microhaplot` R package.
 ```
-cd  /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/microhaplot
+cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/microhaplot
 fixMicrohaplot.sh
 ```
 
