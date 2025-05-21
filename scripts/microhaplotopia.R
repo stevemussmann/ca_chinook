@@ -3,10 +3,10 @@
 ## Much of the code in this script was modified from code provided by 
 ## Anthony Clemento at NOAA
 
-library("tidyverse")
-library("microhaplotopia")
-library("vcfR")
-library("optparse")
+library("tidyverse", quietly=TRUE)
+library("microhaplotopia", quietly=TRUE)
+library("vcfR", quietly=TRUE)
+library("optparse", quietly=TRUE)
 
 ## command line option parsing
 option_list = list(
