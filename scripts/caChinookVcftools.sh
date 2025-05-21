@@ -2,7 +2,7 @@
 
 if [ $# -lt 2 ]
 then
-	echo "Usage: vcftools.sh <input.vcf> <runNumber>"
+	echo "Usage: caChinookVcftools.sh <input.vcf> <runNumber>"
 	echo ""
 	echo "Input help: your input file will probably be named \"variants-bcftools.vcf\""
 	echo "Output help: your output will be named using the run number."
