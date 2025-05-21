@@ -110,13 +110,17 @@ git clone https://github.com/stevemussmann/ca_chinook.git
 2. Make all scripts executable
 ```
 cd ~/local/src/ca_chinook/scripts
-chmod u+x *
+chmod u+x *.pl
+chmod u+x *.R
+chmod u+x *.sh
 ```
 
 3. Link scripts in your ~/local/bin folder so they can be executed from anywhere on your computer.
 ```
 cd ~/local/bin
-for file in ~/local/src/ca_chinook/scripts/*; do ln -s $file; done;
+for file in ~/ylocal/src/ca_chinook/scripts/*.pl; do ln -s $file; done;
+for file in ~/ylocal/src/ca_chinook/scripts/*.R; do ln -s $file; done;
+for file in ~/ylocal/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 ```
 
 
@@ -302,10 +306,11 @@ Options:
 
 Outputs from the `microhaplotopia.R` script are discussed in the next section.
 
-12. Convert the locus names in your final genotype .csv file.
+12. Convert the locus names in your final genotype .csv file. Change directories into the `processing/output` directory and run the `caChinookRenameLoci.pl` script. This will output a new file with the loci named according to the AmpliconName field in [this table](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv). The new file will have `lociRenamed` inserted into its file name before the .csv extension.
 ```
-
+caChinookRenameLoci.pl -f haps_2col_final.csv
 ```
+The output will be `haps_2col_final.lociRenamed.csv`. 
 
 <hr>
 
