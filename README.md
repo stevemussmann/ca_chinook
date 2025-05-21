@@ -178,7 +178,11 @@ snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml -
 <hr>
 
 ## Processing the Snakemake Pipeline Output <a name="processing"></a>
-This section explains how to obtain and modify files so that they can be read by some R scripts to produce the final genotypes file. Most commands in this section can be accomplished either by dragging and dropping files in the Windows interface, or by using the command line. 
+This section explains how to obtain and modify files so that they can be read by some R scripts to produce the final genotypes file. I wrote a script that should handle retrieving the snakemake pipeline output from WSL, copying it to your OneDrive, and automatically handle some of the file filtering and file conversions. For example, if you are working on the first run (run001) of p134, then you can execute this script with the following command:
+```
+caChinookCopyAndProcess.sh p134 run001
+```
+If the script works, you can skip to [step 8](#step8). Otherwise, start at step 1. Most procedures in this section can alternatively be accomplished by dragging and dropping files in the Windows interface, but VCF filtering and another file modification require the command line. 
 
 1. It now may be easier to copy some files to a new location to make them easier to access. For example, you could make a folder in your OneDrive to hold these files. I suggest opening your OneDrive folder in WSL and running the following command. Substitute the name of your run for the example `run001` in the first line of the command block below.
 ```
@@ -229,10 +233,9 @@ cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/microha
 fixMicrohaplot.sh
 ```
 
-8. Open Rstudio and then open the modified `server.R` script in Rstudio. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds` from the "Select Data Set" dropdown box. Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_rosa_microhap_snplicon.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section. Leave Rstudio and the shiny server open.
+8. <a name="step8"></a>Open Rstudio and then open the modified `server.R` script in Rstudio. This will be in the `p134/run001/snakemake_output/microhaplot` folder in your OneDrive that was created by the `caChinookCopyAndProcess.sh` script. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select `FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds` from the "Select Data Set" dropdown box. Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_lfar_wrap_vgll3six6.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section. Leave Rstudio and the shiny server open.
    
-9. Repeat the previous step to export `FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds` with an informative name (e.g., `run001_lfar_wrap_vgll3six6.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section.
-
+9. Repeat the previous step to export `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds` with an informative name (e.g., `run001_rosa_microhap_snplicon.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section.
 
 10. Checkpoint: Your `processing` folder should be arranged as you see below. Verify this is accurate before proceeding.
 ```
