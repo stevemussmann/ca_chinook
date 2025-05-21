@@ -275,7 +275,7 @@ Options:
         -f FINALOUT, --finalOut=FINALOUT
                 name for final output .csv file (default = haps_2col_final.csv)
 
-         -m MICROHAPLOT, --microhaplot=MICROHAPLOT
+        -m MICROHAPLOT, --microhaplot=MICROHAPLOT
                 microhaplot directory name (default = microhaplot)
 
         -o OUTPUT, --output=OUTPUT
