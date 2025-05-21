@@ -32,6 +32,13 @@ option_list = list(
     metavar="totDepth"
   ),
   make_option(
+    c("-f", "--finalOut"), 
+    type="character", 
+    default="haps_2col_final.csv", 
+    help="name for final output .csv file (default = haps_2col_final.csv)", 
+    metavar="finalOut"
+  ),
+  make_option(
     c("-g", "--greb1rosaOut"), 
     type="character", 
     default="greb1rosa_all_hapstr.txt", 
@@ -362,6 +369,6 @@ haps_2col_final <- haps_2col_final %>% select(!c(sdy_I183))
 haps_2col_final <- arrange(haps_2col_final, Indiv) # sort by Indiv column
 
 # write final genotype file
-write_csv(haps_2col_final, file=file.path(outDir, "haps_2col_final.csv"))
+write_csv(haps_2col_final, file=file.path(outDir, opt$finalOut))
 
 quit()
