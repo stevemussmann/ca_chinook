@@ -404,5 +404,12 @@ R --slave -e "install.packages('rubias', dependencies=TRUE, repos='http://cran.r
 ### Running the script
 Place your baseline and mixture files together in the same directory. Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
 ```
-rubias.r -m mixtureFile.csv -b baselineFile.csv
+rubias.R -m mixtureFile.csv -b baselineFile.csv
 ```
+
+### Outputs
+The `output_final` directory will be created in the folder from which you executed the `rubias.R` script. It will contain the following outputs:
+1. `all_top_repgroup_sumPofZ.csv`
+2. `all_top3pops.csv`
+3. `all_toppop.csv`
+4. `final_duplicates.csv`
