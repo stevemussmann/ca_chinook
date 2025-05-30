@@ -11,7 +11,7 @@ Scripts and documentation for California Chinook microhaplotypes
 3. [Processing the Snakemake Pipeline Output](#processing)
 4. [Processed Outputs](#output)
 5. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
-6. [rubias](#rubias)
+6. [Running rubias](#rubias)
 
 <hr>
 
@@ -391,9 +391,18 @@ If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. 
 ```
 bcl2fastq --barcode-mismatches 0
 ```
-## rubias <a name="rubias"></a>
+
+<hr>
+
+## Running rubias <a name="rubias"></a>
 ### First time setup
 With your `snakemake` conda environment active, run the following:
 ```
 R --slave -e "install.packages('rubias', dependencies=TRUE, repos='http://cran.rstudio.com')"
+```
+
+### Running the script
+Place your baseline and mixture files together in the same directory. Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
+```
+rubias.r -m mixtureFile.csv -b baselineFile.csv
 ```
