@@ -202,6 +202,12 @@ write.table(ptypes, file=rosaStringFile, quote=F, sep="\t", row.names=F)
 ################################################################################
 rosaHapStr <- read.table(file=rosaStringFile, header=TRUE, sep="\t", stringsAsFactors = FALSE) %>% as_tibble()
 
+rosaHapStr <- rosaHapStr %>% mutate(rosa_pheno = case_when(
+	str_extract(hapstr, "^.{1}") == "E" ~ "sp",
+	str_extract(hapstr, "^.{1}") == "H" ~ "sp-fall",
+	str_extract(hapstr, "^.{1}") == "L" ~ "fall",
+	str_extract(hapstr, "^.{1}") == "?" ~ "unk"
+))
 
 ################################################################################
 ## sex-ID marker
@@ -367,6 +373,8 @@ haps_2col_final <- full_join(rosaHapStr,haps_2col_final, by="Indiv") # add ROSA 
 haps_2col_final <- full_join(sdy_out,haps_2col_final, by="Indiv") # add ROSA hap string
 haps_2col_final <- haps_2col_final %>% select(!c(sdy_I183))
 haps_2col_final <- arrange(haps_2col_final, Indiv) # sort by Indiv column
+
+haps_2col_final <- rename(haps_2col_final, indiv = Indiv) # rename indiv to Indiv for combining tibbles
 
 # write final genotype file
 write_csv(haps_2col_final, file=file.path(outDir, opt$finalOut))
