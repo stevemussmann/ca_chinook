@@ -119,9 +119,9 @@ chmod u+x *.sh
 3. Link scripts in your ~/local/bin folder so they can be executed from anywhere on your computer.
 ```
 cd ~/local/bin
-for file in ~/ylocal/src/ca_chinook/scripts/*.pl; do ln -s $file; done;
-for file in ~/ylocal/src/ca_chinook/scripts/*.R; do ln -s $file; done;
-for file in ~/ylocal/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
+for file in ~/local/src/ca_chinook/scripts/*.pl; do ln -s $file; done;
+for file in ~/local/src/ca_chinook/scripts/*.R; do ln -s $file; done;
+for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 ```
 
 
