@@ -7,6 +7,7 @@ Scripts and documentation for California Chinook microhaplotypes
     * [Setup for mega-simple-microhap-snakeflow](#mega)
     * [Setup files from this repository](#myscripts)
     * [Setting up Rstudio](#rstudio)
+    * [Pipeline updates](#update)
 2. [Running the Snakemake Pipeline](#pipeline)
 3. [Processing the Snakemake Pipeline Output](#processing)
 4. [Processed Outputs](#output)
@@ -138,6 +139,16 @@ install.packages("devtools", dependencies=TRUE)
 4. Now install microhaplot in Rstudio. Replace `username` in the command below with your Windows username. 
 ```
 devtools::install_local('C:\Users\username\Downloads\microhaplot-master.zip', upgrade='never')
+```
+
+<hr>
+
+### Pipeline updates <a name="update"></a>
+1. To update the ca_chinook scripts to the latest versions, navigate to your `~/local/src/ca_chinook` directory and run `git pull`. This should pull in the latest versions of any scripts used for processing.
+
+```
+cd ~/local/src/ca_chinook
+git pull
 ```
 
 <hr>
