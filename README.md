@@ -258,8 +258,9 @@ processing
 └── ordered-read-counts-table.csv
 ```
 
-11. Run the `microhaplotopia.R` script from the `p134/$RUN/processing` directory. This will convert the files you generated and/or copied in the past several steps into a usable format.
+11. Open a new Linux shell from inside your `p134/$RUN/processing` directory. An easy way to do this is to navigate to this directory in Windows Explorer, hold the `shift` key while right-clicking somewhere in the empty space in this window, then choose "Open Linux shell here" from the right-click menu. Activate your snakemake conda environment and run the `microhaplotopia.R` script from this directory. This will convert the files you generated and/or copied in the past several steps into a usable format.
 ```
+conda activate snakemake
 microhaplotopia.R -r CH_run001_greb1_q20dp5.recode.vcf
 ```
 Most settings can be left as default. The only thing you should have to specify is the name of the VCF file you created in step 8. However, below I provide a comprehensive list of settings that can be modified (if desired) from the command line. 
