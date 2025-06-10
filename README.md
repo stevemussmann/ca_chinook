@@ -128,7 +128,7 @@ for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 ### setting up Rstudio <a name="rstudio"></a>
 1. Install R, Rstudio, and Rtools on your computer from apps-to-go. Packages should be named something like `IFW-R 4.4.2`, `IFW-RStudio-2024.09.1`, and `IFW-Rtools44`.
 
-2. In Rstudio, install the `devtools` library if you do not already have it.
+2. Open Rstudio. In Rstudio, install the `devtools` library if you do not already have it.
 ```
 install.packages("devtools", dependencies=TRUE)
 ```
