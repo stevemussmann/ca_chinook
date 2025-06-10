@@ -128,11 +128,17 @@ for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 ### setting up Rstudio <a name="rstudio"></a>
 1. Install R, Rstudio, and Rtools on your computer from apps-to-go. Packages should be named something like `IFW-R 4.4.2`, `IFW-RStudio-2024.09.1`, and `IFW-Rtools44`.
 
-2. Launch Rstudio. Go to `Tools` --> `Global Options...`. Click on the `Packages` menu in the left pane. Uncheck the box for `Use secure download method for HTTP`.
+2. In Rstudio, install the `devtools` library if you do not already have it.
+```
+install.packages("devtools", dependencies=TRUE)
+```
 
-3. Install microhaplot in Rstudio. Go to [https://github.com/ngthomas/microhaplot](https://github.com/ngthomas/microhaplot). Click on the `<> Code` button, then `Download Zip`.
-
-4. In Rstudio, go to `Tools` --> `Install Packages...`. Select `Package Archive File (.zip; .tar.gz)` from the drop-down menu. Navigate to the package archive location using the `Browse...` button. The file you are looking for should be named `microhaplot-master.zip`. Then click the `Install` button at the bottom of the dialog box.
+3. Download microhaplot for Rstudio. Go to [https://github.com/ngthomas/microhaplot](https://github.com/ngthomas/microhaplot). Click on the `<> Code` button, then `Download Zip`. If given an option, download this file to your `Downloads` folder in Windows.
+  
+4. Now install microhaplot in Rstudio. Replace `username` in the command below with your Windows username. 
+```
+devtools::install_local('C:\Users\username\Downloads\microhaplot-master.zip', upgrade='never')
+```
 
 <hr>
 
