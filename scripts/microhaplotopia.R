@@ -273,7 +273,7 @@ write_csv(source, file = file.path(repDir, "extra_alleles_source.csv"))
 print(paste("Count of individuals per input file impacted by extra alleles written to ", file.path(repDir, "extra_alleles_source.csv")))
 
 locus <- xtralleles %>% group_by(locus) %>% summarise(count = n_distinct(indiv.ID)) %>% arrange(desc(count)) #modified from Anthony's code to count the number of individuals per locus that were impacted by extra alleles
-write_csv(source, file = file.path(repDir, "extra_alleles_locus.csv"))
+write_csv(locus, file = file.path(repDir, "extra_alleles_locus.csv"))
 print(paste("Count of number of individuals with extra alleles per locus written to ", file.path(repDir, "extra_alleles_locus.csv")))
 
 # remove genotypes with >2 alleles
