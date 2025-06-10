@@ -144,11 +144,15 @@ devtools::install_local('C:\Users\username\Downloads\microhaplot-master.zip', up
 <hr>
 
 ### Pipeline updates <a name="update"></a>
-1. To update the ca_chinook scripts to the latest versions, navigate to your `~/local/src/ca_chinook` directory and run `git pull`. This should pull in the latest versions of any scripts used for processing.
+1. To update the ca_chinook scripts to the latest versions, navigate to your `~/local/src/ca_chinook` directory, run `git pull`, and verify that all scripts are executable. This should pull in the latest versions of any scripts used for processing.
 
 ```
 cd ~/local/src/ca_chinook
 git pull
+cd ~/local/src/ca_chinook/scripts
+chmod u+x *.pl
+chmod u+x *.R
+chmod u+x *.sh
 ```
 
 <hr>
