@@ -28,7 +28,7 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 2. Install miniconda accepting all defaults. Answer 'yes' when asked if you want to initialize conda. 
 
 ```
-bash https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
 ```
 
 3. Exit and relaunch WSL before proceeding. When your terminal window reopens, run the following command:
