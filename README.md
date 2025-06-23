@@ -3,16 +3,17 @@ Scripts and documentation for California Chinook microhaplotypes
 
 ## Table of Contents
 1. [Dependencies and First-time Setup](#installation)
-    * [Basic account configuration, conda installation, etc.](#condainstall)
+    * [Basic account configuration, conda installation, etc](#condainstall)
+    * [OPTIONAL: Installing bcl2fastq through conda](#bcl2fastqinstall)
     * [Setup for mega-simple-microhap-snakeflow](#mega)
     * [Setup files from this repository](#myscripts)
     * [Setting up Rstudio](#rstudio)
     * [Pipeline updates](#update)
-2. [Running the Snakemake Pipeline](#pipeline)
-3. [Processing the Snakemake Pipeline Output](#processing)
-4. [Processed Outputs](#output)
-5. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
-6. [Running rubias](#rubias)
+3. [Running the Snakemake Pipeline](#pipeline)
+4. [Processing the Snakemake Pipeline Output](#processing)
+5. [Processed Outputs](#output)
+6. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
+7. [Running rubias](#rubias)
 
 <hr>
 
@@ -55,7 +56,18 @@ echo "alias wget='wget --no-check-certificate'" >> ~/.bashrc
 ```
 
 8. Exit and relaunch WSL one last time before proceeding.
+   
+### OPTIONAL: Installing bcl2fastq through conda <a name="bcl2fastqinstall"></a>
 
+1. Create a new conda environment and install bcl2fastq into it.
+```
+conda create -n bcl2fastq -c conda-forge -c bioconda -c dranew bcl2fastq=2.19.0
+```
+
+2. You should now be able to launch the conda environment with the following command:
+```
+conda activate bcl2fastq
+```
 
 ### setup mega-simple-microhap-snakeflow <a name="mega"></a>
 1. Create a Conda environment for running snakemake
@@ -410,6 +422,12 @@ Indiv,sdy_sex,hapstr,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62
 ## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
 If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. This is because the [mega-simple-microhap-snakeflow](https://github.com/eriqande/mega-simple-microhap-snakeflow) pipeline expects a fastq file name format of `LibraryName_S1_L001_R1_001.fastq.gz`. Using the `--no-lane-splitting` option removes the 'L001' portion of the name and will cause the pipeline to fail. You may also need to reduce the number of allowed `--barcode-mismatches` if using 6-bp length barcodes.
 
+Load your conda environment:
+```
+conda activate bcl2fastq
+```
+
+Run bcl2fastq:
 ```
 bcl2fastq --barcode-mismatches 0
 ```
