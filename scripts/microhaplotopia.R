@@ -27,8 +27,8 @@ option_list = list(
   make_option(
     c("-D", "--totDepth"), 
     type="integer", 
-    default=8, 
-    help="minimum locus sequencing depth (default = 8)", 
+    default=10, 
+    help="minimum locus sequencing depth (default = 10)", 
     metavar="totDepth"
   ),
   make_option(
@@ -247,16 +247,12 @@ locCount
 nxa <- find_NXAlleles(hap_fil)
 write_csv(nxa, file = file.path(repDir, "nxa.csv"))
 nxaCount <- nxa %>% group_by(locus) %>% summarise(count = n()) #modified from Anthony's code to count the number of loci impacted by extra alleles per individual
-#view(nxaCount)
 write_csv(nxaCount, file = file.path(repDir, "nxaCount.csv"))
 
 hap_fil_nxa <- nxa %>% 
   select(group, indiv.ID, locus) %>% 
   distinct() %>% 
   anti_join(hap_fil, .)
-
-#locCount <- hap_fil_nxa %>% group_by(source) %>% summarise(count = n_distinct(locus))
-#locCount
 
 # Find and drop extra aleles
 xtralleles <- find_contaminated_samples(hap_fil_nxa)
@@ -279,8 +275,6 @@ print(paste("Count of number of individuals with extra alleles per locus written
 # remove genotypes with >2 alleles
 hap_fil1 <- hap_fil_nxa %>% 
   anti_join(xtralleles)
-#locCount <- hap_fil1 %>% group_by(source) %>% summarise(count = n_distinct(locus))
-#locCount
 
 # these statistics can be examined before/after subsequent filtering steps
 # Check for chinookie
@@ -306,14 +300,11 @@ grps <- summarize_data(
   datafile = hap_fil1,
   group_var = "group") %>% 
   arrange(., mean_depth)
-#grps
-
 
 # Plot missing data
 himiss <- calculate_missing_data(hap_fil1)
 hm<-ggplot(data=himiss, aes(x=reorder(indiv.ID, n_miss), y=n_miss)) +
   geom_bar(stat="identity")
-#hm
 ggsave("missingData.png", path=repDir)
 
 
@@ -334,18 +325,6 @@ haps_2col <- mhap_transform(
   long_genos = hap_final,
   program = "rubias"
 )
-
-###CODE THAT DID NOT WORK FOR RENAMING COLUMNS
-# get list of unique values in column names, without first column (indiv)
-#loci <- unique(colnames(haps_2col)[-1])
-
-# remove loci from panelInfoStr that are not in our tibble
-#panelInfoStr <- panelInfoStr %>% filter(OtherName %in% loci)
-
-#stuff <- haps_2col %>% rename_with(~ panelInfoStr$AmpliconName[which(panelInfoStr$OtherName == .x)], .cols = panelInfoStr$OtherName )
-
-#stuff <- haps_2col %>% rename_at(vars(panelInfoStr$OtherName), ~ panelInfoStr$AmpliconName)
-
 
 # append "_1" and "_2" to the locus names
 suffs <- c(1,2)
@@ -380,3 +359,4 @@ haps_2col_final <- rename(haps_2col_final, indiv = Indiv) # rename indiv to Indi
 write_csv(haps_2col_final, file=file.path(outDir, opt$finalOut))
 
 quit()
+
