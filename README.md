@@ -452,11 +452,15 @@ Run the following to install rubias:
 R --slave -e "install.packages('rubias', dependencies=TRUE, repos='http://cran.rstudio.com')"
 ```
 
+<hr>
+
 ### Running rubias <a name="rubias"></a>
 Place your baseline and mixture files together in the same directory. Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
 ```
 rubias.R -m mixtureFile.csv -b baselineFile.csv
 ```
+
+<hr>
 
 ### Rubias Outputs <a name="rubiasout"></a>
 The `output_final` directory will be created in the folder from which you executed the `rubias.R` script. It will contain the following outputs:
