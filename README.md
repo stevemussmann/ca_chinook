@@ -2,6 +2,8 @@
 Scripts and documentation for California Chinook microhaplotypes
 
 ## Table of Contents
+
+### Genotyping
 1. [Dependencies and First-time Setup](#installation)
     * [Basic account configuration, conda installation, etc](#condainstall)
     * [OPTIONAL: Installing bcl2fastq through conda](#bcl2fastqinstall)
@@ -13,7 +15,11 @@ Scripts and documentation for California Chinook microhaplotypes
 4. [Processing the Snakemake Pipeline Output](#processing)
 5. [Processed Outputs](#output)
 6. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
-7. [Running rubias](#rubias)
+
+### Genetic Stock ID
+1. [Installing rubias](#installrubias)
+2. [Running rubias](#rubias)
+3. [Rubias outputs](#rubiasout)
 
 <hr>
 
@@ -434,20 +440,25 @@ bcl2fastq --barcode-mismatches 0
 
 <hr>
 
-## Running rubias <a name="rubias"></a>
-### First time setup
-With your `snakemake` conda environment active, run the following:
+## Genetic Stock ID
+### First time setup <a name="installrubias"></a>
+Activate your `snakemake` conda environment (if not already active).
+```
+conda activate snakemake
+```
+
+Run the following to install rubias:
 ```
 R --slave -e "install.packages('rubias', dependencies=TRUE, repos='http://cran.rstudio.com')"
 ```
 
-### Running the script
+### Running rubias <a name="rubias"></a>
 Place your baseline and mixture files together in the same directory. Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
 ```
 rubias.R -m mixtureFile.csv -b baselineFile.csv
 ```
 
-### Outputs
+### Rubias Outputs <a name="rubiasout"></a>
 The `output_final` directory will be created in the folder from which you executed the `rubias.R` script. It will contain the following outputs:
 1. `all_top_repgroup_sumPofZ.csv`
 2. `all_top3pops.csv`
