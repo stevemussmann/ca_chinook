@@ -303,7 +303,7 @@ Options:
                 minimum haplotype sequencing depth (default = 4)
 
         -D TOTDEPTH, --totDepth=TOTDEPTH
-                minimum locus sequencing depth (default = 8)
+                minimum locus sequencing depth (default = 10)
 
         -g GREB1ROSAOUT, --greb1rosaOut=GREB1ROSAOUT
                 output file for greb1rosa haplotype string (default = greb1rosa_all_hapstr.txt)
