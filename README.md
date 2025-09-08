@@ -21,6 +21,9 @@ Scripts and documentation for California Chinook microhaplotypes
 2. [Running rubias](#rubias)
 3. [Rubias outputs](#rubiasout)
 
+### CKMRsim
+1. [Install CKMRsim](#installCKMRsim)
+
 <hr>
 
 ## Dependencies and First-time Setup <a name="installation"></a>
@@ -468,3 +471,18 @@ The `output_final` directory will be created in the folder from which you execut
 2. `all_top3pops.csv`
 3. `all_toppop.csv`
 4. `final_duplicates.csv`
+
+<hr>
+
+## CKMRsim
+### First time setup <a name="installCKMRsim"></a>
+Activate your `snakemake` conda environment (if not already active).
+```
+conda activate snakemake
+```
+
+Download and install CKMRsim package
+```
+wget -O CKMRsim.zip https://github.com/eriqande/CKMRsim/archive/master.zip
+R --slave -e "devtools::install_local('CKMRsim.zip', upgrade='never')"
+```
