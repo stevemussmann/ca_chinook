@@ -485,4 +485,5 @@ Download and install CKMRsim package
 ```
 wget -O CKMRsim.zip https://github.com/eriqande/CKMRsim/archive/master.zip
 R --slave -e "devtools::install_local('CKMRsim.zip', upgrade='never')"
+R --slave -e "install.packages('gRbase', dependencies=TRUE, repos='http://cran.rstudio.com')"
 ```
