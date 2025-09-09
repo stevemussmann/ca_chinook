@@ -24,6 +24,9 @@ Scripts and documentation for California Chinook microhaplotypes
 ### CKMRsim
 1. [Install CKMRsim](#installCKMRsim)
 
+### Colony
+1. [Install Colony](#installColony)
+
 <hr>
 
 ## Dependencies and First-time Setup <a name="installation"></a>
@@ -485,5 +488,21 @@ Download and install CKMRsim package
 ```
 wget -O CKMRsim.zip https://github.com/eriqande/CKMRsim/archive/master.zip
 R --slave -e "devtools::install_local('CKMRsim.zip', upgrade='never')"
-R --slave -e "install.packages('gRbase', dependencies=TRUE, repos='http://cran.rstudio.com')"
+R --slave -e "install.packages('gRbase', dependencies=TRUE, repos='http:/https://cms.zsl.org/sites/default/files/2025-07/colony2_Lnx_15_07_2025.zip/cran.rstudio.com')"
 ```
+
+## Colony
+### First time setup <a name="installColony"></a>
+Download the most recent Colony package for Linux. If the command below doesn't work, select most recent colony package for linux from https://www.zsl.org/about-zsl/resources/software/colony/thank-you
+```
+wget https://cms.zsl.org/sites/default/files/2025-07/colony2_Lnx_15_07_2025.zip
+```
+
+
+Setup conda environment for colony and install Intel MPI runtime library
+```
+conda create -n colony
+conda activate colony
+conda install -c https://software.repos.intel.com/python/conda/ -c conda-forge impi_rt
+```
+
