@@ -12,6 +12,7 @@ class Microhap():
 		self.df = pandas.DataFrame()
 		self.pmissLoc = pmissLoc # allowable proportion of missing data locus
 		self.pmissInd = pmissInd # allowable proportion of missing data individual
+		self.colonyData = pandas.DataFrame()
 
 	def getDict(self):
 		ld = LocusDict(self.df)
@@ -23,6 +24,20 @@ class Microhap():
 		print("")
 		self.df = pandas.read_csv(self.mhFile, index_col=0, header=0)
 
+		# extract colony2 column; exit with error if it doesn't exist
+		try:
+			#self.colonyData = self.df.pop('colony2').to_dict()
+			self.colonyData = self.df.pop('colony2')
+		except KeyError as e:
+			print("\nERROR. The following column is missing from your input file:", e)
+			print("The 'colony2' column should exist and contain information (status as potential male parent, female parent, or offspring) for all individuals.")
+			print("Exiting program...\n")
+			raise SystemExit(1)
+
+		return self.colonyData
+
+
+	def runFilters(self):
 		# filter loci
 		self.filterLoci()
 

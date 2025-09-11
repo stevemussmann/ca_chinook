@@ -1,17 +1,23 @@
 from colony import Colony
-#from csv import csv
+from csvf import CSVfiltered
 
 import os
 
 class MHconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, df, infile, ldict):
+	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname):
 		self.df = df
 		self.ldict = ldict
 		#self.pd = popdata
 		self.infile = infile
 		#self.log = log
+		self.cDat = cDat # colony data; offspring, male parent, female parent, etc.
+		self.derr = derr # allelic dropout rate
+		self.gerr = gerr # genotyping error rate
+		self.pmale = pm # probability of father being present among candidates
+		self.pfemale = pf # probability of mother being present among candidates
+		self.runname = runname
 		self.suffix = {'colony': 'dat', 'csv': 'csv'}
 		
 		self.convertedDir = "convertedFiles"
@@ -26,9 +32,15 @@ class MHconvert():
 				output = self.convert_to(filetype)
 				self.printOutput(output, self.infile, self.suffix[filetype])
 
+	def conv_csv(self):
+		print("This function will print a filtered .csv file")
+		csv = CSVfiltered(self.df)
+		output = csv.convert()
+		return output
+
 	def conv_colony(self):
 		print("This function will convert to colony format.")
-		cy = Colony(self.df, self.ldict)
+		cy = Colony(self.df, self.ldict, self.cDat, self.derr, self.gerr, self.pmale, self.pfemale, self.runname)
 		output = cy.convert()
 		return output
 	

@@ -21,11 +21,12 @@ def main():
 	#print(convDict)
 
 	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind)
-	mhFile.parseFile()
+	colonyData = mhFile.parseFile()
+	mhFile.runFilters()
 	locusdict = mhFile.getDict()
 
 	# conversion process
-	conversion = MHconvert(mhFile.df, input.args.infile, locusdict)
+	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname)
 	conversion.convert(convDict)
 
 main()

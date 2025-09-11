@@ -1,4 +1,3 @@
-#import math
 import os
 import pandas
 import random
@@ -6,23 +5,36 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df, ldict):
+	def __init__(self, df, ldict, cDat, derr, gerr, pm, pf, runname):
 		self.df = df
 		self.ldict = ldict
-		#self.pd = popdata
+		self.cDat = cDat # colony data (potential male parent, female parent, offspring)
+		self.derr = derr # allelic dropout rate
+		self.gerr = gerr # genotyping error rate
+		self.pmale = pm # probability of father being present among candidates
+		self.pfemale = pf # probability of mother being present among candidates
+		self.runname = runname
 		#self.convertedDir = convDir
 
 	def convert(self):
 		output = list()
 
 		randseed = random.randint(1000, 9999) # 4-digit random number seed
-		offspring = len(self.df) # number of individuals in dataframe
+		#offspring = len(self.df) # number of individuals in dataframe
+		colonyCounts = self.cDat.str.lower().value_counts().to_dict() # counts of offspring and parents
+		#print(colonyCounts)
+
 		loci = nLoci = int(len(self.df.columns)/2) # number of loci in dataframe
 
-		output.append("'BUTTE'")
-		output.append("'BUTTE'")
-		
-		offspringline = str(offspring) + "      ! Number of offspring in the sample"
+		datasetnamelist = list()
+		datasetnamelist.append("'")
+		datasetnamelist.append(str(self.runname))
+		datasetnamelist.append("'")
+		datasetline = "".join(datasetnamelist)
+		output.append(datasetline)
+		output.append(datasetline)
+
+		offspringline = str(colonyCounts["offspring"]) + "      ! Number of offspring in the sample"
 		output.append(offspringline)
 
 		lociline = str(loci) + "       ! Number of loci"
@@ -59,51 +71,127 @@ class Colony():
 		output.append(mtString)
 
 		# print string of allelic dropout rates
-		adrString = self.prepValues(loci, 0.0005)
+		adrString = self.prepValues(loci, self.derr)
 		output.append(adrString)
 
 		# print string of genotyping error rates
-		gerString = self.prepValues(loci, 0.0005)
+		gerString = self.prepValues(loci, self.gerr)
 		output.append(gerString)
 
 		
 		for (sampleName, row) in self.df.iterrows():
-			sampleList = list()
-			locusList = list()
-			sampleList.append(str(sampleName))
-			for (locus, genotype) in row.items():
-				loc = locus[:-2]
-				#print(loc)
-				#print(str(self.ldict[loc][genotype]))
-				if not pandas.isnull(genotype):
-					locusList.append(str(self.ldict[loc][genotype]))
-				else:
-					locusList.append("0")
-			locusStr = " ".join(locusList)
-			sampleList.append(locusStr)
-			sampleStr = " ".join(sampleList)
-			output.append(sampleStr)
+			if self.cDat[sampleName].casefold() == "offspring".casefold():
+				# if popmap value = offspring
+				sampleList = list()
+				locusList = list()
+				sampleList.append(str(sampleName))
+				for (locus, genotype) in row.items():
+					loc = locus[:-2]
+					if not pandas.isnull(genotype):
+						locusList.append(str(self.ldict[loc][genotype]))
+					else:
+						locusList.append("0")
+				locusStr = " ".join(locusList)
+				sampleList.append(locusStr)
+				sampleStr = " ".join(sampleList)
+				output.append(sampleStr)
 
 		output.append("")
-		output.append("0.0  0.0")
-		output.append("0  0")
+
+		# set probabilities that male and/or female parent included among candidates
+		if ("male" not in colonyCounts) and ("female" not in colonyCounts):
+			output.append("0.0  0.0     !prob. of dad/mum included in the candidates")
+		else:
+			templine = list() # list to build probabilities line
+			if "male" in colonyCounts:
+				templine.append(str(self.pmale))
+			else:
+				templine.append("0.0")
+
+			if "female" in colonyCounts:
+				templine.append(str(self.pfemale))
+			else:
+				templine.append("0.0")
+
+			templine.append("      !prob. of dad/mum included in the candidates")
+			mfCountString = " ".join(templine)
+
+			output.append(mfCountString)
+	
+		# set number of male and/or female parents
+		if ("male" not in colonyCounts) and ("female" not in colonyCounts):
+			output.append("0  0         !numbers of candidate males & females")
+		else:
+			templine = list() # list to build line from
+			if "male" in colonyCounts:
+				templine.append(str(colonyCounts["male"]))
+			else:
+				templine.append("0")
+
+			if "female" in colonyCounts:
+				templine.append(str(colonyCounts["female"]))
+			else:
+				templine.append("0")
+
+			templine.append("      !numbers of candidate males & females")
+			mfCountString = " ".join(templine)
+
+			output.append(mfCountString)
+
 		output.append("")
+		# genotypes of male parent candidates go here
+		if "male" in colonyCounts:
+			for (sampleName, row) in self.df.iterrows():
+				if self.cDat[sampleName].casefold() == "male".casefold():
+					sampleList = list()
+					locusList = list()
+					sampleList.append(str(sampleName))
+					for (locus, genotype) in row.items():
+						loc = locus[:-2]
+						if not pandas.isnull(genotype):
+							locusList.append(str(self.ldict[loc][genotype]))
+						else:
+							locusList.append("0")
+					locusStr = " ".join(locusList)
+					sampleList.append(locusStr)
+					sampleStr = " ".join(sampleList)
+					output.append(sampleStr)
+
 		output.append("")
-		output.append("0  0")
+		# genotypes of female parent candidates go here
+		if "female" in colonyCounts:
+			for (sampleName, row) in self.df.iterrows():
+				if self.cDat[sampleName].casefold() == "female".casefold():
+					sampleList = list()
+					locusList = list()
+					sampleList.append(str(sampleName))
+					for (locus, genotype) in row.items():
+						loc = locus[:-2]
+						if not pandas.isnull(genotype):
+							locusList.append(str(self.ldict[loc][genotype]))
+						else:
+							locusList.append("0")
+					locusStr = " ".join(locusList)
+					sampleList.append(locusStr)
+					sampleStr = " ".join(sampleList)
+					output.append(sampleStr)
+
 		output.append("")
-		output.append("0  0")
+		output.append("0  0        !#known father-offspring dyads, paternity exclusion threshold")
 		output.append("")
-		output.append("0")
+		output.append("0  0        !#known mother-offspring dyads, maternity exclusion threshold")
 		output.append("")
-		output.append("0")
+		output.append("0           !#known paternal sibship with unknown fathers")
 		output.append("")
-		output.append("0")
+		output.append("0           !#known maternal sibship with unknown mothers")
 		output.append("")
-		output.append("0")
+		output.append("0           !#known paternity exclusions")
 		output.append("")
-		output.append("0")
+		output.append("0           !#known maternity exclusions")
 		output.append("")
-		output.append("0")
+		output.append("0           !#known paternal sibship exclusions")
+		output.append("")
+		output.append("0           !#known maternal sibship exclusions")
 		output.append("")
 
 		return output
