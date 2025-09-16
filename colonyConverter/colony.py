@@ -5,7 +5,7 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df, ldict, cDat, derr, gerr, pm, pf, runname):
+	def __init__(self, df, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen):
 		self.df = df
 		self.ldict = ldict
 		self.cDat = cDat # colony data (potential male parent, female parent, offspring)
@@ -14,6 +14,8 @@ class Colony():
 		self.pmale = pm # probability of father being present among candidates
 		self.pfemale = pf # probability of mother being present among candidates
 		self.runname = runname
+		self.inbreed = inbreed
+		self.runlen = runlen
 		#self.convertedDir = convDir
 
 	def convert(self):
@@ -45,7 +47,11 @@ class Colony():
 
 		output.append("0         ! 0/1=Not updating/updating allele frequency")
 		output.append("2         ! 2/1=Dioecious/Monoecious species")
-		output.append("0         ! 0/1=Inbreeding absent/present")
+
+		inbreedline = str(self.inbreed) + "         ! 0/1=Inbreeding absent/present"
+		output.append(inbreedline)
+		#output.append("0         ! 0/1=Inbreeding absent/present")
+
 		output.append("0         ! 0/1=Diploid species/HaploDiploid species")
 		output.append("0  0      ! 0/1=Polygamy/Monogamy for males & females")
 		output.append("0         ! 0/1 = Clone inference = No/Yes")
@@ -53,7 +59,11 @@ class Colony():
 		output.append("0         ! 0/1/2/3/4=No/Weak/Medium/Strong sibship prior; 4=Optimal sibship prior for Ne")
 		output.append("0         ! 0/1=Unknown/Known population allele frequency")
 		output.append("1         ! Number of runs")
-		output.append("2         ! 1/2/3/4 = Short/Medium/Long/VeryLong run")
+
+		runlenline = str(self.runlen) + "         ! 1/2/3/4 = Short/Medium/Long/VeryLong run"
+		output.append(runlenline)
+		#output.append("2         ! 1/2/3/4 = Short/Medium/Long/VeryLong run")
+		
 		output.append("1         ! 0/1=Monitor method by Iterate#/Time in second")
 		output.append("1         ! Monitor interval in Iterate# / in seconds")
 		output.append("0         ! 0/1=DOS/Windows version")

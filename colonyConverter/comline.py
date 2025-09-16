@@ -9,7 +9,8 @@ class ComLine():
 		parser = argparse.ArgumentParser()
 		parser._action_groups.pop()
 		required = parser.add_argument_group('required arguments')
-		optional = parser.add_argument_group('optional arguments')
+		filtering = parser.add_argument_group('filtering arguments')
+		colony = parser.add_argument_group('colony arguments')
 		conversion = parser.add_argument_group('conversion arguments')
 
 		required.add_argument("-f", "--infile",
@@ -22,37 +23,51 @@ class ComLine():
 							required=True,
 							help="Provide a unique name for the Colony run. Output files from Colony will receive this name (required)."
 		)
-		optional.add_argument("-d", "--droperr",
-							dest='droperr',
-							type=float,
-							default=0.0005,
-							help="Enter the assumed allelic dropout rate (default = 0.0005)."
-		)
-		optional.add_argument("-g", "--genoerr",
-							dest='genoerr',
-							type=float,
-							default=0.0005,
-							help="Enter the assumed genotyping error rate (default = 0.0005)."
-		)
-		optional.add_argument("-i", "--pmissind",
+		filtering.add_argument("-i", "--pmissind",
 							dest='pmissind',
 							type=float,
 							default=0.3,
 							help="Enter the maximum allowable proportion of missing data for an individual (default = 0.3)."
 		)
-		optional.add_argument("-l", "--pmissloc",
+		filtering.add_argument("-l", "--pmissloc",
 							dest='pmissloc',
 							type=float,
 							default=0.3,
 							help="Enter the maximum allowable proportion of missing data for a locus (default = 0.3)."
 		)
-		optional.add_argument("-p", "--pmale",
+		colony.add_argument("-d", "--droperr",
+							dest='droperr',
+							type=float,
+							default=0.0005,
+							help="Enter the assumed allelic dropout rate (default = 0.0005)."
+		)
+		colony.add_argument("-g", "--genoerr",
+							dest='genoerr',
+							type=float,
+							default=0.0005,
+							help="Enter the assumed genotyping error rate (default = 0.0005)."
+		)
+		colony.add_argument("-I", "--inbreed",
+							dest='inbreed',
+							type=int,
+							default=0,
+							choices={0,1},
+							help="0 = inbreeding absent; 1 = inbreeding present (default = 0)."
+		)
+		colony.add_argument("-L", "--runlength",
+							dest='runlength',
+							type=int,
+							default=2,
+							choices={1,2,3,4},
+							help="1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2)."
+		)
+		colony.add_argument("-M", "--pmale",
 							dest='pmale',
 							type=float,
 							default=0.5,
 							help="Enter the assumed probability of father being among candidate parents (default = 0.5). Value is ignored if no candidate fathers provided in the dataset."
 		)
-		optional.add_argument("-P", "--pfemale",
+		colony.add_argument("-F", "--pfemale",
 							dest='pfemale',
 							type=float,
 							default=0.5,

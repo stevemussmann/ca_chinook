@@ -26,7 +26,7 @@ def main():
 	locusdict = mhFile.getDict()
 
 	# conversion process
-	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname)
+	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength)
 	conversion.convert(convDict)
 
 main()

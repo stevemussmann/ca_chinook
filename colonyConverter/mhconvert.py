@@ -6,7 +6,7 @@ import os
 class MHconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname):
+	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen):
 		self.df = df
 		self.ldict = ldict
 		#self.pd = popdata
@@ -18,6 +18,8 @@ class MHconvert():
 		self.pmale = pm # probability of father being present among candidates
 		self.pfemale = pf # probability of mother being present among candidates
 		self.runname = runname
+		self.inbreed = inbreed
+		self.runlen = runlen
 		self.suffix = {'colony': 'dat', 'csv': 'csv'}
 		
 		self.convertedDir = "convertedFiles"
@@ -40,7 +42,7 @@ class MHconvert():
 
 	def conv_colony(self):
 		print("This function will convert to colony format.")
-		cy = Colony(self.df, self.ldict, self.cDat, self.derr, self.gerr, self.pmale, self.pfemale, self.runname)
+		cy = Colony(self.df, self.ldict, self.cDat, self.derr, self.gerr, self.pmale, self.pfemale, self.runname, self.inbreed, self.runlen)
 		output = cy.convert()
 		return output
 	
