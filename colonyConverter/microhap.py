@@ -19,30 +19,56 @@ class Microhap():
 		ldict = ld.getUnique()
 		return ldict
 
-	def parseFile(self):
+	def parseFile(self, colonyBool):
 		print("Reading input .csv file.")
 		print("")
 		self.df = pandas.read_csv(self.mhFile, index_col=0, header=0)
 
-		# extract colony2 column; exit with error if it doesn't exist
-		try:
-			#self.colonyData = self.df.pop('colony2').to_dict()
-			self.colonyData = self.df.pop('colony2')
-		except KeyError as e:
-			print("\nERROR. The following column is missing from your input file:", e)
-			print("The 'colony2' column should exist and contain information (status as potential male parent, female parent, or offspring) for all individuals.")
-			print("Exiting program...\n")
-			raise SystemExit(1)
+		# remove unneeded columns
+		toRemove = ["sdy_sex", "hapstr", "rosa_pheno", "percMicroHap"] # summary columns inserted by genotyping pipeline
+		for col in toRemove:
+			if col in self.df.columns:
+				self.df.pop(col) # remove column
+
+		## extract colony2 column; exit with error if it doesn't exist
+		# only do this if colony2 conversion requested
+		if colonyBool == True:
+			try:
+				self.colonyData = self.df.pop('colony2')
+			except KeyError as e:
+				print("\nERROR. The following column is missing from your input file:", e)
+				print("The 'colony2' column should exist and contain information (status as potential male parent, female parent, or offspring) for all individuals.")
+				print("Exiting program...\n")
+				raise SystemExit(1)
+
+		# validate that remaining columns all end in _1 or _2
+
 
 		return self.colonyData
-
+		
+	def removeLoci(self, blacklist):
+		# remove blacklisted columns
+		removeLoci = list()
+		with open(blacklist, 'r') as fh:
+			for line in fh:
+				removeLoci.append(line.strip())
+		for col in removeLoci:
+			a1 = col + "_1"
+			a2 = col + "_2"
+			if a1 in self.df.columns:
+				self.df.pop(a1)
+			if a2 in self.df.columns:
+				self.df.pop(a2)
 
 	def runFilters(self):
+		# filter individuals
+		self.filterInds()
+		
 		# filter loci
 		self.filterLoci()
 
-		# filter individuals
-		self.filterInds()
+		# remove monomorphic loci
+
 
 	def filterLoci(self):
 		# get number of loci

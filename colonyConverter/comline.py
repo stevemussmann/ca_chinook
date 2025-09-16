@@ -35,6 +35,10 @@ class ComLine():
 							default=0.3,
 							help="Enter the maximum allowable proportion of missing data for a locus (default = 0.3)."
 		)
+		filtering.add_argument("-R", "--removeloci",
+							dest='removeloci',
+							help='Specify a list of loci to remove.'
+		)
 		colony.add_argument("-d", "--droperr",
 							dest='droperr',
 							type=float,
@@ -124,7 +128,8 @@ class ComLine():
 			raise SystemExit(1)
 
 		# check if files exist
-		self.exists( self.args.infile )
+		self.exists( str(self.args.infile) )
+		self.exists( str(self.args.removeloci) )
 
 	def zeroOne(self, num):
 		return 0.0 <= num <= 1.0
