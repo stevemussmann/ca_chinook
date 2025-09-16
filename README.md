@@ -353,7 +353,7 @@ Options:
 
 Outputs from the `microhaplotopia.R` script are discussed in the next section.
 
-12. Convert the locus names in your final genotype .csv file. Change directories into the `processing/output` directory and run the `caChinookRenameLoci.pl` script. This will output a new file with the loci named according to the AmpliconName field in [this table](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv). The new file will have `lociRenamed` inserted into its file name before the .csv extension.
+12. [OPTIONAL] Convert the locus names in your final genotype .csv file. Change directories into the `processing/output` directory and run the `caChinookRenameLoci.pl` script. This will output a new file with the loci named according to the AmpliconName field in [this table](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv). The new file will have `lociRenamed` inserted into its file name before the .csv extension.
 ```
 caChinookRenameLoci.pl -f haps_2col_final.csv
 ```
