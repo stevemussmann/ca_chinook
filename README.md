@@ -488,7 +488,7 @@ Download and install CKMRsim package
 ```
 wget -O CKMRsim.zip https://github.com/eriqande/CKMRsim/archive/master.zip
 R --slave -e "devtools::install_local('CKMRsim.zip', upgrade='never')"
-R --slave -e "install.packages('gRbase', dependencies=TRUE, repos='http:/https://cms.zsl.org/sites/default/files/2025-07/colony2_Lnx_15_07_2025.zip/cran.rstudio.com')"
+R --slave -e "install.packages('gRbase', dependencies=TRUE, repos='http://cran.rstudio.com')"
 ```
 
 ## Colony
