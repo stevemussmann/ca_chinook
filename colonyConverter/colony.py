@@ -8,7 +8,11 @@ class Colony():
 	def __init__(self, df, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen):
 		self.df = df
 		self.ldict = ldict
-		self.cDat = cDat # colony data (potential male parent, female parent, offspring)
+
+		# make sure counts are accurate by removing filtered individuals from df
+		common_records = pandas.merge(self.df, cDat, on='indiv', how='inner')
+		self.cDat = common_records.pop('colony2') # colony data (potential male parent, female parent, offspring)
+
 		self.derr = derr # allelic dropout rate
 		self.gerr = gerr # genotyping error rate
 		self.pmale = pm # probability of father being present among candidates
@@ -50,7 +54,6 @@ class Colony():
 
 		inbreedline = str(self.inbreed) + "         ! 0/1=Inbreeding absent/present"
 		output.append(inbreedline)
-		#output.append("0         ! 0/1=Inbreeding absent/present")
 
 		output.append("0         ! 0/1=Diploid species/HaploDiploid species")
 		output.append("0  0      ! 0/1=Polygamy/Monogamy for males & females")
@@ -62,7 +65,6 @@ class Colony():
 
 		runlenline = str(self.runlen) + "         ! 1/2/3/4 = Short/Medium/Long/VeryLong run"
 		output.append(runlenline)
-		#output.append("2         ! 1/2/3/4 = Short/Medium/Long/VeryLong run")
 		
 		output.append("1         ! 0/1=Monitor method by Iterate#/Time in second")
 		output.append("1         ! Monitor interval in Iterate# / in seconds")
