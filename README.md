@@ -493,13 +493,27 @@ R --slave -e "install.packages('gRbase', dependencies=TRUE, repos='http://cran.r
 
 ## Colony
 ### First time setup <a name="installColony"></a>
+Go to your home directory
+```
+cd ~/local/src
+```
+
 Download the most recent Colony package for Linux. If the command below doesn't work, select most recent colony package for linux from https://www.zsl.org/about-zsl/resources/software/colony/thank-you
 ```
 wget https://cms.zsl.org/sites/default/files/2025-07/colony2_Lnx_15_07_2025.zip
 ```
 
+Unzip the file
+```
+unzip colony2_Lnx_15_07_2025.zip
+```
 
-Setup conda environment for colony and install Intel MPI runtime library
+Link the `colony2p.ifort.impi2018.out` file in your `~/local/bin folder` as `colony`
+```
+ln -s ~/local/src/colony2_Lnx_15_07_2025/colony2p.ifort.impi2018.out colony
+```
+
+Setup a conda environment for colony that includes the Intel MPI runtime library
 ```
 conda create -n colony
 conda activate colony
