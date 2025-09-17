@@ -20,8 +20,6 @@ class MHconvert():
 		self.runlen = runlen
 		self.suffix = {'colony': 'Dat', 'csv': 'csv'}
 		self.convertedDir = cdir # directory to hold converted files
-		#if os.path.exists(self.convertedDir) == False:
-		#	os.mkdir(self.convertedDir)
 
 	def convert(self, d):
 		output = list()
@@ -32,13 +30,13 @@ class MHconvert():
 				self.printOutput(output, self.infile, self.suffix[filetype])
 
 	def conv_csv(self):
-		print("This function will print a filtered .csv file")
+		#print("This function will print a filtered .csv file")
 		csv = CSVfiltered(self.df)
 		output = csv.convert()
 		return output
 
 	def conv_colony(self): 
-		print("This function will convert to colony format.")
+		#print("This function will convert to colony format.")
 		cy = Colony(self.df, self.ldict, self.cDat, self.derr, self.gerr, self.pmale, self.pfemale, self.runname, self.inbreed, self.runlen)
 		output = cy.convert()
 		return output

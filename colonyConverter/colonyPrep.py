@@ -24,11 +24,16 @@ def main():
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value
-	#print(convDict)
 
-	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind) #initialize new file
+	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind, input.args.mono) #initialize new file
 	colonyData = mhFile.parseFile(input.args.colony) # parse file
-	locusdict = mhFile.getDict() # make locus dictionary
+
+	try:
+		locusdict = mhFile.getDict() # make locus dictionary
+	except KeyError as e:
+		print("\nKeyError:", e, "was not found.")
+		print("Make sure all locus columns in your input file end in _1 or _2.\n")
+		raise SystemExit(1)
 
 	if input.args.removeloci:
 		mhFile.removeLoci(input.args.removeloci) # remove blacklisted loci (if invoked)
@@ -37,6 +42,7 @@ def main():
 	
 	# dump locus dictionary to text file (locusDictionary.json)
 	jsonpath = os.path.join(convertedDir, "locusDictionary.json")
+	print("\nPrinting locus dictionary used for COLONY format conversion to", str(jsonpath), "\n")
 	with open(jsonpath, 'w') as jsonfile:
 		json.dump(locusdict, jsonfile, indent='\t')
 

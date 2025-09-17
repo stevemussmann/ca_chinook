@@ -39,6 +39,11 @@ class ComLine():
 							dest='removeloci',
 							help='Specify a list of loci to remove.'
 		)
+		filtering.add_argument("-m", "--mono",
+							dest='mono',
+							action='store_false',
+							help="Remove monomorphic loci from final output (default = True)."
+		)
 		colony.add_argument("-d", "--droperr",
 							dest='droperr',
 							type=float,
@@ -129,7 +134,8 @@ class ComLine():
 
 		# check if files exist
 		self.exists( str(self.args.infile) )
-		self.exists( str(self.args.removeloci) )
+		if self.args.removeloci:
+			self.exists( str(self.args.removeloci) )
 
 	def zeroOne(self, num):
 		return 0.0 <= num <= 1.0

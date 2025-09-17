@@ -1,3 +1,4 @@
+#import json
 import pandas
 #import os.path
 #import distutils.util
@@ -7,12 +8,13 @@ from locusdict import LocusDict
 class Microhap():
 	'Class for operating on microhap genotype files'
 
-	def __init__(self, infile, pmissLoc, pmissInd):
+	def __init__(self, infile, pmissLoc, pmissInd, mono):
 		self.mhFile = infile #input file name
 		self.df = pandas.DataFrame()
 		self.pmissLoc = pmissLoc # allowable proportion of missing data locus
 		self.pmissInd = pmissInd # allowable proportion of missing data individual
 		self.colonyData = pandas.DataFrame()
+		self.mono = mono # boolean to control monomorphic locus filter
 
 	def getDict(self):
 		ld = LocusDict(self.df)
@@ -28,6 +30,7 @@ class Microhap():
 		toRemove = ["sdy_sex", "hapstr", "rosa_pheno", "percMicroHap"] # summary columns inserted by genotyping pipeline
 		for col in toRemove:
 			if col in self.df.columns:
+				print("Removing", col, "column from input.")
 				self.df.pop(col) # remove column
 
 		## extract colony2 column; exit with error if it doesn't exist
@@ -42,12 +45,19 @@ class Microhap():
 				raise SystemExit(1)
 
 		# validate that remaining columns all end in _1 or _2
+		columnNames = list(self.df.columns)
+		for columnName in columnNames:
+			if not columnName.endswith(("_1", "_2")):
+				print("\nERROR.")
+				print("Make sure all locus columns in your input file end in _1 or _2.\n")
+				raise SystemExit(1)
 
 
 		return self.colonyData
 		
 	def removeLoci(self, blacklist):
 		# remove blacklisted columns
+		print("\nRemoving blacklisted loci (if present):")
 		removeLoci = list()
 		with open(blacklist, 'r') as fh:
 			for line in fh:
@@ -56,8 +66,10 @@ class Microhap():
 			a1 = col + "_1"
 			a2 = col + "_2"
 			if a1 in self.df.columns:
+				print(a1)
 				self.df.pop(a1)
 			if a2 in self.df.columns:
+				print(a2)
 				self.df.pop(a2)
 
 	def runFilters(self):
@@ -68,7 +80,32 @@ class Microhap():
 		self.filterLoci()
 
 		# remove monomorphic loci
-
+		if self.mono == True:
+			self.filterMono()
+	
+	def filterMono(self):
+		removeLoci = list()
+		findMono = LocusDict(self.df)
+		mono = findMono.getUnique()
+		#print(mono)
+		#with open("mono.json", 'w') as jfile:
+		#	json.dump(mono, jfile, indent='\t')
+		for key, val in mono.items():
+			if len(mono[key]) == 1:
+				removeLoci.append(key)
+		print("\nRemoving monomorphic loci:")
+		if removeLoci:
+			for col in removeLoci:
+				a1 = col + "_1"
+				a2 = col + "_2"
+				if a1 in self.df.columns:
+					print(a1)
+					self.df.pop(a1)
+				if a2 in self.df.columns:
+					print(a2)
+					self.df.pop(a2)
+		else:
+			print("None found!")
 
 	def filterLoci(self):
 		# get number of loci
@@ -82,6 +119,14 @@ class Microhap():
 		missLoc = self.df.isnull().sum(axis=0) # count missing genotypes per column (locus)
 		missLocPCT = missLoc / nLoci # divide missing data series by number of loci
 		removeLocPCT = missLocPCT[missLocPCT > self.pmissLoc].index # get list of column indexes to remove
+		#print(removeLocPCT)
+
+		# print records that didn't pass missing data filter
+		missRecords = missLocPCT.loc[missLocPCT.index.intersection(removeLocPCT)]
+
+		print("\nMissing data proportion per removed locus:")
+		#pandas.set_option("display.max_rows", None, "display.max_columns", None)
+		print(missRecords.to_string(index=True))
 
 		self.df.drop(removeLocPCT, axis=1, inplace=True)
 
@@ -100,6 +145,13 @@ class Microhap():
 		missInd = self.df.isnull().sum(axis=1) # count missing genotypes per individual
 		missIndPCT = missInd / nAlleles # divide missing data series by number of alleles
 		removeIndPCT = missIndPCT[missIndPCT > self.pmissInd].index # get list of row indexes to remove
+		
+		# print records that didn't pass missing data filter
+		missRecords = missIndPCT.loc[missIndPCT.index.intersection(removeIndPCT)]
+
+		print("\nMissing data proportion per individual (indiv):")
+		#pandas.set_option("display.max_rows", None, "display.max_columns", None)
+		print(missRecords.to_string(index=True))
 		
 		self.df.drop(removeIndPCT, axis=0, inplace=True)
 		

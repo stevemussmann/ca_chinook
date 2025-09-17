@@ -20,15 +20,12 @@ class Colony():
 		self.runname = runname
 		self.inbreed = inbreed
 		self.runlen = runlen
-		#self.convertedDir = convDir
 
 	def convert(self):
 		output = list()
 
 		randseed = random.randint(1000, 9999) # 4-digit random number seed
-		#offspring = len(self.df) # number of individuals in dataframe
 		colonyCounts = self.cDat.str.lower().value_counts().to_dict() # counts of offspring and parents
-		#print(colonyCounts)
 
 		loci = nLoci = int(len(self.df.columns)/2) # number of loci in dataframe
 
@@ -211,10 +208,8 @@ class Colony():
 	def getLocusNames(self):
 		colNames = list(self.df.columns) #get column names from pandas dataframe
 		dupLoci = [item[:-2] for item in colNames] #strip allele identifiers from ends
-		#print(dupLoci)
 
 		singleLoci = dupLoci[1::2] #keep odd numbered list elements
-		#print(singleLoci)
 
 		return singleLoci
 
