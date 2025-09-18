@@ -219,10 +219,10 @@ If this reports a low number (e.g., 256), then set it to something sufficiently 
 ulimit -n 4096
 ```
 
-5. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 4) up or down depending upon how many physical processor cores your computer has. This command will take a while, perhaps an hour or more, especially when running the pipeline for the first time. 
+5. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 8) up or down depending upon how many physical processor cores your computer has. If running a Windows machine, I recommend checking the 'System Information' window for your computer for the number of processor cores. I recommend that you don't exceed this number. I have gone as high as 16 cores (the number of physical processor cores in my laptop). The snakemake command will take a while, perhaps an hour or more, especially when running the pipeline for the first time.
 ```
 cd ~/local/src/mega-simple-microhap-snakeflow/
-snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 4
+snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 8
 ```
 
 <hr>
