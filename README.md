@@ -9,7 +9,6 @@ Scripts and documentation for California Chinook microhaplotypes
     * [OPTIONAL: Installing bcl2fastq through conda](#bcl2fastqinstall)
     * [Setup for mega-simple-microhap-snakeflow](#mega)
     * [Setup files from this repository](#myscripts)
-    * [Setting up Rstudio](#rstudio)
     * [Pipeline updates](#update)
 3. [Running the Snakemake Pipeline](#pipeline)
 4. [Processing the Snakemake Pipeline Output](#processing)
@@ -149,22 +148,6 @@ for file in ~/local/src/ca_chinook/scripts/*.R; do ln -s $file; done;
 for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 ```
 
-
-### setting up Rstudio <a name="rstudio"></a>
-1. Install R, Rstudio, and Rtools on your computer from apps-to-go. Packages should be named something like `IFW-R 4.4.2`, `IFW-RStudio-2024.09.1`, and `IFW-Rtools44`.
-
-2. Open Rstudio. In Rstudio, install the `devtools` library if you do not already have it.
-```
-install.packages("devtools", dependencies=TRUE)
-```
-
-3. Download microhaplot for Rstudio. Go to [https://github.com/ngthomas/microhaplot](https://github.com/ngthomas/microhaplot). Click on the `<> Code` button, then `Download Zip`. If given an option, download this file to your `Downloads` folder in Windows.
-  
-4. Now install microhaplot in Rstudio. Replace `username` in the command below with your Windows username. 
-```
-devtools::install_local('C:\Users\username\Downloads\microhaplot-master.zip', upgrade='never')
-```
-
 <hr>
 
 ### Pipeline updates <a name="update"></a>
@@ -200,17 +183,28 @@ chmod u+x *.sh
         └── etc.
 ```
 
-3. Activate your conda environment
+3. From here, you should be able to run the entire pipeline using the `caChinookPipeline.sh` script. This requires three inputs given after the script name, as shown below.
+```
+Example Usage: caChinookPipeline.sh <projectNumber> <runNumber> <cores>
+```
+In this example, we will use p134 as the projectNumber, run001 as the runNumber, and 8 for the number of cores. This last number (cores) will be provided to the Snakemake pipeline. You can adjust the number of cores up or down depending upon how many physical processor cores your computer has. If running a Windows machine, I recommend checking the 'System Information' window for your computer for the number of processor cores. I recommend that you don't exceed this number. I have gone as high as 16 cores (the number of physical processor cores in my laptop). You can run the entire pipeline with the command shown below:
+
+```
+caChinookPipeline.sh p134 run001 8
+```
+If the pipeline runs successfully you can skip ahead to [Processed Outputs](#output). If this script doesn't work, or if you just want to run through the pipeline manually, continue with step 4. 
+
+4. Activate your conda environment
 ```
 conda activate snakemake
 ```
 
-3. Run the `preprocess.R` script to create the two files required by the snakemake pipeline: `samples.csv` and `units.csv`. Watch carefully for errors, and correct any problems until you successfully create the two files.
+5. Run the `preprocess.R` script to create the two files required by the snakemake pipeline: `samples.csv` and `units.csv`. Watch carefully for errors, and correct any problems until you successfully create the two files.
 ```
 preprocess.R -f SampleSheet.csv
 ```
 
-4. This pipeline reads from / writes to many files simultaneously. Check the number of files that can be open simultaneously on your computer with the `ulimit` command.
+6. This pipeline reads from / writes to many files simultaneously. Check the number of files that can be open simultaneously on your computer with the `ulimit` command.
 ```
 ulimit -n
 ```
@@ -219,7 +213,7 @@ If this reports a low number (e.g., 256), then set it to something sufficiently 
 ulimit -n 4096
 ```
 
-5. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 8) up or down depending upon how many physical processor cores your computer has. If running a Windows machine, I recommend checking the 'System Information' window for your computer for the number of processor cores. I recommend that you don't exceed this number. I have gone as high as 16 cores (the number of physical processor cores in my laptop). The snakemake command will take a while, perhaps an hour or more, especially when running the pipeline for the first time.
+7. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 8) up or down depending upon how many physical processor cores your computer has. If running a Windows machine, I recommend checking the 'System Information' window for your computer for the number of processor cores. I recommend that you don't exceed this number. I have gone as high as 16 cores (the number of physical processor cores in my laptop). The snakemake command will take a while, perhaps an hour or more, especially when running the pipeline for the first time.
 ```
 cd ~/local/src/mega-simple-microhap-snakeflow/
 snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 8
@@ -232,19 +226,18 @@ This section explains how to obtain and modify files so that they can be read by
 ```
 caChinookCopyAndProcess.sh p134 run001
 ```
-If the script works, you can skip to [step 8](#step8). Otherwise, start at step 1. Most procedures in this section can alternatively be accomplished by dragging and dropping files in the Windows interface, but VCF filtering and another file modification require the command line. 
+If the script works, you can skip to [step 9](#step9). Otherwise, start at step 1. Most procedures in this section can alternatively be accomplished by dragging and dropping files in the Windows interface, but VCF filtering and another file modification require the command line. 
 
 1. It now may be easier to copy some files to a new location to make them easier to access. For example, you could make a folder in your OneDrive to hold these files. I suggest opening your OneDrive folder in WSL and running the following command. Substitute the name of your run for the example `run001` in the first line of the command block below.
 ```
 RUN="run001"
-mkdir -p p134/$RUN/snakemake_output p134/$RUN/processing/microhaplot
+mkdir -p p134/$RUN/snakemake_output p134/$RUN/processing/
 ```
 This will create the following directory structure. The `snakemake_output` folder is where you will copy the unmodified outputs of the snakemake pipeline. The `processing` folder is where you will run a series of scripts on select output files to filter and convert the microhaplotype data to a usable form.
 ```
 p134
 └── run001
     ├── processing
-    │   └── microhaplot
     └── snakemake_output
 ```
 
@@ -266,7 +259,7 @@ cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/vcfs/RO
 vcftools.sh variants-bcftools.vcf run001
 ```
 
-5. Copy the `CH_run001_greb1_q20dp5.recode.vcf` file to `p134/$RUN/processing/microhaplot`
+5. Copy the `CH_run001_greb1_q20dp5.recode.vcf` file to `p134/$RUN/processing`
 ```
 cp CH_run001_greb1_q20dp5.recode.vcf /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/processing/.
 ```
@@ -277,30 +270,30 @@ cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/idxstat
 cp ordered-read-counts-table.csv /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/processing/.
 ```
 
-7. Go into the `p134/$RUN/snakemake_output/microhaplot` folder. Run the `fixMicrohaplot.sh` script from the scripts folder in this repository. This will rename some functions within the `ui.R` and `server.R` scripts in this folder so that they are compatible with the most recent versions of the `ggiraph` R package which is a dependency of the `microhaplot` R package.
+7. Copy the .rds file containing microhaplotype data for the LFAR, WRAP, vgll3, and six6 loci into the `p134/$RUN/processing` folder.
 ```
-cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/microhaplot
-fixMicrohaplot.sh
+cd ~/local/src/mega-simple-microhap-snakeflow/data/run001trim/Chinook/microhaplot
+cp FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/processing/.
 ```
 
-8. <a name="step8"></a>Open Rstudio and then open the modified `server.R` script in Rstudio. This will be in the `p134/run001/snakemake_output/microhaplot` folder in your OneDrive that was created by the `caChinookCopyAndProcess.sh` script. Click the "Run App" button to launch the shiny program. Wait until the program finishes loading, then select `FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds` from the "Select Data Set" dropdown box. Then click the "Table" button (bottom, right of center of window) and finally click the "Download" button (in the top right portion of the window). Save the file with an informative name (e.g., `run001_lfar_wrap_vgll3six6.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section. Leave Rstudio and the shiny server open.
-   
-9. Repeat the previous step to export `FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds` with an informative name (e.g., `run001_rosa_microhap_snplicon.csv`) in the `p134/$RUN/processing/microhaplot` folder that you made in step 1 of this section.
+8. Now do the same for the .rds file containing the rest of the microhaplotype loci.
+```
+cp FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing/.
+``` 
 
-10. Checkpoint: Your `processing` folder should be arranged as you see below. Verify this is accurate before proceeding.
+9. <a name="step9"></a>Checkpoint: Your `processing` folder should be arranged as you see below. Verify this is accurate before proceeding.
 ```
 processing
-├── microhaplot
-│   ├── run001_lfar_wrap_vgll3six6.csv
-│   └── run001_rosa_microhap_snplicon.csv
 ├── CH_run001_greb1_q20dp5.recode.vcf
+├── FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds
+├── FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds
 └── ordered-read-counts-table.csv
 ```
 
-11. Open a new Linux shell from inside your `p134/$RUN/processing` directory. An easy way to do this is to navigate to this directory in Windows Explorer, hold the `shift` key while right-clicking somewhere in the empty space in this window, then choose "Open Linux shell here" from the right-click menu. Activate your snakemake conda environment and run the `microhaplotopia.R` script from this directory. This will convert the files you generated and/or copied in the past several steps into a usable format.
+10. Open a new Linux shell from inside your `p134/$RUN/processing` directory. An easy way to do this is to navigate to this directory in Windows Explorer, hold the `shift` key while right-clicking somewhere in the empty space in this window, then choose "Open Linux shell here" from the right-click menu. Activate your snakemake conda environment and run the `microhaplotopia.R` script from this directory. This will convert the files you generated and/or copied in the past several steps into a usable format. You will also need to provide the `microhaplotopia.R` script with your run name (e.g., `run001`). 
 ```
 conda activate snakemake
-microhaplotopia.R -r CH_run001_greb1_q20dp5.recode.vcf
+microhaplotopia.R -r CH_run001_greb1_q20dp5.recode.vcf -R run001
 ```
 Most settings can be left as default. The only thing you should have to specify is the name of the VCF file you created in step 8. However, below I provide a comprehensive list of settings that can be modified (if desired) from the command line. 
 ```
@@ -317,14 +310,17 @@ Options:
         -D TOTDEPTH, --totDepth=TOTDEPTH
                 minimum locus sequencing depth (default = 10)
 
+        -f FINALOUT, --finalOut=FINALOUT
+                name for final output .csv file (default = haps_2col_final.csv)
+
         -g GREB1ROSAOUT, --greb1rosaOut=GREB1ROSAOUT
                 output file for greb1rosa haplotype string (default = greb1rosa_all_hapstr.txt)
 
         -G GREBINFO, --grebInfo=GREBINFO
                 info needed to generate greb1rosa haplotype string (default = ~/local/src/ca_chinook/example_files/greb1_roha_alleles_reordered_wr.txt)
 
-        -f FINALOUT, --finalOut=FINALOUT
-                name for final output .csv file (default = haps_2col_final.csv)
+        -L LFAR, --lfar=LFAR
+                rds file of loci mapped to full genome (default = FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds)
 
         -m MICROHAPLOT, --microhaplot=MICROHAPLOT
                 microhaplot directory name (default = microhaplot)
@@ -332,14 +328,20 @@ Options:
         -o OUTPUT, --output=OUTPUT
                 output directory name (default = output)
 
+        -O REPORTS, --reports=REPORTS
+                reports directory name (default = reports)
+
         -r ROSA, --rosa=ROSA
                 ROSA VCF file (No default; required)
 
-        -R REPORTS, --reports=REPORTS
-                reports directory name (default = reports)
+        -R RUN, --run=RUN
+                Run number (No default; required)
 
         -s SDY, --sdy=SDY
                 sdy read count file (default = ordered-read-counts-table.csv)
+
+        -S SNPLICON, --snplicon=SNPLICON
+                rds file of loci mapped to target fastas (default = FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds)
 
         -x MAXFEMALE, --maxFemale=MAXFEMALE
                 maximum sdy reads allowed to call female (default = 2)
@@ -353,7 +355,7 @@ Options:
 
 Outputs from the `microhaplotopia.R` script are discussed in the next section.
 
-12. [OPTIONAL] Convert the locus names in your final genotype .csv file. Change directories into the `processing/output` directory and run the `caChinookRenameLoci.pl` script. This will output a new file with the loci named according to the AmpliconName field in [this table](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv). The new file will have `lociRenamed` inserted into its file name before the .csv extension.
+11. [OPTIONAL] Convert the locus names in your final genotype .csv file. Change directories into the `processing/output` directory and run the `caChinookRenameLoci.pl` script. This will output a new file with the loci named according to the AmpliconName field in [this table](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv). The new file will have `lociRenamed` inserted into its file name before the .csv extension.
 ```
 caChinookRenameLoci.pl -f haps_2col_final.csv
 ```
@@ -366,9 +368,8 @@ The pipeline writes several files to the `output` and `reports` directories. Aft
 ```
 processing
 ├── CH_run001_greb1_q20dp5.recode.vcf
-├── microhaplot
-│   ├── run001_lfar_wrap_vgll3six6.csv
-│   └── run001_rosa_microhap_snplicon.csv
+├── FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds
+├── FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds
 ├── ordered-read-counts-table.csv
 ├── output
 │   ├── greb1rosa_all_hapstr.txt
@@ -385,6 +386,7 @@ processing
     ├── nxa.csv
     └── nxaCount.csv
 ```
+
 ### Output Directory
 This directory contains the main outputs, including the final genotypes file.
 1. `greb1rosa_all_hapstr.txt` is a tab-delimited file that contains haplotype strings for the greb1rosa loci. See example below:
