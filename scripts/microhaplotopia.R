@@ -3,10 +3,10 @@
 ## Much of the code in this script was modified from code provided by 
 ## Anthony Clemento at NOAA
 
-library("tidyverse", quietly=TRUE)
-library("microhaplotopia", quietly=TRUE)
-library("vcfR", quietly=TRUE)
-library("optparse", quietly=TRUE)
+suppressPackageStartupMessages(library("tidyverse", quietly=TRUE))
+suppressPackageStartupMessages(library("microhaplotopia", quietly=TRUE))
+suppressPackageStartupMessages(library("vcfR", quietly=TRUE))
+suppressPackageStartupMessages(library("optparse", quietly=TRUE))
 
 ## command line option parsing
 option_list = list(
@@ -53,6 +53,13 @@ option_list = list(
     metavar="grebInfo"
   ),
   make_option(
+    c("-L", "--lfar"), 
+    type="character", 
+    default="FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds", 
+    help="rds file of loci mapped to full genome (default = FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds)", 
+    metavar="lfar"
+  ),
+  make_option(
     c("-m", "--microhaplot"), 
     type="character", 
     default="microhaplot", 
@@ -67,6 +74,13 @@ option_list = list(
     metavar="output"
   ),
   make_option(
+    c("-O", "--reports"), 
+    type="character", 
+    default="reports", 
+    help="reports directory name (default = reports)", 
+    metavar="reports"
+  ),
+  make_option(
     c("-r", "--rosa"), 
     type="character", 
     default=NULL, 
@@ -74,11 +88,11 @@ option_list = list(
     metavar="rosa"
   ),
   make_option(
-    c("-R", "--reports"), 
+    c("-R", "--run"), 
     type="character", 
-    default="reports", 
-    help="reports directory name (default = reports)", 
-    metavar="reports"
+    default=NULL, 
+    help="Run number (No default; required)", 
+    metavar="run"
   ),
   make_option(
     c("-s", "--sdy"), 
@@ -86,6 +100,13 @@ option_list = list(
     default="ordered-read-counts-table.csv", 
     help="sdy read count file (default = ordered-read-counts-table.csv)", 
     metavar="sdy"
+  ),
+  make_option(
+    c("-S", "--snplicon"), 
+    type="character", 
+    default="FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds", 
+    help="rds file of loci mapped to target fastas (default = FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds)", 
+    metavar="snplicon"
   ),
   make_option(
     c("-x", "--maxFemale"), 
@@ -230,7 +251,27 @@ write_csv(sdy_out, file = sdyOutFile)
 ################################################################################
 ## getting microhaplotypes
 ################################################################################
-hap <- read_unfiltered_observed(file.path(WD, microhaplotDir))
+#file1 = "FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds"
+#file2 = "FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds"
+
+RDS_file1 <- readRDS(opt$snplicon)
+RDS_file2 <- readRDS(opt$lfar)
+
+mhp_RDS_file <- full_join(RDS_file1, RDS_file2)
+
+hap <- mhp_RDS_file %>%
+  rename(
+    indiv.ID = id
+  ) %>% 
+  dplyr::filter(haplo != "haplo") %>%
+  mutate(
+    indiv.ID = str_remove(indiv.ID,"_*$") # Remove any trailing underscores from individual IDs
+  ) %>%
+  mutate(
+	source = opt$run # add 'source' field with run number value so script stops crashing when looking for missing individuals
+  )
+
+#hap <- read_unfiltered_observed(file.path(WD, microhaplotDir))
 locCount <- hap %>% group_by(source) %>% summarise(count = n_distinct(locus))
 
 # Filter based on depth and allele balance
@@ -306,7 +347,6 @@ himiss <- calculate_missing_data(hap_fil1)
 hm<-ggplot(data=himiss, aes(x=reorder(indiv.ID, n_miss), y=n_miss)) +
   geom_bar(stat="identity")
 ggsave("missingData.png", path=repDir)
-
 
 # find samples that were removed by filters
 missing_samples <- find_missing_samples(hap, hap_fil1)

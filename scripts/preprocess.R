@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 
+suppressPackageStartupMessages(library(tidyverse))
 library("optparse")
 
 option_list = list(
@@ -23,6 +24,12 @@ if (is.null(opt$file)){
 # before running this script for the first time, modify the path in the line below so that it points to the location of sample-sheet-processing-functions.R on your computer
 source("~/local/src/mega-simple-microhap-snakeflow/preprocess/sample-sheet-processing-functions.R")
 
-create_samples_and_units(opt$file)
+tryCatch({
+		create_samples_and_units(opt$file)
+	}, error = function(e) {
+		message("\nError while running preprocess.R: ", e$message)
+		quit(status = 1)
+	}
+)
 
-quit()
+quit(status = 0)
