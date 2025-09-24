@@ -3,7 +3,7 @@
 # exit and print usage if command line input not provided.
 if [ $# -lt 2 ]
 then
-	echo "Usage: caChinookCopyAndProcess.sh <projectNumber> <runNumber>\n"
+	echo -e "\nUsage: caChinookCopyAndProcess.sh <projectNumber> <runNumber>\n"
 	exit
 fi
 
@@ -12,7 +12,7 @@ RUN=$2
 WINDOWSUSER=`powershell.exe '$env:UserName' | sed 's/\r//g'` #get user's windows username
 
 # make directories that data will be copied into
-mkdir -p /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/snakemake_output /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing/microhaplot
+mkdir -p /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/snakemake_output /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing
 
 # copy data into onedrive snakemake_output directory
 cp -r ~/local/src/mega-simple-microhap-snakeflow/data/$RUN/Chinook/idxstats/ /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/snakemake_output/.
@@ -32,8 +32,9 @@ cp CH_${RUN}_greb1_q20dp5.recode.vcf /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/
 cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/snakemake_output/idxstats/target_fastas/ROSA/rosawr
 cp ordered-read-counts-table.csv /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing/.
 
-# fix R shiny files so they will run properly with recent version of ggiraph
-cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/snakemake_output/microhaplot
-fixMicrohaplot.sh
+# copy .rds files into proper location
+cd $HOME/local/src/mega-simple-microhap-snakeflow/data/run001trim/Chinook/microhaplot
+cp FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing/. # copy loci mapped to full genome
+cp FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing/. # copy loci mapped to target fastas
 
 exit
