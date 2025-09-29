@@ -151,15 +151,26 @@ for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 <hr>
 
 ### Pipeline updates <a name="update"></a>
-1. To update the ca_chinook scripts to the latest versions, navigate to your `~/local/src/ca_chinook` directory, run `git pull`, and verify that all scripts are executable. This should pull in the latest versions of any scripts used for processing.
+1. To update the ca_chinook scripts to the latest versions, navigate to your `~/local/src/ca_chinook` directory, run `git pull`, verify that all scripts are executable, and make links in the `~/local/bin` directory. This should pull in the latest versions of any scripts used for processing.
 
 ```
 cd ~/local/src/ca_chinook
 git pull
 cd ~/local/src/ca_chinook/scripts
+
 chmod u+x *.pl
 chmod u+x *.R
 chmod u+x *.sh
+
+cd ~/local/bin
+for file in ~/local/src/ca_chinook/scripts/*.pl; do ln -s $file; done;
+for file in ~/local/src/ca_chinook/scripts/*.R; do ln -s $file; done;
+for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
+```
+You may receive a failure message if a symbolic link already exists for a script. These error messages can be ingored. See example below:
+```
+## Example error message:
+# ln: failed to create symbolic link './caChinookPipeline.sh': File exists
 ```
 
 <hr>
