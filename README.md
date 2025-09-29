@@ -375,7 +375,7 @@ The output will be `haps_2col_final.lociRenamed.csv`.
 <hr>
 
 ## Processed Outputs <a name="output"></a>
-The pipeline writes several files to the `output` and `reports` directories. After running `microhaplotopia.R` you should have the following in your `processing` folder:
+Outputs will be written to your OneDrive folder. The project number and run number supplied to `caChinookPipeline.sh` will be used to create a directory in your onedrive folder that will contain the `processing` and `snakemake_output` directories (e.g., `p134/run001/processing` and `p134/run001/snakemake_output` if you used the example run and project names from this tutorial). The pipeline writes several files to these directories. `snakemake_output` simply contains a backup of the raw files written by the snakemake pipeline. These could be used to run different filtering schemes on the aligned data, if desired. The `processing` folder contains all processed outputs and reports, such as the final genotype file. A complete accounting is as follows:
 ```
 processing
 ├── CH_run001_greb1_q20dp5.recode.vcf
