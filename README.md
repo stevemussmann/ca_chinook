@@ -504,6 +504,8 @@ R --slave -e "devtools::install_local('CKMRsim.zip', upgrade='never')"
 R --slave -e "install.packages('gRbase', dependencies=TRUE, repos='http://cran.rstudio.com')"
 ```
 
+<hr>
+
 ## Colony
 ### First time setup <a name="installColony"></a>
 Go to your home directory
@@ -521,8 +523,15 @@ Unzip the file
 unzip colony2_Lnx_15_07_2025.zip
 ```
 
+Make sure files are executable
+```
+cd colony2_Lnx_15_07_2025/
+chmod u+x *.out
+```
+
 Link the `colony2p.ifort.impi2018.out` file in your `~/local/bin folder` as `colony`
 ```
+cd ~/local/bin
 ln -s ~/local/src/colony2_Lnx_15_07_2025/colony2p.ifort.impi2018.out colony
 ```
 
