@@ -167,7 +167,7 @@ for file in ~/local/src/ca_chinook/scripts/*.pl; do ln -s $file; done;
 for file in ~/local/src/ca_chinook/scripts/*.R; do ln -s $file; done;
 for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 ```
-You may receive a failure message if a symbolic link already exists for a script. These error messages can be ingored. See example below:
+You may receive a failure message if a symbolic link already exists for a script. These error messages can be ingored.
 ```
 ## Example error message:
 # ln: failed to create symbolic link './caChinookPipeline.sh': File exists
