@@ -60,7 +60,7 @@ cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/snakemake_output/idxstat
 cp ordered-read-counts-table.csv /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing/.
 
 # copy .rds files into proper location
-cd $HOME/local/src/mega-simple-microhap-snakeflow/data/run001trim/Chinook/microhaplot
+cd $HOME/local/src/mega-simple-microhap-snakeflow/data/$RUN/Chinook/microhaplot
 cp FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing/. # copy loci mapped to full genome
 cp FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/$PRJ/$RUN/processing/. # copy loci mapped to target fastas
 
