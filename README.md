@@ -10,10 +10,11 @@ Scripts and documentation for California Chinook microhaplotypes
     * [Setup for mega-simple-microhap-snakeflow](#mega)
     * [Setup files from this repository](#myscripts)
     * [Pipeline updates](#update)
+2. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
 3. [Running the Snakemake Pipeline](#pipeline)
 4. [Processing the Snakemake Pipeline Output](#processing)
 5. [Processed Outputs](#output)
-6. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
+
 
 ### Genetic Stock ID
 1. [Installing rubias](#installrubias)
@@ -175,9 +176,34 @@ You may receive a failure message if a symbolic link already exists for a script
 
 <hr>
 
+## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
+If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. This is because the [mega-simple-microhap-snakeflow](https://github.com/eriqande/mega-simple-microhap-snakeflow) pipeline expects a fastq file name format of `LibraryName_S1_L001_R1_001.fastq.gz`. Using the `--no-lane-splitting` option removes the 'L001' portion of the name and will cause the pipeline to fail. You may also need to reduce the number of allowed `--barcode-mismatches` if using 6-bp length barcodes.
+
+Load your conda environment:
+```
+conda activate bcl2fastq
+```
+
+Copy your SampleSheet.csv file into the Illumina run folder (example run folder name = 250409_M05543_0090_000000000-LWLT3). Then change directories into the Illumina run folder and run bcl2fastq. For example:
+```
+cd 250409_M05543_0090_000000000-LWLT3
+bcl2fastq --barcode-mismatches 0
+```
+
+bcl2fastq will output fastq files into a subfolder named after the Sample_Project field of the Illumina samplesheet that was used to demultiplex the data. If we consider the example samplesheet in this repository (see `example_files/SampleSheet.csv`), all output will be written to a `P134_CA_Standardization` subdirectory. Furthermore, each set of fastq files will be written to subdirectories within `P134_CA_Standardization` that are named after the Sample_ID field of the samplesheet (e.g., `CH_00001`). For example, the full path to the fastq files for sample CH_00001 will be in `250409_M05543_0090_000000000-LWLT3/Data/Intensities/BaseCalls/P134_CA_Standardization/CH_00001`. 
+
+To get all of your fastq files into the root directory of your Illumina run folder, you could run the following command from your Illumina run folder:
+```
+cp Data/Intensities/BaseCalls/P134_CA_Standardization/CH_*/*.fastq.gz .
+```
+
+From here you can move these files to the raw data folder for the snakemake pipeline that you will establish in the next section. 
+
+<hr>
+
 ## Running the Snakemake Pipeline <a name="pipeline"></a>
 
-1. Before sequencing, make an Illumina sample sheet (see `example_files/SampleSheet.csv`). Use this sample sheet to conduct the sequencing run on your Illumina sequencer. Optionally, you can also demultiplex using bcl2fastq if you did not use the sample sheet to automatically demultiplex files on the sequencer. [Go to bcl2fastq instructions.](#bcl2fastq)
+1. Before sequencing, make an Illumina sample sheet (see `example_files/SampleSheet.csv`). Use this sample sheet to conduct the sequencing run on the Illumina MiSeq. Optionally, you can use this sample sheet to demultiplex with bcl2fastq if you are running the Illumina NextSeq 1000/2000, or if you did not automatically demultiplex on the MiSeq. [Go to bcl2fastq instructions.](#bcl2fastq)
 2. Create a folder within the `mega-simple-microhap-snakeflow/data` directory that is named according to your sequencing run number (e.g., run001). Within this folder, place the `SampleSheet.csv` file and a folder named `raw` that contains all of your `fastq.gz` files. See example below:
 
 ```
@@ -441,21 +467,6 @@ Indiv,sdy_sex,hapstr,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62
 8. `nxa.csv`
 9. `nxaCount.csv`
 
-
-<hr>
-
-## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
-If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. This is because the [mega-simple-microhap-snakeflow](https://github.com/eriqande/mega-simple-microhap-snakeflow) pipeline expects a fastq file name format of `LibraryName_S1_L001_R1_001.fastq.gz`. Using the `--no-lane-splitting` option removes the 'L001' portion of the name and will cause the pipeline to fail. You may also need to reduce the number of allowed `--barcode-mismatches` if using 6-bp length barcodes.
-
-Load your conda environment:
-```
-conda activate bcl2fastq
-```
-
-Run bcl2fastq:
-```
-bcl2fastq --barcode-mismatches 0
-```
 
 <hr>
 
