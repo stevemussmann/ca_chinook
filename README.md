@@ -184,6 +184,11 @@ Load your conda environment:
 conda activate bcl2fastq
 ```
 
+If demultiplexing a large number of individuals, such as output from a NextSeq 1000 flowcell, raise the number of files that can be open simultaneously on your computer to a large number:
+```
+ulimit -n 8192
+```
+
 Copy your SampleSheet.csv file into the Illumina run folder (example run folder name = 250409_M05543_0090_000000000-LWLT3). Then change directories into the Illumina run folder and run bcl2fastq. For example:
 ```
 cd 250409_M05543_0090_000000000-LWLT3
