@@ -32,7 +32,7 @@ cd $HOME/local/src/mega-simple-microhap-snakeflow/data/$RUN
 preprocess.R -f SampleSheet.csv
 
 # set ulimit
-ulimit -n 4096
+ulimit -n 8192
 
 # run snakemake pipeline
 cd $HOME/local/src/mega-simple-microhap-snakeflow
