@@ -209,6 +209,7 @@ From here you can move these files to the raw data folder for the snakemake pipe
 ## Running the Snakemake Pipeline <a name="pipeline"></a>
 
 1. Before sequencing, make an Illumina sample sheet (see `example_files/SampleSheet.csv`). Use this sample sheet to conduct the sequencing run on the Illumina MiSeq. Optionally, you can use this sample sheet to demultiplex with bcl2fastq if you are running the Illumina NextSeq 1000/2000, or if you did not automatically demultiplex on the MiSeq. [Go to bcl2fastq instructions.](#bcl2fastq)
+
 2. Create a folder within the `mega-simple-microhap-snakeflow/data` directory that is named according to your sequencing run number (e.g., run001). Within this folder, place the `SampleSheet.csv` file and a folder named `raw` that contains all of your `fastq.gz` files. See example below:
 
 ```
@@ -225,7 +226,9 @@ From here you can move these files to the raw data folder for the snakemake pipe
         └── etc.
 ```
 
-3. From here, you should be able to run the entire pipeline using the `caChinookPipeline.sh` script. This requires three inputs given after the script name, as shown below.
+3. Make sure you have adequate hard drive space available before proceeding. ***Processing of data from a NextSeq 1000 flowcell for just the 'ROSA' and 'FullPanel' options may write approximately 300 GB of intermediate files to your hard drive.*** This is in addition to the space used by the raw fastq.gz files.
+
+4. From here, you should be able to run the entire pipeline using the `caChinookPipeline.sh` script. This requires three inputs given after the script name, as shown below.
 ```
 Example Usage: caChinookPipeline.sh <projectNumber> <runNumber> <cores>
 ```
@@ -236,26 +239,26 @@ caChinookPipeline.sh p134 run001 8
 ```
 If the pipeline runs successfully you can skip ahead to [Processed Outputs](#output). If this script doesn't work, or if you just want to run through the pipeline manually, continue with step 4. 
 
-4. Activate your conda environment
+5. Activate your conda environment
 ```
 conda activate snakemake
 ```
 
-5. Run the `preprocess.R` script to create the two files required by the snakemake pipeline: `samples.csv` and `units.csv`. Watch carefully for errors, and correct any problems until you successfully create the two files.
+6. Run the `preprocess.R` script to create the two files required by the snakemake pipeline: `samples.csv` and `units.csv`. Watch carefully for errors, and correct any problems until you successfully create the two files.
 ```
 preprocess.R -f SampleSheet.csv
 ```
 
-6. This pipeline reads from / writes to many files simultaneously. Check the number of files that can be open simultaneously on your computer with the `ulimit` command.
+7. This pipeline reads from / writes to many files simultaneously. Check the number of files that can be open simultaneously on your computer with the `ulimit` command.
 ```
 ulimit -n
 ```
-If this reports a low number (e.g., 256), then set it to something sufficiently high (e.g., 4096) with the following command:
+If this reports a low number (e.g., 256), then set it to something sufficiently high (e.g., 8192) with the following command:
 ```
-ulimit -n 4096
+ulimit -n 8192
 ```
 
-7. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 8) up or down depending upon how many physical processor cores your computer has. If running a Windows machine, I recommend checking the 'System Information' window for your computer for the number of processor cores. I recommend that you don't exceed this number. I have gone as high as 16 cores (the number of physical processor cores in my laptop). The snakemake command will take a while, perhaps an hour or more, especially when running the pipeline for the first time.
+8. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 8) up or down depending upon how many physical processor cores your computer has. If running a Windows machine, I recommend checking the 'System Information' window for your computer for the number of processor cores. I recommend that you don't exceed this number. I have gone as high as 16 cores (the number of physical processor cores in my laptop). The snakemake command will take a while, perhaps an hour or more, especially when running the pipeline for the first time.
 ```
 cd ~/local/src/mega-simple-microhap-snakeflow/
 snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 8
