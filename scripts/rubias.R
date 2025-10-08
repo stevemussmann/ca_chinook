@@ -3,7 +3,7 @@
 ## Most of the code in this script was modified from code provided by 
 ## Anthony Clemento at NOAA
 
-library("tidyverse", quietly=TRUE)
+suppressPackageStartupMessages(library("tidyverse", quietly=TRUE))
 library("rubias")
 library("optparse", quietly=TRUE)
 
@@ -85,10 +85,7 @@ mixfile_char[1,1] = "reference"
 dups <- close_matching_samples(mixfile_char, 5, min_frac_non_miss = 0.8, min_frac_matching = 0.9)
 mixfile_char[1,1] = "mixture"
 
-dups
-
-# Huh weird, looks like those consecutive samples match
-# Going to leave it in there but will write it out so we have a record
+# write out records of duplicates
 dupsOut <- file.path(outDir, "final_duplicates.csv")
 write_csv(dups, dupsOut)
 
