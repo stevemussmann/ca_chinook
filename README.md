@@ -493,7 +493,9 @@ R --slave -e "install.packages('rubias', dependencies=TRUE, repos='http://cran.r
 <hr>
 
 ### Running rubias <a name="rubias"></a>
-Place your baseline and mixture files together in the same directory. Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
+Place your baseline and mixture files together in the same directory. There is no need to remove the `sdy_sex`, `hapstr`, `rosa_pheno`, or `percMicroHap` columns from your mixture file. The `percMicroHap` column will be used to remove individuals with <50% of loci genotyped by default. You can change this value manually using the `-p` command-line option for the `rubias.R` script. 
+
+Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
 ```
 rubias.R -m mixtureFile.csv -b baselineFile.csv
 ```
