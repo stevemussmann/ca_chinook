@@ -14,7 +14,7 @@ option_list = list(
     type="character", 
     default="SWFSC-chinook-reference-baseline.select.csv", 
     help="name for baseline genotypes .csv file (default = SWFSC-chinook-reference-baseline.select.csv)", 
-    metavar="mixture"
+    metavar="baseline"
   ),
   make_option(
     c("-m", "--mixture"), 
@@ -29,6 +29,13 @@ option_list = list(
     default="output_final", 
     help="output directory name (default = output_final)", 
     metavar="output"
+  ),
+  make_option(
+  	c("-p", "--missing"),
+	type="numeric",
+	default=50.0,
+	help="minimum genotype percent threshold to retain individual (default = 50.0%)",
+	metavar="percent"
   )
 );
 
@@ -54,18 +61,24 @@ dir.create(outDir, showWarnings=FALSE)
 
 ################################################################################
 
-baseline <- read_csv(opt$baseline)
-#baseline <- read_csv("subRoSA_baseline_final_rubias183_collapse_MDF_MDS.csv")
+# read baseline data
+baseline <- read_csv(opt$baseline, col_types = cols(.default = "c"))
 
 # And we need our genotypes file from microhaplotopia
-#genos <- read_csv("Results_Interlab_Plates_1_2_3_GeM_DWR_20250521.csv")
-genos <- read_csv(opt$mixture)
+genos <- read_csv(opt$mixture, col_types = cols(.default = "c")) # read in all columns as character data as default 
 
 # We will  need some required fields for the rubias file
 req <- tibble(sample_type = "mixture", repunit = NA, collection = "final")
 mixfile <- genos %>% cbind(req, .)
 mixfile_char <- mixfile %>% mutate_at(vars(-(sample_type:indiv)), as.character)
-#View(mixfile_char)
+
+# filter to remove individuals missing high proportion of loci
+mixfile_char <- mixfile_char %>% mutate(percMicroHap = as.numeric(percMicroHap)) # make sure percMicroHap value is numeric
+mixfile_char <- mixfile_char %>% filter(percMicroHap >= opt$missing)
+
+# drop columns that may or may not exist
+columns_to_drop <- c("sdy_sex", "hapstr", "rosa_pheno", "percMicroHap")
+mixfile_char <- mixfile_char %>% select(-any_of(columns_to_drop))
 
 # Found a bug in close_matching_samples that doesn't like all fish being mixture
 mixfile_char[1,1] = "reference"
