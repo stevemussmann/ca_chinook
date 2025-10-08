@@ -32,7 +32,7 @@ Scripts and documentation for California Chinook microhaplotypes
 ## Dependencies and First-time Setup <a name="installation"></a>
 
 ### basic account configuration, conda installation, etc. <a name="condainstall"></a>
-Before proceeding, make sure you have Windows Subsystem for Linux (WSL) installed on your computer. The installation code below has been tested in Ubuntu 22.04. The installation process described below (i.e., Conda installation, creation of local/src and local/bin folders, modification of .bashrc, etc.) only needs to be done once for setup of this pipeline unless you move to a new computer. Miniconda needs to be installed if it is not already configured on your computer. If you already have Miniconda installed, then skip to step 5 in this section.
+Before proceeding, make sure you have Windows Subsystem for Linux (WSL) installed on your computer. The installation process described below (i.e., Conda installation, creation of local/src and local/bin folders, modification of .bashrc, etc.) only needs to be done once for setup of this pipeline unless you move to a new computer. Miniconda needs to be installed if it is not already configured on your computer. Skip to step 5 in this section if Miniconda is already installed.
 
 1. Launch Windows Subsystem for Linux (WSL) and download the miniconda installer:
 ```
@@ -50,9 +50,9 @@ bash Miniconda3-latest-Linux-x86_64.sh
 conda config --set auto_activate_base false
 ```
 
-4. Once again, exit and relaunch WSL before proceeding.
+4. Exit and relaunch WSL again before proceeding.
 
-5. Create location in which you will install software for genotyping. Then change directories into the `~/local/src` folder that you just made.
+5. Create locations in which you will install custom software.
 ```
 mkdir -p ~/local/src ~/local/bin
 ```
@@ -67,7 +67,7 @@ echo 'export PATH=$PATH:$HOME/local/bin' >> ~/.bashrc
 echo "alias wget='wget --no-check-certificate'" >> ~/.bashrc
 ```
 
-8. Exit and relaunch WSL one last time before proceeding.
+8. Exit and relaunch WSL one more time before proceeding.
    
 ### OPTIONAL: Installing bcl2fastq through conda <a name="bcl2fastqinstall"></a>
 
