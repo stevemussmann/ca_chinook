@@ -19,8 +19,8 @@ option_list = list(
   make_option(
     c("-m", "--mixture"), 
     type="character", 
-    default="haps_2col_final.lociRenamed.csv", 
-    help="name for mixture genotypes .csv file (default = haps_2col_final.lociRenamed.csv)", 
+    default="haps_2col_final.csv", 
+    help="name for mixture genotypes .csv file (default = haps_2col_final.csv)", 
     metavar="mixture"
   ),
   make_option(
@@ -47,8 +47,6 @@ opt = parse_args(opt_parser);
 #  stop("mixture genotypes file must be specified (option -m).", call.=FALSE)
 #}
 
-# set working directory in Rstudio
-#setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 WD <- getwd()
 
 ################################################################################
@@ -73,8 +71,10 @@ mixfile <- genos %>% cbind(req, .)
 mixfile_char <- mixfile %>% mutate_at(vars(-(sample_type:indiv)), as.character)
 
 # filter to remove individuals missing high proportion of loci
-mixfile_char <- mixfile_char %>% mutate(percMicroHap = as.numeric(percMicroHap)) # make sure percMicroHap value is numeric
-mixfile_char <- mixfile_char %>% filter(percMicroHap >= opt$missing)
+if( "percMicroHap" %in% names(mixfile_char) ){
+	mixfile_char <- mixfile_char %>% mutate(percMicroHap = as.numeric(percMicroHap)) # make sure percMicroHap value is numeric
+	mixfile_char <- mixfile_char %>% filter(percMicroHap >= opt$missing)
+}
 
 # drop columns that may or may not exist
 columns_to_drop <- c("sdy_sex", "hapstr", "rosa_pheno", "percMicroHap")
