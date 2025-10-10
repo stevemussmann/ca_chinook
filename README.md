@@ -1,5 +1,5 @@
 # California Chinook Salmon Genotyping
-Scripts and documentation for California Chinook microhaplotypes
+Scripts and documentation for California Chinook microhaplotypes. This repository uses modified versions of software written by [Eric C. Anderson](https://github.com/eriqande). Briefly, my modifications retain the core functionality of his wok but reduce the usage of disk space so that a large sequencing run (e.g., a full NextSeq 1000 flowcell or larger) can more easily fit onto a hard drive. If you want the version of this pipeline that uses Eric Anderson's unmodified software, switch to the [eriqande branch](https://github.com/stevemussmann/ca_chinook/tree/eriqande) of this repository. 
 
 ## Table of Contents
 
