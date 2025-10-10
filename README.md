@@ -1,5 +1,5 @@
 # California Chinook Salmon Genotyping
-Scripts and documentation for California Chinook microhaplotypes. This repository uses modified versions of software written by [Eric C. Anderson](https://github.com/eriqande). Briefly, my modifications retain the core functionality of his wok but reduce the usage of disk space so that a large sequencing run (e.g., a full NextSeq 1000 flowcell or larger) can more easily fit onto a hard drive. If you want the version of this pipeline that uses Eric Anderson's unmodified software, switch to the [eriqande branch](https://github.com/stevemussmann/ca_chinook/tree/eriqande) of this repository. 
+Scripts and documentation for California Chinook microhaplotypes. This repository uses modified versions of software written by [Eric C. Anderson](https://github.com/eriqande). Briefly, my modifications retain the core functionality of his work but reduce the usage of disk space so that a large sequencing run (e.g., a full NextSeq 1000 flowcell or larger) can more easily fit onto a hard drive. If you want the version of this pipeline that uses Eric Anderson's unmodified software, switch to the [eriqande branch](https://github.com/stevemussmann/ca_chinook/tree/eriqande) of this repository. 
 
 ## Table of Contents
 
@@ -92,36 +92,29 @@ conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tid
 git config --global http.sslverify false
 ```
 
-4. Clone the `eriqande/mega-simple-microhap-snakeflow` to your computer. 
+3. Clone my modified version of the `eriqande/mega-simple-microhap-snakeflow` snakemake pipeline to your computer. 
 ```
 cd ~/local/src
-git clone https://github.com/eriqande/mega-simple-microhap-snakeflow.git
+git clone https://github.com/stevemussmann/mega-simple-microhap-snakeflow.git
 ```
 
-4. Patch the `mega-simple-microhap-snakeflow` pipeline so that it doesn't attempt to install the `microhaplotextract` library every time the pipeline runs (or ever). We will instead install this package manually.
-```
-cd ~/local/src/mega-simple-microhap-snakeflow/workflow/script
-rm create_microhaplot_folder.R
-wget https://raw.githubusercontent.com/stevemussmann/ca_chinook/refs/heads/main/patches/create_microhaplot_folder.R
-```
-
-5. Download the `microhaplotextract` R package (this is the 'just-for-extracting' branch of the microhaplot github repository), activate the snakemake Conda environment that you made in Step 1, and install the `microhaplotextract` from the source zip file.
+4. Download my modified `microhaplotextract` R package, activate the snakemake Conda environment that you made in Step 1, and install it from the source zip file.
 ```
 cd ~/local/src/mega-simple-microhap-snakeflow/
-wget https://github.com/eriqande/microhaplot/archive/just-for-extracting.zip
+wget https://github.com/stevemussmann/microhaplot/archive/master.zip -O just-for-extracting.zip
 conda activate snakemake
 R --slave -e "devtools::install_local('just-for-extracting.zip', upgrade='never')"
 ```
 
-6. We're also going to install the 'emc-edits' branch of the `microhaplotopia` R package in a similar way.
+5. We're also going to install the 'emc-edits' branch of the `microhaplotopia` R package in a similar way.
 ```
 wget https://github.com/eriqande/microhaplotopia/archive/emc-edits.zip
 R --slave -e "devtools::install_local('emc-edits.zip', upgrade='never')"
 ```
 
-7. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that it doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found within the `GTseq_processing/CA_Chinook_microhaplotype_files` directory) to `~/local/src/mega-simple-microhap-snakeflow`
+6. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that it doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found within the `GTseq_processing/CA_Chinook_microhaplotype_files` directory) to `~/local/src/mega-simple-microhap-snakeflow`
 
-8. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline. 
+7. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline. 
 ```
 mkdir ~/local/src/mega-simple-microhap-snakeflow/data
 ```
@@ -226,13 +219,13 @@ From here you can move these files to the raw data folder for the snakemake pipe
         └── etc.
 ```
 
-3. Make sure you have adequate hard drive space available before proceeding. ***Processing of data from a NextSeq 1000 flowcell for just the 'ROSA' and 'FullPanel' options may write approximately 300 GB of intermediate files to your hard drive.*** This is in addition to the space used by the raw fastq.gz files.
+3. Make sure you have adequate hard drive space available before proceeding. ***Processing of data from a NextSeq 1000 flowcell for just the 'ROSA' and 'FullPanel' options may write approximately 40 GB of intermediate files to your hard drive.*** This is in addition to the space used by the raw fastq.gz files.
 
 4. From here, you should be able to run the entire pipeline using the `caChinookPipeline.sh` script. This requires three inputs given after the script name, as shown below.
 ```
 Example Usage: caChinookPipeline.sh <projectNumber> <runNumber> <cores>
 ```
-In this example, we will use p134 as the projectNumber, run001 as the runNumber, and 8 for the number of cores. This last number (cores) will be provided to the Snakemake pipeline. You can adjust the number of cores up or down depending upon how many physical processor cores your computer has. If running a Windows machine, I recommend checking the 'System Information' window for your computer for the number of processor cores. I recommend that you don't exceed this number. I have gone as high as 16 cores (the number of physical processor cores in my laptop). You can run the entire pipeline with the command shown below:
+In this example, we will use p134 as the projectNumber, run001 as the runNumber, and 8 for the number of cores. This last number (cores) will be provided to the Snakemake pipeline. You can adjust the number of cores up or down depending upon how many physical processor cores your computer has. Increasing the number of cores will also increase RAM usage, although somewhat unpredictably (RAM usage at any given moment also depends on input file sizes and the job order determined by Snakemake). If running a Windows machine, check the 'System Information' window to find your computer's number of processor cores and amount of RAM. I recommend that you never request more than the number of processor cores in your computer. I have successfully gone as high as 16 cores (the number of physical processor cores in my laptop) when processing MiSeq data, but 16 cores has crashed the pipeline when processing a NextSeq 1000 flowcell output because this consumed >64GB RAM. 8 to 10 is a safer range for processing NextSeq data, assuming your computer has at least 64GB RAM. You can run the entire pipeline with the command shown below:
 
 ```
 caChinookPipeline.sh p134 run001 8
@@ -258,7 +251,7 @@ If this reports a low number (e.g., 256), then set it to something sufficiently 
 ulimit -n 8192
 ```
 
-8. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 8) up or down depending upon how many physical processor cores your computer has. If running a Windows machine, I recommend checking the 'System Information' window for your computer for the number of processor cores. I recommend that you don't exceed this number. I have gone as high as 16 cores (the number of physical processor cores in my laptop). The snakemake command will take a while, perhaps an hour or more, especially when running the pipeline for the first time.
+8. From the `mega-simple-microhap-snakeflow` directory, run the following command to execute the pipeline. You can adjust the number of cores (currently set at 8) up or down depending upon your computer's hardware configuration. The snakemake command will take a while, perhaps an hour or more, especially when running the pipeline for the first time.
 ```
 cd ~/local/src/mega-simple-microhap-snakeflow/
 snakemake --config run_dir=data/run001 --configfile config/Chinook/config.yaml --use-conda --cores 8
