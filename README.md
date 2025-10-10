@@ -301,7 +301,7 @@ cd /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/snakemake_output/vcfs/RO
 
 4. Filter the ROSA genotypes for sequencing depth and quality in vcftools. This is accomplished by running the `vcftools.sh` script on the ROSA .vcf genotypes file, specifying your input file (e.g., `variants-bcftools.vcf`) and your run number (e.g., `run001`) on the command line. This example will output a file named `CH_run001_greb1_q20dp5.recode.vcf` which will be used as input for the R script. For example:
 ```
-vcftools.sh variants-bcftools.vcf run001
+caChinookVcftools.sh variants-bcftools.vcf run001
 ```
 
 5. Copy the `CH_run001_greb1_q20dp5.recode.vcf` file to `p134/$RUN/processing`
@@ -317,7 +317,7 @@ cp ordered-read-counts-table.csv /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134
 
 7. Copy the .rds file containing microhaplotype data for the LFAR, WRAP, vgll3, and six6 loci into the `p134/$RUN/processing` folder.
 ```
-cd ~/local/src/mega-simple-microhap-snakeflow/data/run001trim/Chinook/microhaplot
+cd ~/local/src/mega-simple-microhap-snakeflow/data/$RUN/Chinook/microhaplot
 cp FullPanel--fullgex_remapped_to_thinned--Otsh_v1.0--lfar_wrap_vgll3six6.rds /mnt/c/Users/$WINDOWSUSER/OneDrive\ -\ DOI/p134/$RUN/processing/.
 ```
 
