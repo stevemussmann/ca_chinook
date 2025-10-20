@@ -1,5 +1,5 @@
 # California Chinook Salmon Genotyping
-Scripts and documentation for California Chinook microhaplotypes. This repository uses modified versions of software written by [Eric C. Anderson](https://github.com/eriqande). Briefly, my modifications retain the core functionality of his work but reduce the usage of disk space so that a large sequencing run (e.g., a full NextSeq 1000 flowcell or larger) can more easily fit onto a hard drive. If you want the version of this pipeline that uses Eric Anderson's unmodified software, switch to the [eriqande branch](https://github.com/stevemussmann/ca_chinook/tree/eriqande) of this repository. 
+Scripts and documentation for California Chinook microhaplotypes. This repository uses modified versions of software written by [Eric C. Anderson](https://github.com/eriqande). Briefly, my modifications retain the core functionality of his work but reduce the usage of disk space so that a large sequencing run (e.g., a full NextSeq 1000 flowcell or larger) can more easily fit onto the hard drive of a desktop or laptop computer. If you want the version of this pipeline that uses Eric Anderson's unmodified software, switch to the [eriqande branch](https://github.com/stevemussmann/ca_chinook/tree/eriqande) of this repository. 
 
 ## Table of Contents
 
@@ -397,7 +397,7 @@ Options:
 
 Outputs from the `microhaplotopia.R` script are discussed in the next section.
 
-11. [OPTIONAL] Convert the locus names in your final genotype .csv file. Change directories into the `processing/output` directory and run the `caChinookRenameLoci.pl` script. This will output a new file with the loci named according to the AmpliconName field in [this table](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv). The new file will have `lociRenamed` inserted into its file name before the .csv extension.
+11. [OPTIONAL] This step seems to be unnecessary because most labs use the default locus names output by the snakemake pipeline. However, if you want/need to convert the locus names in your final genotype .csv file, do the following: change directories into the `processing/output` directory and run the `caChinookRenameLoci.pl` script. This will output a new file with the loci named according to the AmpliconName field in [this table](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv). The new file will have `lociRenamed` inserted into its file name before the .csv extension.
 ```
 caChinookRenameLoci.pl -f haps_2col_final.csv
 ```
@@ -477,12 +477,12 @@ Indiv,sdy_sex,hapstr,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62
 
 ## Genetic Stock ID
 ### First time setup <a name="installrubias"></a>
-Activate your `snakemake` conda environment (if not already active).
+1. Activate your `snakemake` conda environment (if not already active).
 ```
 conda activate snakemake
 ```
 
-Run the following to install rubias:
+2. Run the following to install rubias:
 ```
 R --slave -e "install.packages('rubias', dependencies=TRUE, repos='http://cran.rstudio.com')"
 ```
@@ -490,9 +490,9 @@ R --slave -e "install.packages('rubias', dependencies=TRUE, repos='http://cran.r
 <hr>
 
 ### Running rubias <a name="rubias"></a>
-Place your baseline and mixture files together in the same directory. There is no need to remove the `sdy_sex`, `hapstr`, `rosa_pheno`, or `percMicroHap` columns from your mixture file. The `percMicroHap` column will be used to remove individuals with <50% of loci genotyped by default. You can change this value manually using the `-p` command-line option for the `rubias.R` script. 
+1. Place your baseline and mixture files together in the same directory. There is no need to remove the `sdy_sex`, `hapstr`, `rosa_pheno`, or `percMicroHap` columns from your mixture file. The `percMicroHap` column will be used to remove individuals with <50% of loci genotyped by default. You can change this value manually using the `-p` command-line option for the `rubias.R` script. 
 
-Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
+2. Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
 ```
 rubias.R -m mixtureFile.csv -b baselineFile.csv
 ```
