@@ -31,8 +31,8 @@ Scripts and documentation for California Chinook microhaplotypes. This repositor
 
 ## Dependencies and First-time Setup <a name="installation"></a>
 
-### basic account configuration, conda installation, etc. <a name="condainstall"></a>
-Before proceeding, make sure you have Windows Subsystem for Linux (WSL) installed on your computer. The installation process described below (i.e., Conda installation, creation of local/src and local/bin folders, modification of .bashrc, etc.) only needs to be done once for setup of this pipeline unless you move to a new computer. Miniconda needs to be installed if it is not already configured on your computer. Skip to step 5 in this section if Miniconda is already installed.
+### Basic account configuration, conda installation, etc. <a name="condainstall"></a>
+Before proceeding, make sure you have Windows Subsystem for Linux (WSL) installed on your computer. The installation process described below (i.e., Conda installation, creation of `~/local/src` and `~/local/bin` directories, modification of `~/.bashrc`, etc.) only needs to be done once for setup of this pipeline unless you move to a new computer. Miniconda needs to be installed if it is not already configured on your computer. Skip to step 5 in this section if Miniconda is already installed. Skip to [Installing bcl2fastq through conda](#bcl2fastqinstall) if you have already setup your `~/local/src` and `~/local/bin` directories.
 
 1. Launch Windows Subsystem for Linux (WSL) and download the miniconda installer:
 ```
@@ -70,13 +70,14 @@ echo "alias wget='wget --no-check-certificate'" >> ~/.bashrc
 8. Exit and relaunch WSL one more time before proceeding.
    
 ### Installing bcl2fastq through conda <a name="bcl2fastqinstall"></a>
+Installation of bcl2fastq only needs to be done once. Skip to [Installing mega-simple-microhap-snakeflow](#mega) if you have already installed bcl2fastq on your computer.
 
 1. Create a new conda environment and install bcl2fastq into it.
 ```
 conda create -n bcl2fastq -c conda-forge -c bioconda -c dranew bcl2fastq=2.19.0
 ```
 
-2. You should now be able to launch the conda environment with the following command:
+2. You should now be able to launch the conda environment, as needed, with the following command:
 ```
 conda activate bcl2fastq
 ```
@@ -92,7 +93,7 @@ conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tid
 git config --global http.sslverify false
 ```
 
-3. Clone my modified version of the `eriqande/mega-simple-microhap-snakeflow` snakemake pipeline to your computer. 
+3. Clone my modified version of [Eric Anderson's](https://github.com/eriqande) `mega-simple-microhap-snakeflow` snakemake pipeline to your computer. 
 ```
 cd ~/local/src
 git clone https://github.com/stevemussmann/mega-simple-microhap-snakeflow.git
@@ -112,7 +113,10 @@ wget https://github.com/eriqande/microhaplotopia/archive/emc-edits.zip
 R --slave -e "devtools::install_local('emc-edits.zip', upgrade='never')"
 ```
 
-6. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that it doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found within the `GTseq_processing/CA_Chinook_microhaplotype_files` directory) to `~/local/src/mega-simple-microhap-snakeflow`
+6. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that it doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found within the `GTseq_processing/CA_Chinook_microhaplotype_files` directory on the server) to the `~/local/src/mega-simple-microhap-snakeflow` on your computer. The image below shows where to find the `~/local/src/mega-simple-microhap-snakeflow` directory using File Explorer on your Windows computer. The name of your Ubuntu directory might differ slightly from mine (which is titled `Ubuntu-22.04`).
+
+<img width="1457" height="473" alt="image" src="https://github.com/user-attachments/assets/34cacf1d-4211-469b-a346-60b071c8f6f6" />
+
 
 7. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline. 
 ```
