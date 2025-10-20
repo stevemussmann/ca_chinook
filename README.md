@@ -6,8 +6,8 @@ Scripts and documentation for California Chinook microhaplotypes. This repositor
 ### Genotyping
 1. [Dependencies and First-time Setup](#installation)
     * [Basic account configuration, conda installation, etc](#condainstall)
-    * [OPTIONAL: Installing bcl2fastq through conda](#bcl2fastqinstall)
-    * [Setup for mega-simple-microhap-snakeflow](#mega)
+    * [Installing bcl2fastq through conda](#bcl2fastqinstall)
+    * [Installing mega-simple-microhap-snakeflow](#mega)
     * [Setup files from this repository](#myscripts)
     * [Pipeline updates](#update)
 2. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
@@ -69,7 +69,7 @@ echo "alias wget='wget --no-check-certificate'" >> ~/.bashrc
 
 8. Exit and relaunch WSL one more time before proceeding.
    
-### OPTIONAL: Installing bcl2fastq through conda <a name="bcl2fastqinstall"></a>
+### Installing bcl2fastq through conda <a name="bcl2fastqinstall"></a>
 
 1. Create a new conda environment and install bcl2fastq into it.
 ```
@@ -81,7 +81,7 @@ conda create -n bcl2fastq -c conda-forge -c bioconda -c dranew bcl2fastq=2.19.0
 conda activate bcl2fastq
 ```
 
-### setup mega-simple-microhap-snakeflow <a name="mega"></a>
+### Installing mega-simple-microhap-snakeflow <a name="mega"></a>
 1. Create a Conda environment for running snakemake
 ```
 conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse vcftools zlib liblzma-devel samtools=1.22
