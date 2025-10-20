@@ -173,7 +173,7 @@ You may receive a failure message if a symbolic link already exists for a script
 
 <hr>
 
-## Demultiplexing with bcl2fastq (optional) <a name="bcl2fastq"></a>
+## Demultiplexing with bcl2fastq (recommended for NextSeq 1000/2000 runs) <a name="bcl2fastq"></a>
 If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. This is because the [mega-simple-microhap-snakeflow](https://github.com/eriqande/mega-simple-microhap-snakeflow) pipeline expects a fastq file name format of `LibraryName_S1_L001_R1_001.fastq.gz`. Using the `--no-lane-splitting` option removes the 'L001' portion of the name and will cause the pipeline to fail. You may also need to reduce the number of allowed `--barcode-mismatches` if using 6-bp length barcodes.
 
 Load your conda environment:
@@ -194,7 +194,7 @@ bcl2fastq --barcode-mismatches 0
 
 bcl2fastq will output fastq files into a subfolder named after the Sample_Project field of the Illumina samplesheet that was used to demultiplex the data. If we consider the example samplesheet in this repository (see `example_files/SampleSheet.csv`), all output will be written to a `P134_CA_Standardization` subdirectory. Furthermore, each set of fastq files will be written to subdirectories within `P134_CA_Standardization` that are named after the Sample_ID field of the samplesheet (e.g., `CH_00001`). For example, the full path to the fastq files for sample CH_00001 will be in `250409_M05543_0090_000000000-LWLT3/Data/Intensities/BaseCalls/P134_CA_Standardization/CH_00001`. 
 
-To get all of your fastq files into the root directory of your Illumina run folder, you could run the following command from your Illumina run folder:
+To get all of your fastq files into the root directory of your Illumina run folder, you could run the following command from within your Illumina run folder:
 ```
 cp Data/Intensities/BaseCalls/P134_CA_Standardization/CH_*/*.fastq.gz .
 ```
@@ -223,7 +223,7 @@ From here you can move these files to the raw data folder for the snakemake pipe
         └── etc.
 ```
 
-3. Make sure you have adequate hard drive space available before proceeding. ***Processing of data from a NextSeq 1000 flowcell for just the 'ROSA' and 'FullPanel' options may write approximately 40 GB of intermediate files to your hard drive.*** This is in addition to the space used by the raw fastq.gz files.
+3. Make sure you have adequate hard drive space available before proceeding. ***Processing of data from a NextSeq 1000 flowcell for just the 'ROSA' and 'FullPanel' options may write 40 GB or more of intermediate files to your hard drive.*** This is in addition to the space used by the raw fastq.gz files.
 
 4. From here, you should be able to run the entire pipeline using the `caChinookPipeline.sh` script. This requires three inputs given after the script name, as shown below.
 ```
@@ -234,7 +234,7 @@ In this example, we will use p134 as the projectNumber, run001 as the runNumber,
 ```
 caChinookPipeline.sh p134 run001 8
 ```
-If the pipeline runs successfully you can skip ahead to [Processed Outputs](#output). If this script doesn't work, or if you just want to run through the pipeline manually, continue with step 4. 
+The pipeline may take up to approximately an hour to process a MiSeq run. A NextSeq 1000/2000 run may require most of a work day (~8 hours). If the pipeline runs successfully you can skip ahead to [Processed Outputs](#output). If this script doesn't work, or if you just want to run through the pipeline manually, continue with step 4. 
 
 5. Activate your conda environment
 ```
@@ -270,7 +270,7 @@ caChinookCopyAndProcess.sh p134 run001
 ```
 If the script works, you can skip to [step 9](#step9). Otherwise, start at step 1. Most procedures in this section can alternatively be accomplished by dragging and dropping files in the Windows interface, but VCF filtering and another file modification require the command line. 
 
-1. It now may be easier to copy some files to a new location to make them easier to access. For example, you could make a folder in your OneDrive to hold these files. I suggest opening your OneDrive folder in WSL and running the following command. Substitute the name of your run for the example `run001` in the first line of the command block below.
+1. Copy the output files to a new location to make them easier to access. Make a folder in your OneDrive to hold these files. I suggest opening your OneDrive folder in WSL and running the following command. Substitute your current project number for `p134`, and the name of your run for `run001` in the first line of the command block below.
 ```
 RUN="run001"
 mkdir -p p134/$RUN/snakemake_output p134/$RUN/processing/
