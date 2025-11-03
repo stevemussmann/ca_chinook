@@ -111,13 +111,22 @@ class Microhap():
 		# get number of loci
 		if len(self.df.columns)%2 == 0: # test if even number of columns
 			nLoci = int(len(self.df.columns)/2) # calculate number of loci; ensure output is integer
+			#print(nLoci)
 		else:
 			print("\nERROR: Uneven number of locus columns in input file.")
 			print("Exiting program...\n")
 			raise SystemExit
 
+		# get number of individuals
+		nInds = len(self.df)
+
 		missLoc = self.df.isnull().sum(axis=0) # count missing genotypes per column (locus)
-		missLocPCT = missLoc / nLoci # divide missing data series by number of loci
+		missLocPCT = missLoc / nInds # divide missing data series by number of individuals
+		
+		## uncomment for debugging
+		#pandas.set_option('display.max_rows', None)
+		#print(missLoc)
+		
 		removeLocPCT = missLocPCT[missLocPCT > self.pmissLoc].index # get list of column indexes to remove
 		#print(removeLocPCT)
 
