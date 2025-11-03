@@ -1,6 +1,7 @@
 import collections
 import os
 import pandas
+import matplotlib.pyplot
 
 class LocusDict():
 	'Class for making dict to translate microhap genotypes to integer data'
@@ -8,6 +9,7 @@ class LocusDict():
 	def __init__(self, df):
 		self.df = df
 		self.recodeAlleles = collections.defaultdict(dict)
+		self.alleleCounts = collections.defaultdict(int)
 	
 	def getUnique(self):
 		colNames = list(self.df.columns)
@@ -32,5 +34,19 @@ class LocusDict():
 			#print(swap)
 
 		return self.recodeAlleles
-		
 
+	def countAlleles(self):
+		for key in self.recodeAlleles.keys():
+			self.alleleCounts[key] = len(self.recodeAlleles[key])
+			#print(nAlleles)
+		
+		# use Counter to count occurrences of each value
+		valCounts = collections.Counter(self.alleleCounts.values())
+		#print(valCounts)	
+
+		# make histogram of alleles per locus
+		matplotlib.pyplot.bar(list(valCounts.keys()), list(valCounts.values())) # histogram
+		matplotlib.pyplot.title("Allele Counts per Locus")
+		matplotlib.pyplot.xlabel("Alleles per Locus")
+		matplotlib.pyplot.ylabel("Observation Count")
+		matplotlib.pyplot.savefig("histo.png")

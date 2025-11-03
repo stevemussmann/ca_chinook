@@ -19,6 +19,7 @@ class Microhap():
 	def getDict(self):
 		ld = LocusDict(self.df)
 		ldict = ld.getUnique()
+		ld.countAlleles()
 		return ldict
 
 	def parseFile(self, colonyBool):
