@@ -1,12 +1,15 @@
 from colony import Colony
 from csvf import CSVfiltered
 
+import collections
+import json
 import os
+import pandas
 
 class MHconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir):
+	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs):
 		self.df = df
 		self.ldict = ldict
 		self.infile = infile
@@ -20,6 +23,10 @@ class MHconvert():
 		self.runlen = runlen
 		self.suffix = {'colony': 'Dat', 'csv': 'csv'}
 		self.convertedDir = cdir # directory to hold converted files
+		self.snpdf = pandas.DataFrame() #dataframe to hold SNPs if SNP output option is used
+		self.alleleFreqs = afreqs
+		
+		self.convSNP(self.df)
 
 	def convert(self, d):
 		output = list()
@@ -74,3 +81,39 @@ class MHconvert():
 		for line in output:
 			fh.write(line)
 			fh.write("\n")
+
+	def convSNP(self, df):
+		superDict = dict() # will hold nested dicts created for each locus
+		colNames = list(self.df.columns)
+		dupLoci = [item[:-2] for item in colNames]
+		singleLoci = dupLoci[1::2]
+
+		for locus in singleLoci:
+			locDict = collections.defaultdict(lambda: collections.defaultdict(int)) # nested dict of dicts with default int value so that I can add value without first needing to check if key already exists
+
+			for key, val in self.alleleFreqs[locus].items():
+				hapList = list(key)
+				count=0
+				for char in hapList:
+					locDict[count][char] += int(val)
+					count += 1
+				#print(str(val))
+
+			#print(locDict)
+
+			superDict[locus] = locDict
+
+			#print(self.alleleFreqs[locus])
+			#name1 = locus + "_1"
+			#name2 = locus + "_2"
+
+		## uncomment next 3 lines to verify nested dict format was created as desired
+		#jsonpath = os.path.join(os.getcwd(), "snpFreqsDict.json")
+		#with open(jsonpath, 'w') as jsonfile:
+		#	json.dump(superDict, jsonfile, indent='\t')
+
+		for locus, d in superDict.items():
+			print(locus)
+			for k, d2 in d.items():
+				print(d2)
+

@@ -19,8 +19,13 @@ class Microhap():
 	def getDict(self):
 		ld = LocusDict(self.df)
 		ldict = ld.getUnique()
-		ld.countAlleles()
+		#ld.countAlleles()
 		return ldict
+
+	def getFreqs(self):
+		ld = LocusDict(self.df)
+		freqs = ld.getFreqs()
+		return freqs
 
 	def parseFile(self, colonyBool):
 		print("Reading input .csv file.")
@@ -88,6 +93,7 @@ class Microhap():
 		removeLoci = list()
 		findMono = LocusDict(self.df)
 		mono = findMono.getUnique()
+		findMono.countAlleles()
 		#print(mono)
 		#with open("mono.json", 'w') as jfile:
 		#	json.dump(mono, jfile, indent='\t')

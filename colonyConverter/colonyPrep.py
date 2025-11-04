@@ -30,6 +30,7 @@ def main():
 
 	try:
 		locusdict = mhFile.getDict() # make locus dictionary
+		alleleFreqs = mhFile.getFreqs() # get number occurrences of each allele per locus
 	except KeyError as e:
 		print("\nKeyError:", e, "was not found.")
 		print("Make sure all locus columns in your input file end in _1 or _2.\n")
@@ -47,7 +48,7 @@ def main():
 		json.dump(locusdict, jsonfile, indent='\t')
 
 	# conversion process
-	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir)
+	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs)
 	conversion.convert(convDict)
 
 main()

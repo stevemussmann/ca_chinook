@@ -35,6 +35,25 @@ class LocusDict():
 
 		return self.recodeAlleles
 
+	def getFreqs(self):
+		alleleFreqs = collections.defaultdict(dict)
+
+		colNames = list(self.df.columns)
+		dupLoci = [item[:-2] for item in colNames]
+		singleLoci = dupLoci[1::2]
+
+		for locus in singleLoci:
+			name1 = locus + "_1"
+			name2 = locus + "_2"
+
+			# get frequencies - maybe move to new function so not run multiple times
+			freqs = dict(pandas.concat([self.df[name1], self.df[name2]]).dropna().value_counts())
+			#print(freqs)
+
+			alleleFreqs[locus] = freqs
+
+		return alleleFreqs
+
 	def countAlleles(self):
 		for key in self.recodeAlleles.keys():
 			self.alleleCounts[key] = len(self.recodeAlleles[key])
