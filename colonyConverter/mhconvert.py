@@ -97,23 +97,45 @@ class MHconvert():
 				for char in hapList:
 					locDict[count][char] += int(val)
 					count += 1
-				#print(str(val))
 
-			#print(locDict)
-
-			superDict[locus] = locDict
-
-			#print(self.alleleFreqs[locus])
-			#name1 = locus + "_1"
-			#name2 = locus + "_2"
+			superDict[locus] = locDict # superDict holds all individual locDicts
 
 		## uncomment next 3 lines to verify nested dict format was created as desired
 		#jsonpath = os.path.join(os.getcwd(), "snpFreqsDict.json")
 		#with open(jsonpath, 'w') as jsonfile:
 		#	json.dump(superDict, jsonfile, indent='\t')
 
+		removeList = list() # hold loci that will be removed from dataframe because there are no biallelic SNPs
+		keepDict = dict()
 		for locus, d in superDict.items():
-			print(locus)
-			for k, d2 in d.items():
-				print(d2)
+			potentialKeep = list()
+			for position, d2 in d.items():
+				# test if position is biallelic
+				if len(d2) == 2:
+					potentialKeep.append(position) # record biallelic positions
+
+			# find loci with no biallelic positions and push to removeList
+			if len(potentialKeep) == 0:
+				removeList.append(locus)
+			# if single biallelic position, push locus and position to keepDict
+			elif len(potentialKeep) == 1:
+				keepDict[locus] = potentialKeep[0]
+			# if multiple biallelic positions, find position with greatest minor allele count
+			else:
+				mac = dict() # dict to hold all minor allele counts for locus
+				for position in potentialKeep:
+					# determine minor allele at each position
+					minAllele = min(superDict[locus][position], key=superDict[locus][position].get)
+
+					# record minor allele count for position in mac dict
+					mac[position] = superDict[locus][position][minAllele]
+				
+				# get position that has minor allele with greatest minor allele count
+				maxminAllele = max(mac, key=mac.get)
+				keepDict[locus] = maxminAllele # add retained position to keepDict
+				#print(mac)
+
+		#print(removeList)
+			
+		#print(keepDict)
 
