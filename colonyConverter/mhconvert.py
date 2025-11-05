@@ -101,7 +101,7 @@ class MHconvert():
 			newDF[name2] = newDF[name2].str.slice(pos, pos+1) # extract SNP allele 2
 
 			snpDF[locus] = newDF[name1] + newDF[name2] # concatenate SNP alleles 1 and 2
-			snpDF[locus] = snpDF[locus].apply(lambda x: ''.join(sorted(str(x))) if pandas.notna(x) else pandas.NA) # sort new string
+			snpDF[locus] = snpDF[locus].apply(lambda x: ''.join(sorted(str(x))) if pandas.notna(x) else "0") # sort new string
 
 			# comment above line and uncomment next two lines for alternate handling of NA values
 			#snpDF[locus] = snpDF[locus].apply(lambda x: ''.join(sorted(str(x)))) # sort new string
