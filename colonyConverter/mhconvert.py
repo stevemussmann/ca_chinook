@@ -15,7 +15,7 @@ warnings.simplefilter(action='ignore', category=pandas.errors.PerformanceWarning
 class MHconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs, snppitCols, pops, snppitmap):
+	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs, snppitCols, pops, snppitmap, snpDict):
 		self.df = df
 		self.ldict = ldict
 		self.infile = infile
@@ -34,11 +34,18 @@ class MHconvert():
 		self.snppitCols = snppitCols
 		self.pops = pops # dict of population information for all individuals
 		self.snppitmap = snppitmap
+		self.snpDict = snpDict # dict of booleans for snp file formats
+		#print("printing snpdict")
+		#print(self.snpDict)
 		
 		# add if statement here to only do SNP conversion if SNP file formats requested
-		kd = self.findSNP(self.df) # identify SNP positions to keep for SNP format output files
-		self.snpDF = self.convSNP(kd, self.df) # make dataframe of SNPs
-		self.snpDF.to_excel('output.xlsx', index=True)
+		if any(self.snpDict.values()):
+			print("At least one SNP-based file format was requested.")
+			kd = self.findSNP(self.df) # identify SNP positions to keep for SNP format output files
+			self.snpDF = self.convSNP(kd, self.df) # make dataframe of SNPs
+
+			## uncomment to test whether snpDF is being written correctly
+			#self.snpDF.to_excel('output.xlsx', index=True)
 
 
 	def convert(self, d):

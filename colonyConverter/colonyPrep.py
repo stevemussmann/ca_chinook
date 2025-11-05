@@ -19,11 +19,15 @@ def main():
 
 	# make list of file formats; grab relevant options from argparse object
 	d = vars(input.args)
-	convDict = dict()
+	convDict = dict() # all file formats
+	snpDict = dict() # only snp file formats
 	convList = ['colony', 'csv', 'sequoia', 'snppit']
+	snpList = ['sequoia', 'snppit']
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value
+		if key in snpList:
+			snpDict[key] = value
 
 	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind, input.args.mono) #initialize new file
 	
@@ -54,7 +58,7 @@ def main():
 		json.dump(locusdict, jsonfile, indent='\t')
 
 	# conversion process
-	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols, pops, input.args.snppitmap)
+	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols, pops, input.args.snppitmap, snpDict)
 	conversion.convert(convDict)
 
 main()
