@@ -32,6 +32,7 @@ class MHconvert():
 		
 		kd = self.findSNP(self.df) # identify SNP positions to keep for SNP format output files
 		self.snpDF = self.convSNP(kd, self.df) # make dataframe of SNPs
+		self.snpDF.to_excel('output.xlsx', index=True)
 
 
 	def convert(self, d):
@@ -100,6 +101,7 @@ class MHconvert():
 
 			snpDF[locus] = newDF[name1] + newDF[name2] # concatenate SNP alleles 1 and 2
 			snpDF[locus] = snpDF[locus].apply(lambda x: ''.join(sorted(str(x)))) # sort new string
+		snpDF.replace('ann', pandas.NA, inplace=True) # make sure NA values are treated properly
 		print(snpDF)
 
 		return snpDF
