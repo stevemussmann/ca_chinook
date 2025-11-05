@@ -61,7 +61,12 @@ class Microhap():
 
 
 		return self.colonyData
-	
+
+	def getPops(self):
+		print("Extracting Population IDs...\n")
+		pops = self.df.pop('Population ID').to_dict()
+		return pops
+
 	def removeSnppit(self):
 		print("Checking for presence of optional SNPPIT columns.")
 		#list of all possible optional snppit columns

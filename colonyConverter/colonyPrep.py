@@ -29,6 +29,7 @@ def main():
 	
 	# pull out special columns
 	snppitCols = mhFile.removeSnppit() #removes optional columns for SNPPIT
+	pops = mhFile.getPops() #remove populations column; variable 'pops' is a dict
 
 	# parse file
 	colonyData = mhFile.parseFile(input.args.colony)
