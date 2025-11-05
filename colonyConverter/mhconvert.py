@@ -5,6 +5,10 @@ import collections
 import json
 import os
 import pandas
+import warnings
+
+# PerformanceWarning STFU
+warnings.simplefilter(action='ignore', category=pandas.errors.PerformanceWarning)
 
 class MHconvert():
 	'Class for converting pandas dataframes into various genotype files'
@@ -26,7 +30,9 @@ class MHconvert():
 		self.snpdf = pandas.DataFrame() #dataframe to hold SNPs if SNP output option is used
 		self.alleleFreqs = afreqs
 		
-		self.convSNP(self.df)
+		kd = self.findSNP(self.df) # identify SNP positions to keep for SNP format output files
+		self.snpDF = self.convSNP(kd, self.df) # make dataframe of SNPs
+
 
 	def convert(self, d):
 		output = list()
@@ -82,7 +88,23 @@ class MHconvert():
 			fh.write(line)
 			fh.write("\n")
 
-	def convSNP(self, df):
+	def convSNP(self, kd, df):
+		newDF = df.copy(deep=True) # make deep copy of microhap dataframe
+		snpDF = pandas.DataFrame() # make dataframe that will hold SNP calls
+		for locus, pos in kd.items():
+			name1 = locus + "_1"
+			name2 = locus + "_2"
+
+			newDF[name1] = newDF[name1].str.slice(pos, pos+1) # extract SNP allele 1
+			newDF[name2] = newDF[name2].str.slice(pos, pos+1) # extract SNP allele 2
+
+			snpDF[locus] = newDF[name1] + newDF[name2] # concatenate SNP alleles 1 and 2
+			snpDF[locus] = snpDF[locus].apply(lambda x: ''.join(sorted(str(x)))) # sort new string
+		print(snpDF)
+
+		return snpDF
+
+	def findSNP(self, df):
 		superDict = dict() # will hold nested dicts created for each locus
 		colNames = list(self.df.columns)
 		dupLoci = [item[:-2] for item in colNames]
@@ -134,8 +156,10 @@ class MHconvert():
 				maxminAllele = max(mac, key=mac.get)
 				keepDict[locus] = maxminAllele # add retained position to keepDict
 				#print(mac)
-
+		
 		#print(removeList)
 			
 		#print(keepDict)
+
+		return keepDict
 
