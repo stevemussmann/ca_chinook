@@ -98,7 +98,7 @@ conda activate bcl2fastq
 ### Installing mega-simple-microhap-snakeflow <a name="mega"></a>
 1. Create a Conda environment for running snakemake
 ```
-conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse vcftools zlib liblzma-devel samtools=1.22 matplotlib
+conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse vcftools zlib liblzma-devel samtools=1.22 matplotlib openpyxl
 ```
 
 2. To make life easier while cloning github repositories, run the following:
