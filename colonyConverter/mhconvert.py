@@ -1,5 +1,6 @@
 from colony import Colony
 from csvf import CSVfiltered
+from sequoia import Sequoia
 
 import collections
 import json
@@ -13,7 +14,7 @@ warnings.simplefilter(action='ignore', category=pandas.errors.PerformanceWarning
 class MHconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs):
+	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs, snppitCols):
 		self.df = df
 		self.ldict = ldict
 		self.infile = infile
@@ -25,11 +26,13 @@ class MHconvert():
 		self.runname = runname
 		self.inbreed = inbreed
 		self.runlen = runlen
-		self.suffix = {'colony': 'Dat', 'csv': 'csv'}
+		self.suffix = {'colony': 'Dat', 'csv': 'csv', 'sequoia': 'sequoia'}
 		self.convertedDir = cdir # directory to hold converted files
 		self.snpdf = pandas.DataFrame() #dataframe to hold SNPs if SNP output option is used
 		self.alleleFreqs = afreqs
+		self.snppitCols = snppitCols
 		
+		# add if statement here to only do SNP conversion if SNP file formats requested
 		kd = self.findSNP(self.df) # identify SNP positions to keep for SNP format output files
 		self.snpDF = self.convSNP(kd, self.df) # make dataframe of SNPs
 		self.snpDF.to_excel('output.xlsx', index=True)
@@ -53,6 +56,11 @@ class MHconvert():
 		#print("This function will convert to colony format.")
 		cy = Colony(self.df, self.ldict, self.cDat, self.derr, self.gerr, self.pmale, self.pfemale, self.runname, self.inbreed, self.runlen)
 		output = cy.convert()
+		return output
+
+	def conv_sequoia(self):
+		seq = Sequoia(self.snpDF, self.convertedDir)
+		output = seq.convert(self.snppitCols)
 		return output
 	
 	def convert_to(self, name: str):

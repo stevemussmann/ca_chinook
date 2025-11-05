@@ -15,6 +15,11 @@ class Microhap():
 		self.pmissInd = pmissInd # allowable proportion of missing data individual
 		self.colonyData = pandas.DataFrame()
 		self.mono = mono # boolean to control monomorphic locus filter
+		
+		print("Reading input .csv file.")
+		print("")
+		self.df = pandas.read_csv(self.mhFile, index_col=0, header=0)
+
 
 	def getDict(self):
 		ld = LocusDict(self.df)
@@ -28,10 +33,6 @@ class Microhap():
 		return freqs
 
 	def parseFile(self, colonyBool):
-		print("Reading input .csv file.")
-		print("")
-		self.df = pandas.read_csv(self.mhFile, index_col=0, header=0)
-
 		# remove unneeded columns
 		toRemove = ["sdy_sex", "hapstr", "rosa_pheno", "percMicroHap"] # summary columns inserted by genotyping pipeline
 		for col in toRemove:
@@ -60,7 +61,35 @@ class Microhap():
 
 
 		return self.colonyData
-		
+	
+	def removeSnppit(self):
+		print("Checking for presence of optional SNPPIT columns.")
+		#list of all possible optional snppit columns
+		optionalCols = ['POPCOLUMN_SEX', 'POPCOLUMN_REPRO_YEARS', 'POPCOLUMN_SPAWN_GROUP', 'OFFSPRINGCOLUMN_BORN_YEAR', 'OFFSPRINGCOLUMN_SAMPLE_YEAR', 'OFFSPRINGCOLUMN_AGE_AT_SAMPLING']
+
+		remove = list() #will hold list of snppit columns that appear in pandas df
+		snppitCols = pandas.DataFrame() #declare empty dataframe to be returned even if no optional columns were used.
+
+		for col in optionalCols:
+			if col in self.df.columns:
+				remove.append(col) #add existing cols to remove list
+
+		if remove:
+			print("The following optional SNPPIT columns were detected in the input file:")
+			for col in remove:
+				print(col)
+			print("")
+			snppitCols = self.removeColumns(self.df, remove)
+		else:
+			print("No optional SNPPIT columns detected in input file.")
+			print("")
+
+		return snppitCols
+
+	def removeColumns(self, df, removelist):
+		junk = pandas.concat([df.pop(x) for x in removelist], axis=1)
+		return junk
+
 	def removeLoci(self, blacklist):
 		# remove blacklisted columns
 		print("\nRemoving blacklisted loci (if present):")

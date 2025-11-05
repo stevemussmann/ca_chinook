@@ -97,6 +97,11 @@ class ComLine():
 							action='store_true',
 							help="Write colony format file."
 		)
+		conversion.add_argument("-q", "--sequoia",
+							dest='sequoia',
+							action='store_true',
+							help="Write Sequoia format file."
+		)
 		self.args = parser.parse_args()
 
 		# check if certain values between 0.0 and 1.0
@@ -125,7 +130,7 @@ class ComLine():
 			raise SystemExit(1)
 
 		#check if at least one conversion option was used.
-		if not [x for x in (self.args.colony, self.args.csv) if x is True]:
+		if not [x for x in (self.args.colony, self.args.csv, self.args.sequoia) if x is True]:
 			print("")
 			print("No format conversion options were selected.")
 			print("You must choose at least one file format for output.")

@@ -20,13 +20,18 @@ def main():
 	# make list of file formats; grab relevant options from argparse object
 	d = vars(input.args)
 	convDict = dict()
-	convList = ['colony', 'csv']
+	convList = ['colony', 'csv', 'sequoia']
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value
 
 	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind, input.args.mono) #initialize new file
-	colonyData = mhFile.parseFile(input.args.colony) # parse file
+	
+	# pull out special columns
+	snppitCols = mhFile.removeSnppit() #removes optional columns for SNPPIT
+
+	# parse file
+	colonyData = mhFile.parseFile(input.args.colony)
 
 	try:
 		locusdict = mhFile.getDict() # make locus dictionary
@@ -48,7 +53,7 @@ def main():
 		json.dump(locusdict, jsonfile, indent='\t')
 
 	# conversion process
-	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs)
+	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols)
 	conversion.convert(convDict)
 
 main()
