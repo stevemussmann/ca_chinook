@@ -1,4 +1,4 @@
-# colonyConverter
+# fileConverter
 
 Program for filtering microhaplotype data and converting to Colony (and other) file formats. 
 
@@ -20,18 +20,18 @@ conda activate snakemake
 conda install pandas
 ```
 
-`colonyConverter.py` was downloaded when you installed this repository on your computer. To make it easily accessible from the command line, make the script executable and install it in your path.
+`microhapConvert.py` was downloaded when you installed this repository on your computer. To make it easily accessible from the command line, make the script executable and install it in your path.
 
 ```
-cd ~/local/src/ca_chinook/colonyConverter
-chmod u+x colonyPrep.py
+cd ~/local/src/ca_chinook/fileConverter
+chmod u+x microhapConvert.py
 cd ~/local/bin/
-ln -s $HOME/local/src/ca_chinook/colonyConverter/colonyPrep.py
+ln -s $HOME/local/src/ca_chinook/fileConverter/microhapConvert.py
 ```
 
 You can test if the converter is properly installed by attempting to print the help menu:
 ```
-colonyPrep.py --help
+microhapConvert.py --help
 ```
 
 ## Input Requirements
@@ -72,7 +72,7 @@ conda activate snakemake
 
 As an example, the following command could be run to produce both a filtered .csv file and a file in Colony format:
 ```
-colonyPrep.py -f haps_2col_final.csv -r example -c -C
+microhapConvert.py -f haps_2col_final.csv -r example -c -C
 ```
 
 ## Outputs
