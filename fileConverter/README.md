@@ -11,6 +11,8 @@ This program has only been tested in Python v3.12.10. However, it should be comp
 
 ## Dependencies
 - pandas
+- matplotlib
+- openpyxl
 
 ## Installation
 Activate the `snakemake` conda environment that you made for processing microhaplotype data and install the `pandas` dependency.
