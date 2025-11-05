@@ -11,6 +11,7 @@ class ComLine():
 		required = parser.add_argument_group('required arguments')
 		filtering = parser.add_argument_group('filtering arguments')
 		colony = parser.add_argument_group('colony arguments')
+		snppit = parser.add_argument_group('snppit arguments')
 		conversion = parser.add_argument_group('conversion arguments')
 
 		required.add_argument("-f", "--infile",
@@ -102,6 +103,15 @@ class ComLine():
 							action='store_true',
 							help="Write Sequoia format file."
 		)
+		conversion.add_argument("-z", "--snppit",
+							dest='snppit',
+							action='store_true',
+							help="Write SNPPIT format file."
+		)
+		snppit.add_argument("-Z", "--snppitmap",
+							dest='snppitmap',
+							help="Provide a tab-delimited file specifying POP and OFFSPRING groups for SNPPIT format. Required if converting a SNPPIT file."
+		)
 		self.args = parser.parse_args()
 
 		# check if certain values between 0.0 and 1.0
@@ -130,7 +140,7 @@ class ComLine():
 			raise SystemExit(1)
 
 		#check if at least one conversion option was used.
-		if not [x for x in (self.args.colony, self.args.csv, self.args.sequoia) if x is True]:
+		if not [x for x in (self.args.colony, self.args.csv, self.args.sequoia, self.args.snppit) if x is True]:
 			print("")
 			print("No format conversion options were selected.")
 			print("You must choose at least one file format for output.")
@@ -141,6 +151,14 @@ class ComLine():
 		self.exists( str(self.args.infile) )
 		if self.args.removeloci:
 			self.exists( str(self.args.removeloci) )
+		if self.args.snppit == True:
+			if self.args.snppitmap is None:
+				print("")
+				print("If doing a snppit conversion you must also specify a POP and OFFSPRING groups file using the -Z option.")
+				print("")
+				raise SystemExit
+			else:
+				self.exists( str(self.args.snppitmap) )
 
 	def zeroOne(self, num):
 		return 0.0 <= num <= 1.0

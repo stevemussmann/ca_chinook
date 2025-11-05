@@ -20,7 +20,7 @@ def main():
 	# make list of file formats; grab relevant options from argparse object
 	d = vars(input.args)
 	convDict = dict()
-	convList = ['colony', 'csv', 'sequoia']
+	convList = ['colony', 'csv', 'sequoia', 'snppit']
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value
@@ -54,7 +54,7 @@ def main():
 		json.dump(locusdict, jsonfile, indent='\t')
 
 	# conversion process
-	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols)
+	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols, pops, input.args.snppitmap)
 	conversion.convert(convDict)
 
 main()

@@ -1,6 +1,7 @@
 from colony import Colony
 from csvf import CSVfiltered
 from sequoia import Sequoia
+from snppit import Snppit
 
 import collections
 import json
@@ -14,7 +15,7 @@ warnings.simplefilter(action='ignore', category=pandas.errors.PerformanceWarning
 class MHconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs, snppitCols):
+	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs, snppitCols, pops, snppitmap):
 		self.df = df
 		self.ldict = ldict
 		self.infile = infile
@@ -26,11 +27,13 @@ class MHconvert():
 		self.runname = runname
 		self.inbreed = inbreed
 		self.runlen = runlen
-		self.suffix = {'colony': 'Dat', 'csv': 'csv', 'sequoia': 'sequoia'}
+		self.suffix = {'colony': 'Dat', 'csv': 'csv', 'sequoia': 'sequoia', 'snppit': 'snppit'}
 		self.convertedDir = cdir # directory to hold converted files
 		self.snpdf = pandas.DataFrame() #dataframe to hold SNPs if SNP output option is used
 		self.alleleFreqs = afreqs
 		self.snppitCols = snppitCols
+		self.pops = pops # dict of population information for all individuals
+		self.snppitmap = snppitmap
 		
 		# add if statement here to only do SNP conversion if SNP file formats requested
 		kd = self.findSNP(self.df) # identify SNP positions to keep for SNP format output files
@@ -59,8 +62,15 @@ class MHconvert():
 		return output
 
 	def conv_sequoia(self):
+		#print("This function will convert to sequoia format.")
 		seq = Sequoia(self.snpDF, self.convertedDir)
 		output = seq.convert(self.snppitCols)
+		return output
+	
+	def conv_snppit(self):
+		#print("This function will convert to SNPPIT format.")
+		snppit = Snppit(self.snpDF, self.pops)
+		output = snppit.convert(self.snppitmap, self.snppitCols)
 		return output
 	
 	def convert_to(self, name: str):
