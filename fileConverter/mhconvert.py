@@ -42,6 +42,12 @@ class MHconvert():
 		if any(self.snpDict.values()):
 			print("At least one SNP-based file format was requested.")
 			kd = self.findSNP(self.df) # identify SNP positions to keep for SNP format output files
+			print("Writing dictionary of retained SNP coordinates to RetainedSNPcoordinates.json")
+			print("Coordinates are provided relative to SNP position in microhaplotype allele strings provided per locus in your input file.")
+			jsonpath = os.path.join(os.getcwd(), "RetainedSNPcoordinates.json")
+			with open(jsonpath, 'w') as f:
+				json.dump(kd, f, indent='\t') # write dict to json file recording positions of snps retained from each locus
+
 			self.snpDF = self.convSNP(kd, self.df) # make dataframe of SNPs
 
 			## uncomment to test whether snpDF is being written correctly
@@ -155,7 +161,7 @@ class MHconvert():
 			superDict[locus] = locDict # superDict holds all individual locDicts
 
 		## uncomment next 3 lines to verify nested dict format was created as desired
-		#jsonpath = os.path.join(os.getcwd(), "snpFreqsDict.json")
+		#jsonpath = os.path.join(os.getcwd(), "snpMinorAlleleCountsDict.json")
 		#with open(jsonpath, 'w') as jsonfile:
 		#	json.dump(superDict, jsonfile, indent='\t')
 
