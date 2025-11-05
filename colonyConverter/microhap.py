@@ -64,7 +64,13 @@ class Microhap():
 
 	def getPops(self):
 		print("Extracting Population IDs...\n")
-		pops = self.df.pop('Population ID').to_dict()
+		try:
+			pops = self.df.pop('Population ID').to_dict()
+		except KeyError as e:
+			print("\nERROR. The following column is missing from your input file:", e)
+			print("Exiting program...\n")
+			raise SystemExit(1)
+
 		return pops
 
 	def removeSnppit(self):
