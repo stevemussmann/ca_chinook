@@ -88,16 +88,21 @@ microhapConvert.py -f haps_2col_final.csv -r example -c -C
 ## Outputs
 Converted and filtered files are written to a `convertedFiles/` output directory that is created in the directory from which you executed the conversion program. The table below provides the output file names from each option. If only an extension is provided, the the input file basename is retained and the new file extension is applied to the output. This results in the .csv format option producing a file with the same name as the input file, but because it is written to the `convertedFiles/` output directory the original file will be retained. A file named `locusDictionary.json` will also be written. This contains the necessary information to translate the Colony haplotype numbers back into nucleotide format. 
 
+The table below shows which file formats are output in microhaplotype (microhap) vs. SNP formats. The microhap format retains all microhaplotype information whenever possible. The SNP formats retain only a single biallelic SNP from each microhaplotype. If multiple biallelic SNPs are discovered at a locus, then the SNP with the greatest minor allele count (MAC) is retained. The position of each retained SNP within each locus's microhaplotype string is output in a json file (`RetainedSNPcoordinates.json`). 0-based coordinates are reported (i.e., 0 = first position in the microhaplotype string). The coordinate file is only created when SNP-format file conversions are requested. 
+
 <div align="center">
   
-| Format       | Output file name and/or extension  |  Program Option  |
-| :----------- | :--------------------------------: | :--------------: |
-| Colony       | Colony2.Dat                        | `-C`             |
-| CSV          | .csv                               | `-c`             |
-| Sequoia      | .sequoia; sequoia.lh.txt           | `-q`             |
-| SNPPIT       | .snppit                            | `-z`             |
-  
+| Format       | Output file name and/or extension  |  Program Option  | Format Type |
+| :----------- | :--------------------------------: | :--------------: | :---------: |
+| Colony       | Colony2.Dat                        | `-C`             | microhap    |
+| CSV          | .csv                               | `-c`             | microhap    |
+| Sequoia      | .sequoia; sequoia.lh.txt           | `-q`             | SNP         |
+| SNPPIT       | .snppit                            | `-z`             | SNP         |
+
 </div>
+
+## Special Input Requirements
+The following sections detail special columns that can be used to include required data for certain formats (Sequoia and SNPPIT).
 
 ### Sequoia
 The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of `f`, `female`, `m`, and `male` will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3). 
