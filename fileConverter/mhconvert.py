@@ -1,3 +1,4 @@
+from ckmrsim import CKMR
 from colony import Colony
 from csvf import CSVfiltered
 from sequoia import Sequoia
@@ -27,7 +28,7 @@ class MHconvert():
 		self.runname = runname
 		self.inbreed = inbreed
 		self.runlen = runlen
-		self.suffix = {'colony': 'Dat', 'csv': 'csv', 'sequoia': 'sequoia', 'snppit': 'snppit'}
+		self.suffix = {'ckmr': 'tsv', 'colony': 'Dat', 'csv': 'csv', 'sequoia': 'sequoia', 'snppit': 'snppit'}
 		self.convertedDir = cdir # directory to hold converted files
 		self.snpdf = pandas.DataFrame() #dataframe to hold SNPs if SNP output option is used
 		self.alleleFreqs = afreqs
@@ -58,7 +59,7 @@ class MHconvert():
 		output = list()
 		for filetype, boolean in d.items():
 			if boolean == True:
-				print("Converting to", filetype, "format file.")
+				print("\nConverting to", filetype, "format file.")
 				output = self.convert_to(filetype)
 				self.printOutput(output, self.infile, self.suffix[filetype])
 
@@ -66,6 +67,12 @@ class MHconvert():
 		#print("This function will print a filtered .csv file")
 		csv = CSVfiltered(self.df)
 		output = csv.convert()
+		return output
+	
+	def conv_ckmr(self):
+		#print("This function will print a filtered .csv file for ckmr format")
+		tsv = CKMR(self.df, self.cDat)
+		output = tsv.convert()
 		return output
 
 	def conv_colony(self): 
@@ -100,8 +107,14 @@ class MHconvert():
 
 	def printOutput(self, output, fileName, suffix):
 		# if colony conversion, use Colony2.Dat as output name
+		outParents = None
+		outOffspring = None
 		if suffix == "Dat":
 			outName = os.path.join(self.convertedDir, "Colony2.Dat")
+		elif suffix == "tsv":
+			#print("reached tsv block")
+			outParents = os.path.join(self.convertedDir, "ckmrsim.parents.tsv")
+			outOffspring = os.path.join(self.convertedDir, "ckmrsim.offspring.tsv")
 		else:
 			# make new file name for writing
 			fileName = fileName.replace(" ", "_") #replace spaces in original filename if they exist
@@ -111,14 +124,42 @@ class MHconvert():
 			outName = '.'.join(nameList)
 			outName = os.path.join(self.convertedDir, outName)
 
-		print("Writing to", outName)
-		print("")
+		# this is a little janky. Basically I packaged the offspring and parents genotypes into
+		# a single list and I cound the number of header lines to determine whether I'm writing
+		# to the offspring (first batch in list) or parents (second batch). 
+		if outOffspring:
+			print("Writing to", outOffspring, "and", outParents)
+			print("")
+			counter=0
+			fhp = open(outParents, 'w')
+			fho = open(outOffspring, 'w')
+			for line in output:
+				if line.startswith("indiv\t"):
+					counter+=1
+				if counter == 1:
+					fho.write(line)
+					fho.write("\n")
+				elif counter == 2:
+					fhp.write(line)
+					fhp.write("\n")
+				else:
+					fhp.close()
+					fho.close()
+					print("There shouldn't be data for a third file in CKMRsim output.")
+					print("How did you get here?")
+					print("")
+					raise SystemExit(1)
+			fhp.close()
+			fho.close()
+		else:
+			print("Writing to", outName)
+			print("")
 
-		fh = open(outName, 'w')
-
-		for line in output:
-			fh.write(line)
-			fh.write("\n")
+			fh = open(outName, 'w')
+			for line in output:
+				fh.write(line)
+				fh.write("\n")
+			fh.close()
 
 	def convSNP(self, kd, df):
 		print("Making new SNP dataframe.\n")

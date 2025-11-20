@@ -21,7 +21,7 @@ def main():
 	d = vars(input.args)
 	convDict = dict() # all file formats
 	snpDict = dict() # only snp file formats
-	convList = ['colony', 'csv', 'sequoia', 'snppit']
+	convList = ['ckmr', 'colony', 'csv', 'sequoia', 'snppit']
 	snpList = ['sequoia', 'snppit']
 	for key, value in d.items():
 		if key in convList:
@@ -36,7 +36,7 @@ def main():
 	pops = mhFile.getPops() #remove populations column; variable 'pops' is a dict
 
 	# parse file
-	colonyData = mhFile.parseFile(input.args.colony)
+	colonyData = mhFile.parseFile(input.args.colony, input.args.ckmr)
 
 	try:
 		locusdict = mhFile.getDict() # make locus dictionary
@@ -52,10 +52,11 @@ def main():
 	mhFile.runFilters() # run missing data filters
 	
 	# dump locus dictionary to text file (locusDictionary.json)
-	jsonpath = os.path.join(convertedDir, "locusDictionary.json")
-	print("\nPrinting locus dictionary used for COLONY format conversion to", str(jsonpath), "\n")
-	with open(jsonpath, 'w') as jsonfile:
-		json.dump(locusdict, jsonfile, indent='\t')
+	if input.args.colony == True:
+		jsonpath = os.path.join(convertedDir, "locusDictionary.json")
+		print("\nPrinting locus dictionary used for COLONY format conversion to", str(jsonpath), "\n")
+		with open(jsonpath, 'w') as jsonfile:
+			json.dump(locusdict, jsonfile, indent='\t')
 
 	# conversion process
 	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols, pops, input.args.snppitmap, snpDict)

@@ -32,7 +32,7 @@ class Microhap():
 		freqs = ld.getFreqs()
 		return freqs
 
-	def parseFile(self, colonyBool):
+	def parseFile(self, colonyBool, ckmrBool):
 		# remove unneeded columns
 		toRemove = ["sdy_sex", "hapstr", "rosa_pheno", "percMicroHap"] # summary columns inserted by genotyping pipeline
 		for col in toRemove:
@@ -40,12 +40,13 @@ class Microhap():
 				print("Removing", col, "column from input.")
 				self.df.pop(col) # remove column
 
-		## extract colony2 column; exit with error if it doesn't exist
-		# only do this if colony2 conversion requested
-		if colonyBool == True:
-			try:
-				self.colonyData = self.df.pop('colony2')
-			except KeyError as e:
+		## extract colony2 column if it exists
+		if 'colony2' in self.df.columns:
+			self.colonyData = self.df.pop('colony2')
+		else:
+			## exit with error if it doesn't exist
+			# only do this if colony2 conversion requested
+			if colonyBool == True or ckmrBool == True:
 				print("\nERROR. The following column is missing from your input file:", e)
 				print("The 'colony2' column should exist and contain information (status as potential male parent, female parent, or offspring) for all individuals.")
 				print("Exiting program...\n")
@@ -53,6 +54,7 @@ class Microhap():
 
 		# validate that remaining columns all end in _1 or _2
 		columnNames = list(self.df.columns)
+		#print(columnNames)
 		for columnName in columnNames:
 			if not columnName.endswith(("_1", "_2")):
 				print("\nERROR.")
