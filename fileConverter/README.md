@@ -4,7 +4,7 @@ Program for filtering microhaplotype data and converting to Colony (and other) f
 
 This program is a work in progress. This README.md file will be updated regarding program functionality as features are added. Currently the program serves two main functions:
 1. Filtering microhaplotype data output by the snakemake pipeline to remove loci and individuals with excessive missing data.
-2. Converting the data to Colony input format. It will also output a filtered .csv file if requested.
+2. Converting the data to various input file formats.
 
 ## Python Version Compatibility
 This program has only been tested in Python v3.12.10. However, it should be compatible with Python v3.8+.
@@ -39,12 +39,11 @@ microhapConvert.py --help
 ## Input Requirements
 Briefly, the haps_2col_final.csv file produced at the end of the `caChinookPipeline.sh` script is acceptable as input, with some small modifications (see below). 
 
-In other words, the input should be in csv format with two columns for each locus. Headings for the two alleles should end in _1 and _2 (e.g., Ots_100884-287_1 and Ots_100884-287_2). The first column should be titled `indiv` and contain the individual IDs for all samples. You do not need to remove the special columns from the file that were inserted by the genotyping pipeline (`sdy_sex`, `hapstr`, `rosa_pheno`, and `percMicroHap`) because these will be automatically identified and removed by the file converter. 
+In other words, the input should be in csv format with two columns for each locus. Headings for the two alleles should end in _1 and _2 (e.g., Ots_100884-287_1 and Ots_100884-287_2). The first column must be titled `indiv` and contain the individual IDs for all samples. You do not need to remove the special columns from the file that were inserted by the genotyping pipeline (`sdy_sex`, `hapstr`, `rosa_pheno`, and `percMicroHap`) because these will be automatically identified and removed by the file converter. 
 
 Modifications: You do, however, need to add some information for certain programs. 
 * The second column should be titled exactly `Population ID` and this column should contain population information for all individuals.
-* The third column in the file should be titled exactly `colony2`. In this column, identify all potential offspring as `offspring` and all candidate parents by their sex (`male` or `female`).
-* Additional columns are needed for SNPPIT and Sequoia conversions (see SNPPIT and Sequoia sections at the end).
+* Additional columns are needed for Colony, CKMRsim, SNPPIT and Sequoia conversions (see sections for these programs at the end).
 
 ## Program Options
 Required Inputs:
@@ -71,6 +70,7 @@ Arguments that apply to colony-format outputs only:
 File format conversion output options (at least one required):
 * **`-c` / `--csv`:** Write filtered csv format file.
 * **`-C` / `--colony`:** Write colony format file.
+* **`-t` / `--ckmr`:** Write CKMRsim format files.
 * **`-q` / `--sequoia`:** Prints a [sequoia](https://jiscah.github.io/) formatted genotype file.
 * **`-z` / `--snppit`:** Prints a file in [snppit](https://github.com/eriqande/snppit) format (-Z option is also required for snppit conversion as specified above).
 
@@ -92,17 +92,24 @@ The table below shows which file formats are output in microhaplotype (microhap)
 
 <div align="center">
   
-| Format       | Output file name and/or extension  |  Program Option  | Format Type |
-| :----------- | :--------------------------------: | :--------------: | :---------: |
-| Colony       | Colony2.Dat                        | `-C`             | microhap    |
-| CSV          | .csv                               | `-c`             | microhap    |
-| Sequoia      | .sequoia; sequoia.lh.txt           | `-q`             | SNP         |
-| SNPPIT       | .snppit                            | `-z`             | SNP         |
+| Format       | Output file name and/or extension          |  Program Option  | Format Type |
+| :----------- | :----------------------------------------: | :--------------: | :---------: |
+| Colony       | Colony2.Dat                                | `-C`             | microhap    |
+| CSV          | .csv                                       | `-c`             | microhap    |
+| CKMRsim      | ckmrsim.offspring.tsv; ckmrsim.parents.tsv | `-t`             | microhap    |
+| Sequoia      | .sequoia; sequoia.lh.txt                   | `-q`             | SNP         |
+| SNPPIT       | .snppit                                    | `-z`             | SNP         |
 
 </div>
 
 ## Special Input Requirements
-The following sections detail special columns that can be used to include required data for certain formats (Sequoia and SNPPIT).
+The following sections detail special columns that can be used to include required data for certain formats (Colony, CKMRsim, Sequoia, and SNPPIT).
+
+### Colony
+Add a column to the file titled exactly `colony2`. In this column, identify all potential offspring as `offspring` and all candidate parents by their sex (`male` or `female`). The terms `offspring`, `male`, and `female` are all case-insensitive.
+
+### CKMRsim
+Follow instructions for Colony. All individuals labeled as `offspring` in the `colony2` column will be output in the `ckmrsim.offspring.tsv` file. All individuals marked with any term other than `offspring` will be interpreted as belonging to the parental group and sent to the `ckmrsim.parents.tsv` output file. 
 
 ### Sequoia
 The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of `f`, `female`, `m`, and `male` will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3). 
