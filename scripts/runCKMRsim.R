@@ -98,8 +98,8 @@ if( !dir.exists(OUTDIR)){
 }
 
 # read genotypes files
-parents <- read_csv(opt$parents, col_types = cols(.default = col_character())) %>% rename(ID = SAMPLE_ID)
-offspring <- read_csv(opt$offspring, col_types = cols(.default = col_character())) %>% rename(ID = SAMPLE_ID)
+parents <- read_tsv(opt$parents, col_types = cols(.default = col_character())) %>% rename(ID = indiv)
+offspring <- read_tsv(opt$offspring, col_types = cols(.default = col_character())) %>% rename(ID = indiv)
 
 # get lists of parents and offspring
 parent_ids <- parents$ID
