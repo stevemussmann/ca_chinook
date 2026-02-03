@@ -189,6 +189,34 @@ You may receive a failure message if a symbolic link already exists for a script
 ## Demultiplexing with bcl2fastq (recommended for NextSeq 1000/2000 runs) <a name="bcl2fastq"></a>
 If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. This is because the [mega-simple-microhap-snakeflow](https://github.com/eriqande/mega-simple-microhap-snakeflow) pipeline expects a fastq file name format of `LibraryName_S1_L001_R1_001.fastq.gz`. Using the `--no-lane-splitting` option removes the 'L001' portion of the name and will cause the pipeline to fail. You may also need to reduce the number of allowed `--barcode-mismatches` if using 6-bp length barcodes.
 
+### Preparing SampleSheet.csv
+You can make a SampleSheet.csv file using the makeSampleSheet.pl script in this repository. First, use Excel to create a comma-delimited file named `project_summary.csv`. Open a blank Excel workbook, paste in the table from the 'Project Summary' sheet of your GT project's layout worksheet. Make sure to paste data **as values**. 
+
+Next, make a second comma-delimited file named `sample_imports.csv`. Paste the contents of the table on the 'Sample_Imports' sheet of your GT project's layout worksheet. Only paste the table header line and rows containing records in your sequencing run. Again, make sure to paste the data **as values**. 
+
+Make sure each file has Unix-style line breaks. Use sed to remove carriage-returns:
+
+```
+sed -i 's/\r//g' *.csv
+```
+
+Now use the `makeSampleSheet.pl` script to make your sample sheet. Run this script in the folder containing your `project_summary.csv` and `sample_imports.csv` files. At minimum, you need to specify:
+* sequencing platform (nextseq or miseq) with the `-m` option
+* GT project number with the `-g` option (e.g., GT026)
+* Your username or initials with the `-u` option (e.g., smm)
+
+Example command:
+```
+makeSampleSheet.pl -m nextseq -g GT026 -u smm
+```
+
+The program has several other options that can be used to customize input, output, or change microhap panel choices. Run the program with the `-h` command to get the full help menu.
+```
+makeSampleSheet.pl -h
+```
+
+
+### Running bcl2fastq
 Load your conda environment:
 ```
 conda activate bcl2fastq
