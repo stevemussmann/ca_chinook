@@ -11,10 +11,12 @@ Scripts and documentation for California Chinook microhaplotypes. This repositor
     * [Installing mega-simple-microhap-snakeflow](#mega)
     * [Setup files from this repository](#myscripts)
     * [Pipeline updates](#update)
-2. [Optional: Demultiplex with bcl2fastq](#bcl2fastq)
-3. [Running the Snakemake Pipeline](#pipeline)
-4. [Processing the Snakemake Pipeline Output](#processing)
-5. [Processed Outputs](#output)
+2. [Demultiplex with bcl2fastq - Recommended for NextSeq 1000/2000](#bcl2fastq)
+    *[Preparing SampleSheet.csv](#samplesheet)
+    *[Running bcl2fastq](#runbcl2fastq)
+4. [Running the Snakemake Pipeline](#pipeline)
+5. [Processing the Snakemake Pipeline Output](#processing)
+6. [Processed Outputs](#output)
 
 
 ### Genetic Stock ID
@@ -189,7 +191,7 @@ You may receive a failure message if a symbolic link already exists for a script
 ## Demultiplexing with bcl2fastq (recommended for NextSeq 1000/2000 runs) <a name="bcl2fastq"></a>
 If you demultiplex with bcl2fastq, do not use the `--no-lane-splitting` option. This is because the [mega-simple-microhap-snakeflow](https://github.com/eriqande/mega-simple-microhap-snakeflow) pipeline expects a fastq file name format of `LibraryName_S1_L001_R1_001.fastq.gz`. Using the `--no-lane-splitting` option removes the 'L001' portion of the name and will cause the pipeline to fail. You may also need to reduce the number of allowed `--barcode-mismatches` if using 6-bp length barcodes.
 
-### Preparing SampleSheet.csv
+### Preparing SampleSheet.csv <a name="samplesheet"></a>
 You can make a SampleSheet.csv file using the makeSampleSheet.pl script in this repository. First, use Excel to create a comma-delimited file named `project_summary.csv`. Open a blank Excel workbook, paste in the table from the 'Project Summary' sheet of your GT project's layout worksheet. Make sure to paste data **as values**. 
 
 Next, make a second comma-delimited file named `sample_imports.csv`. Paste the contents of the table on the 'Sample_Imports' sheet of your GT project's layout worksheet. Only paste the table header line and rows containing records in your sequencing run. Again, make sure to paste the data **as values**. 
@@ -210,13 +212,15 @@ Example command:
 makeSampleSheet.pl -m nextseq -g GT026 -u smm
 ```
 
+The script will always output a .csv file (default output = SampleSheet.csv) that should be used to both demultiplex your reads in bcl2fastq and process the demultiplexed reads in the snakemake pipeline. If you create a sample sheet for a MiSeq run, an additional file will be created (default output = SampleSheet.miseqrun.csv) that should be loaded onto the MiSeq for your run.
+
 The program has several other options that can be used to customize input, output, or change microhap panel choices. Run the program with the `-h` command to get the full help menu.
 ```
 makeSampleSheet.pl -h
 ```
 
 
-### Running bcl2fastq
+### Running bcl2fastq <a name="runbcl2fastq"></a>
 Load your conda environment:
 ```
 conda activate bcl2fastq
