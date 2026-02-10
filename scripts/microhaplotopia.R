@@ -109,18 +109,32 @@ option_list = list(
     metavar="snplicon"
   ),
   make_option(
-    c("-x", "--maxFemale"), 
-    type="integer", 
-    default=2, 
-    help="maximum sdy reads allowed to call female (default = 2)", 
-    metavar="maxFemale"
+    c("-y", "--propMale"), 
+    type="double", 
+    default=0.002, 
+    help="minimum proportion of sdy reads per individual to call a male (default = 0.002)", 
+    metavar="propMale"
   ),
   make_option(
-    c("-X", "--maxUnknown"), 
+    c("-Y", "--minReads"), 
     type="integer", 
-    default=5, 
-    help="maximum number of sdy reads for unknown (default = 5)", 
-    metavar="maxUnknown"
+    default=10000, 
+    help="minimum number of reads per individual for making sex call (default = 10000)", 
+    metavar="minReads"
+#  ),
+#  make_option(
+#    c("-x", "--maxFemale"), 
+#    type="integer", 
+#    default=2, 
+#    help="maximum sdy reads allowed to call female (default = 2)", 
+#    metavar="maxFemale"
+#  ),
+#  make_option(
+#    c("-X", "--maxUnknown"), 
+#    type="integer", 
+#    default=5, 
+#    help="maximum number of sdy reads for unknown (default = 5)", 
+#    metavar="maxUnknown"
   )
 );
 
@@ -172,8 +186,10 @@ sdyOutFile <- file.path(outDir, "sdy_calls.csv")
 ################################################################################
 
 # sdy marker settings
-maxFemale <- opt$maxFemale #maximum number of sdy reads allowed to call female
-maxUnknown <- opt$maxUnknown #maximum number of sdy reads for unknown. Values > maxFemale and <= maxUnknown will be called "Unk" sex. Values > maxUnknown will be called male.
+propMale <- opt$propMale # minimum proportion of sdy reads per individual to call male
+minReads <- opt$minReads # minimum number of total reads per individual to make sex call
+#maxFemale <- opt$maxFemale #maximum number of sdy reads allowed to call female
+#maxUnknown <- opt$maxUnknown #maximum number of sdy reads for unknown. Values > maxFemale and <= maxUnknown will be called "Unk" sex. Values > maxUnknown will be called male.
 
 # settings for retaining genotype calls
 hapDepth <- opt$hapDepth # remove haplotypes with < specified hapDepth
@@ -231,22 +247,22 @@ rosaHapStr <- rosaHapStr %>% mutate(rosa_pheno = case_when(
 ))
 
 ################################################################################
-## sex-ID marker
+## read sex-ID marker file
 ################################################################################
 sexy <- read_csv(file=sdyReadCounts, locale=locale(encoding="latin1")) %>% select(NMFS_DNA_ID, sdy_I183)
 
 sdy <- bind_rows(sexy)
 
-sdy_out <- sdy %>% mutate(sdy_sex = case_when(
-    sdy_I183 <= maxFemale ~ "Female",
-    sdy_I183 > maxFemale & sdy_I183 <= maxUnknown ~ "Unk",
-    sdy_I183 > maxUnknown ~ "Male"
-  )) %>% 
-  relocate(sdy_sex, .after = sdy_I183)
-sdy_out <- rename(sdy_out, Indiv = NMFS_DNA_ID) # rename NMFS_DNA_ID to Indiv
+#sdy_out <- sdy %>% mutate(sdy_sex = case_when(
+#    sdy_I183 <= maxFemale ~ "Female",
+#    sdy_I183 > maxFemale & sdy_I183 <= maxUnknown ~ "Unk",
+#    sdy_I183 > maxUnknown ~ "Male"
+#  )) %>% 
+#  relocate(sdy_sex, .after = sdy_I183)
+#sdy_out <- rename(sdy_out, Indiv = NMFS_DNA_ID) # rename NMFS_DNA_ID to Indiv
 
 # write sdy output
-write_csv(sdy_out, file = sdyOutFile)
+#write_csv(sdy_out, file = sdyOutFile)
 
 ################################################################################
 ## getting microhaplotypes
@@ -274,6 +290,48 @@ hap <- mhp_RDS_file %>%
 #hap <- read_unfiltered_observed(file.path(WD, microhaplotDir))
 locCount <- hap %>% group_by(source) %>% summarise(count = n_distinct(locus))
 
+################################################################################
+## handle sex-ID calls
+################################################################################
+#calculate reads per individual
+readCount <- hap %>% group_by(indiv.ID) %>% summarise(sum_reads = sum(depth))
+readCount <- rename(readCount, Indiv = indiv.ID)
+
+#join readcounts to sdy data
+sdy <- rename(sdy, Indiv = NMFS_DNA_ID)
+sdy_out <- left_join(readCount, sdy, by = "Indiv")
+
+#calculate proportion of reads that come from sdy marker
+sdy_out <- sdy_out %>% mutate(prop = sdy_I183 / sum_reads)
+sdy_out <- sdy_out %>% mutate(sdy_sex = case_when(
+		sum_reads >= minReads & prop >= propMale ~ "Male",
+		sum_reads >= minReads & prop < propMale ~ "Female",
+		.default = NULL
+	)
+)
+
+# write out sex ID calls to file
+write_csv(sdy_out, file = sdyOutFile)
+
+# count proportion male and female
+sdy_out %>% summarise(prop_male = sum(sdy_sex == "Male", na.rm = TRUE) / n())
+sdy_out %>% summarise(prop_female = sum(sdy_sex == "Female", na.rm = TRUE) / n())
+
+# make scatterplot showing sexID calls by number of reads
+sdyPlot<-ggplot(data=sdy_out, aes(x=sum_reads, y=prop, color = sdy_sex)) +
+	geom_point()
+ggsave("sdyPlot.png", path=repDir)
+
+# make histogram showing sexID calls by proportion
+sdyHisto<-ggplot(data=sdy_out, aes(x=prop, fill=sdy_sex)) + 
+	geom_histogram(position="identity") + 
+	scale_x_continuous(n.breaks = 10)
+ggsave("sdyHist.png", path=repDir)
+
+
+################################################################################
+## filtering microhaplotypes
+################################################################################
 # Filter based on depth and allele balance
 hap_fil <- filter_raw_microhap_data(
   hap,
@@ -390,7 +448,10 @@ haps_2col_final <- haps_2col_final %>% relocate(percMicroHap, .after = Indiv)
 # add the sex and ROSA columns
 haps_2col_final <- full_join(rosaHapStr,haps_2col_final, by="Indiv") # add ROSA hap string
 haps_2col_final <- full_join(sdy_out,haps_2col_final, by="Indiv") # add ROSA hap string
-haps_2col_final <- haps_2col_final %>% select(!c(sdy_I183))
+haps_2col_final <- haps_2col_final %>% select(!c(sdy_I183)) # remove extra columns added by sdy_out
+haps_2col_final <- haps_2col_final %>% select(!c(sum_reads)) # remove extra columns added by sdy_out
+haps_2col_final <- haps_2col_final %>% select(!c(prop)) # remove extra columns added by sdy_out
+
 haps_2col_final <- arrange(haps_2col_final, Indiv) # sort by Indiv column
 
 haps_2col_final <- rename(haps_2col_final, indiv = Indiv) # rename indiv to Indiv for combining tibbles
