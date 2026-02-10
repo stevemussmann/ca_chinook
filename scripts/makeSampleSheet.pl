@@ -129,7 +129,7 @@ foreach my $line( @impLines ){
 		my @temp = split( /,/, $line );
 
 		# make sure negatives are uniquely named
-		if( $temp[11] =~ /^Negative/ ){
+		if( $temp[11] =~ /^Negative/ or $temp[11] =~ /^0_/ ){
 			$temp[11] =~ s/_/-/g;
 		}
 		# print Sample_ID,Sample_Name,Sample_Plate,
