@@ -434,11 +434,11 @@ Options:
         -S SNPLICON, --snplicon=SNPLICON
                 rds file of loci mapped to target fastas (default = FullPanel--target_fastas--target_fasta--rosa_microhap_snplicon.rds)
 
-        -x MAXFEMALE, --maxFemale=MAXFEMALE
-                maximum sdy reads allowed to call female (default = 2)
+        -y PROPMALE, --propMale=PROPMALE
+                minimum proportion of sdy reads per individual to call a male (default = 0.002)
 
-        -X MAXUNKNOWN, --maxUnknown=MAXUNKNOWN
-                maximum number of sdy reads for unknown (default = 5)
+        -Y MINREADS, --minReads=MINREADS
+                minimum number of reads per individual for making sex call (default = 10000)
 
         -h, --help
                 Show this help message and exit
@@ -491,14 +491,18 @@ Indiv   hapstr
 4330-005        ?NNLLNLLL??L
 ```
 
-2. `sdy_calls.csv` is a comma-delimited file that contains the genetic sex calls (sdy_sex) for all individuals, and the number of times the sdy marker was identified among reads generated for each individual (sdy_I183).
+2. `sdy_calls.csv` is a comma-delimited file that contains the total number of reads (sum_reads), the number of times the sdy marker was identified among the reads (sdy_I183), the proportion of reads represented by sdy_I183 (prop), and genetic sex calls (sdy_sex) for all individuals.
 ```
-Indiv,sdy_I183,sdy_sex
-4330-001,1379,Male
-4330-002,6,Male
-4330-003,1139,Male
-4330-004,2,Female
-4330-005,1113,Male
+Indiv,sum_reads,sdy_I183,prop,sdy_sex
+0,11575,11,9.503239740820735e-4,Female
+0,11575,8,6.911447084233262e-4,Female
+0,11575,7,6.047516198704104e-4,Female
+0,11575,4,3.455723542116631e-4,Female
+0,11575,5,4.3196544276457883e-4,Female
+0,11575,4,3.455723542116631e-4,Female
+0,11575,3,2.591792656587473e-4,Female
+0,11575,2,1.7278617710583154e-4,Female
+0,11575,5,4.3196544276457883e-4,Female
 ```
 
 3. `haps_2col_final.csv` is a comma-delimited file that contains all genotype data for all individuals. The column percMicroHap reports the percentage of loci that amplified successfully for each individual.
@@ -521,6 +525,8 @@ Indiv,sdy_sex,hapstr,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62
 7. `missingData.png`
 8. `nxa.csv`
 9. `nxaCount.csv`
+10. `sdyHist.png`
+11. `sdyPlot.png`
 
 
 <hr>
