@@ -494,22 +494,18 @@ Indiv   hapstr
 2. `sdy_calls.csv` is a comma-delimited file that contains the total number of reads (sum_reads), the number of times the sdy marker was identified among the reads (sdy_I183), the proportion of reads represented by sdy_I183 (prop), and genetic sex calls (sdy_sex) for all individuals.
 ```
 Indiv,sum_reads,sdy_I183,prop,sdy_sex
-0,11575,11,9.503239740820735e-4,Female
-0,11575,8,6.911447084233262e-4,Female
-0,11575,7,6.047516198704104e-4,Female
-0,11575,4,3.455723542116631e-4,Female
-0,11575,5,4.3196544276457883e-4,Female
-0,11575,4,3.455723542116631e-4,Female
-0,11575,3,2.591792656587473e-4,Female
-0,11575,2,1.7278617710583154e-4,Female
-0,11575,5,4.3196544276457883e-4,Female
+4330-001,122530,3001,0.024491961152370848,Male
+4330-002,124914,6,4.8033046736154476e-5,Female
+4330-003,125301,2507,0.020007821166630753,Male
+4330-004,119955,14,1.1671043307907132e-4,Female
+4330-005,147998,3411,0.023047608751469613,Male
 ```
 
 3. `haps_2col_final.csv` is a comma-delimited file that contains all genotype data for all individuals. The column percMicroHap reports the percentage of loci that amplified successfully for each individual.
 ```
 Indiv,sdy_sex,hapstr,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62937268-62937373_2,NC_037104.1:55923357-55923657_1,NC_037104.1:55923357-55923657_2,...
 4330-001,Male,LNNLLNLLLLLL,92.74611398963731,T,T,A,A,...
-4330-002,Male,ENNEENEEEEEH,95.85492227979275,T,T,A,A,...
+4330-002,Female,ENNEENEEEEEH,95.85492227979275,T,T,A,A,...
 4330-003,Male,LNNLLNLLLLLL,98.96373056994818,C,T,A,A,...
 4330-004,Female,LNNLLNLLLLLL,100,T,T,A,A,...
 4330-005,Male,?NNLLNLLL??L,87.56476683937824,T,T,A,A,...
