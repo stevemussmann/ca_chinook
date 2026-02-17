@@ -98,23 +98,28 @@ conda activate bcl2fastq
 ```
 
 ### Installing mega-simple-microhap-snakeflow <a name="mega"></a>
-1. Create a Conda environment for running snakemake
+1. If you skipped over the Conda installation because you already had it set up on your computer, you should still check to make sure you have the most recent version. Sometimes snakemake will refuse to run properly if you have an older version of conda installed. Run the following code if it has been a couple of months since you installed Conda:
+```
+conda update -n base -c conda-forge conda
+```
+
+2. Create a Conda environment for running snakemake
 ```
 conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse r-adegenet r-vcfr vcftools zlib liblzma-devel samtools=1.22 matplotlib openpyxl
 ```
 
-2. To make life easier while cloning github repositories, run the following:
+3. To make life easier while cloning github repositories, run the following:
 ```
 git config --global http.sslverify false
 ```
 
-3. Clone my modified version of [Eric Anderson's](https://github.com/eriqande) `mega-simple-microhap-snakeflow` snakemake pipeline to your computer. 
+4. Clone my modified version of [Eric Anderson's](https://github.com/eriqande) `mega-simple-microhap-snakeflow` snakemake pipeline to your computer. 
 ```
 cd ~/local/src
 git clone https://github.com/stevemussmann/mega-simple-microhap-snakeflow.git
 ```
 
-4. Download my modified `microhaplotextract` R package, activate the snakemake Conda environment that you made in Step 1, and install it from the source zip file.
+5. Download my modified `microhaplotextract` R package, activate the snakemake Conda environment that you made in Step 1, and install it from the source zip file.
 ```
 cd ~/local/src/mega-simple-microhap-snakeflow/
 wget https://github.com/stevemussmann/microhaplot/archive/master.zip -O just-for-extracting.zip
@@ -122,18 +127,18 @@ conda activate snakemake
 R --slave -e "devtools::install_local('just-for-extracting.zip', upgrade='never')"
 ```
 
-5. We're also going to install the 'emc-edits' branch of the `microhaplotopia` R package in a similar way.
+6. We're also going to install the 'emc-edits' branch of the `microhaplotopia` R package in a similar way.
 ```
 wget https://github.com/eriqande/microhaplotopia/archive/emc-edits.zip
 R --slave -e "devtools::install_local('emc-edits.zip', upgrade='never')"
 ```
 
-6. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that snakemake doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found at `Z:/Research/Genetics/GTseq_processing/CA_Chinook_microhaplotype_files/resources`) to the `~/local/src/mega-simple-microhap-snakeflow` directory on your computer. This command will take several minutes to complete since you are copying ~6.3 GB of data over a network connection.
+7. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that snakemake doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found at `Z:/Research/Genetics/GTseq_processing/CA_Chinook_microhaplotype_files/resources`) to the `~/local/src/mega-simple-microhap-snakeflow` directory on your computer. This command will take several minutes to complete since you are copying ~6.3 GB of data over a network connection.
 ```
 cp -r /mnt/z/Research/Genetics/GTseq_processing/CA_Chinook_microhaplotype_files/resources ~/local/src/mega-simple-microhap-snakeflow/.
 ```
 
-7. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline.
+8. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline.
 ```
 mkdir ~/local/src/mega-simple-microhap-snakeflow/data
 ```
