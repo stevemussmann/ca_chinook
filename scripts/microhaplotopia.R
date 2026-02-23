@@ -239,11 +239,37 @@ write.table(ptypes, file=rosaStringFile, quote=F, sep="\t", row.names=F)
 ################################################################################
 rosaHapStr <- read.table(file=rosaStringFile, header=TRUE, sep="\t", stringsAsFactors = FALSE) %>% as_tibble()
 
-rosaHapStr <- rosaHapStr %>% mutate(rosa_pheno = case_when(
-	str_extract(hapstr, "^.{1}") == "E" ~ "sp",
-	str_extract(hapstr, "^.{1}") == "H" ~ "sp-fall",
-	str_extract(hapstr, "^.{1}") == "L" ~ "fall",
-	str_extract(hapstr, "^.{1}") == "?" ~ "unk"
+## old way
+#rosaHapStr <- rosaHapStr %>% mutate(rosa_pheno = case_when(
+#	str_extract(hapstr, "^.{1}") == "E" ~ "sp",
+#	str_extract(hapstr, "^.{1}") == "H" ~ "sp-fall",
+#	str_extract(hapstr, "^.{1}") == "L" ~ "fall",
+#	str_extract(hapstr, "^.{1}") == "?" ~ "unk"
+#))
+
+## canonical ROSA haplotype classifications
+rosaHapStr <- rosaHapStr %>% mutate(canonical_rosa_pheno = case_when(
+	#Early/Early
+	hapstr == "EWWEEWEEEEEL" ~ "Winter",
+	hapstr == "EWWEEWEEEEEH" ~ "Winter",
+	hapstr == "ENNEENEEEEEE" ~ "Spring",
+	hapstr == "ENNEENEEEEEL" ~ "Spring",
+	hapstr == "ENNEENEEEEEH" ~ "Spring",
+	hapstr == "EHHEEHEEEEEL" ~ "Sp-Win",
+	hapstr == "EHHEEHEEEEEH" ~ "Sp-Win",
+
+	#Late/Late
+	hapstr == "LNNLLNLLLLLL" ~ "Fall",
+	hapstr == "LNNLLNLLLLLH" ~ "Fall",
+
+	#Early/Late
+	hapstr == "HHHHHHHHHHHL" ~ "Fall-Win",
+	hapstr == "HHHHHHHHHHHH" ~ "Fall-Win",
+	hapstr == "HNNHHNHHHHHL" ~ "Sp-Fall",
+	hapstr == "HNNHHNHHHHHH" ~ "Sp-Fall",
+
+	# all other cases
+	.default = "Unknown"
 ))
 
 ################################################################################
