@@ -98,23 +98,28 @@ conda activate bcl2fastq
 ```
 
 ### Installing mega-simple-microhap-snakeflow <a name="mega"></a>
-1. Create a Conda environment for running snakemake
+1. If you skipped over the Conda installation because you already had it set up on your computer, you should still check to make sure you have the most recent version. Sometimes snakemake will refuse to run properly if you have an older version of conda installed. Run the following code if it has been a couple of months since you installed Conda:
+```
+conda update -n base -c conda-forge conda
+```
+
+2. Create a Conda environment for running snakemake
 ```
 conda create -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse r-adegenet r-vcfr vcftools zlib liblzma-devel samtools=1.22 matplotlib openpyxl
 ```
 
-2. To make life easier while cloning github repositories, run the following:
+3. To make life easier while cloning github repositories, run the following:
 ```
 git config --global http.sslverify false
 ```
 
-3. Clone my modified version of [Eric Anderson's](https://github.com/eriqande) `mega-simple-microhap-snakeflow` snakemake pipeline to your computer. 
+4. Clone my modified version of [Eric Anderson's](https://github.com/eriqande) `mega-simple-microhap-snakeflow` snakemake pipeline to your computer. 
 ```
 cd ~/local/src
 git clone https://github.com/stevemussmann/mega-simple-microhap-snakeflow.git
 ```
 
-4. Download my modified `microhaplotextract` R package, activate the snakemake Conda environment that you made in Step 1, and install it from the source zip file.
+5. Download my modified `microhaplotextract` R package, activate the snakemake Conda environment that you made in Step 1, and install it from the source zip file.
 ```
 cd ~/local/src/mega-simple-microhap-snakeflow/
 wget https://github.com/stevemussmann/microhaplot/archive/master.zip -O just-for-extracting.zip
@@ -122,18 +127,18 @@ conda activate snakemake
 R --slave -e "devtools::install_local('just-for-extracting.zip', upgrade='never')"
 ```
 
-5. We're also going to install the 'emc-edits' branch of the `microhaplotopia` R package in a similar way.
+6. We're also going to install the 'emc-edits' branch of the `microhaplotopia` R package in a similar way.
 ```
 wget https://github.com/eriqande/microhaplotopia/archive/emc-edits.zip
 R --slave -e "devtools::install_local('emc-edits.zip', upgrade='never')"
 ```
 
-6. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that snakemake doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found at `Z:/Research/Genetics/GTseq_processing/CA_Chinook_microhaplotype_files/resources`) to the `~/local/src/mega-simple-microhap-snakeflow` directory on your computer. This command will take several minutes to complete since you are copying ~6.3 GB of data over a network connection.
+7. We also want to copy some files to the `mega-simple-microhap-snakeflow` directory so that snakemake doesn't attempt to download and/or build them upon the first run of the pipeline. Copy the entire `resources` folder from the AFTC 'rando' server (found at `Z:/Research/Genetics/GTseq_processing/CA_Chinook_microhaplotype_files/resources`) to the `~/local/src/mega-simple-microhap-snakeflow` directory on your computer. This command will take several minutes to complete since you are copying ~6.3 GB of data over a network connection.
 ```
 cp -r /mnt/z/Research/Genetics/GTseq_processing/CA_Chinook_microhaplotype_files/resources ~/local/src/mega-simple-microhap-snakeflow/.
 ```
 
-7. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline.
+8. Within the `mega-simple-microhap-snakeflow` folder that you cloned to your computer, make a directory named `data`. This is the folder where you will put all of your data when running the pipeline.
 ```
 mkdir ~/local/src/mega-simple-microhap-snakeflow/data
 ```
@@ -494,22 +499,18 @@ Indiv   hapstr
 2. `sdy_calls.csv` is a comma-delimited file that contains the total number of reads (sum_reads), the number of times the sdy marker was identified among the reads (sdy_I183), the proportion of reads represented by sdy_I183 (prop), and genetic sex calls (sdy_sex) for all individuals.
 ```
 Indiv,sum_reads,sdy_I183,prop,sdy_sex
-0,11575,11,9.503239740820735e-4,Female
-0,11575,8,6.911447084233262e-4,Female
-0,11575,7,6.047516198704104e-4,Female
-0,11575,4,3.455723542116631e-4,Female
-0,11575,5,4.3196544276457883e-4,Female
-0,11575,4,3.455723542116631e-4,Female
-0,11575,3,2.591792656587473e-4,Female
-0,11575,2,1.7278617710583154e-4,Female
-0,11575,5,4.3196544276457883e-4,Female
+4330-001,122530,3001,0.024491961152370848,Male
+4330-002,124914,6,4.8033046736154476e-5,Female
+4330-003,125301,2507,0.020007821166630753,Male
+4330-004,119955,14,1.1671043307907132e-4,Female
+4330-005,147998,3411,0.023047608751469613,Male
 ```
 
 3. `haps_2col_final.csv` is a comma-delimited file that contains all genotype data for all individuals. The column percMicroHap reports the percentage of loci that amplified successfully for each individual.
 ```
 Indiv,sdy_sex,hapstr,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62937268-62937373_2,NC_037104.1:55923357-55923657_1,NC_037104.1:55923357-55923657_2,...
 4330-001,Male,LNNLLNLLLLLL,92.74611398963731,T,T,A,A,...
-4330-002,Male,ENNEENEEEEEH,95.85492227979275,T,T,A,A,...
+4330-002,Female,ENNEENEEEEEH,95.85492227979275,T,T,A,A,...
 4330-003,Male,LNNLLNLLLLLL,98.96373056994818,C,T,A,A,...
 4330-004,Female,LNNLLNLLLLLL,100,T,T,A,A,...
 4330-005,Male,?NNLLNLLL??L,87.56476683937824,T,T,A,A,...
