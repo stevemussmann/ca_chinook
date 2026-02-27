@@ -482,6 +482,39 @@ haps_2col_final <- arrange(haps_2col_final, Indiv) # sort by Indiv column
 
 haps_2col_final <- rename(haps_2col_final, indiv = Indiv) # rename indiv to Indiv for combining tibbles
 
+## sort alleles alphabetically per locus
+# I hate R, and especially tidyverse.
+print("Sorting alleles alphabetically per locus per individual. This part takes longer to run than it probably should.")
+n <- names(haps_2col_final) # get column names
+r <- c("indiv", "sdy_sex", "hapstr", "canonical_rosa_pheno", "percMicroHap") # vector of columns to remove
+result <- setdiff(n, r) # remove columns
+result2 <- str_sub(result, end = -3) # remove _1 and _2 from end of allele names
+loci <- unique(result2) # reduce to only locus names
+
+for (locus in loci) {
+  allele1 = paste0(locus, "_1")
+  allele2 = paste0(locus, "_2")
+  cols <- haps_2col_final %>% select(any_of(c(allele1, allele2)))
+  
+  cols2 <- cols |> # what even is this '|>' nonsense?
+    rowwise() |>
+    mutate(sorted_vals = list(sort(c_across(everything())))) %>% # this %>% is nonsense too.
+    mutate(c1_sorted = sorted_vals[1],
+           c2_sorted = sorted_vals[2]
+    ) %>%
+    select(c1_sorted, c2_sorted) %>%
+    rename(
+      "{allele1}" := c1_sorted, # this is the dumbest way of accessing a variable to rename something I've ever seen.
+      "{allele2}" := c2_sorted
+    )
+  #print(columns2, n=100)
+  
+  haps_2col_final[[allele1]] <- cols2[[allele1]] # and now I have to access the variable a different way.
+  haps_2col_final[[allele2]] <- cols2[[allele2]] # why is it so hard to access a column name by variable?
+  
+}
+print("Done sorting.")
+
 # write final genotype file
 write_csv(haps_2col_final, file=file.path(outDir, opt$finalOut))
 
