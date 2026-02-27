@@ -211,10 +211,11 @@ Now use the `makeSampleSheet.pl` script to make your sample sheet. Run this scri
 * sequencing platform (nextseq or miseq) with the `-m` option
 * GT project number with the `-g` option (e.g., GT026)
 * Your username or initials with the `-u` option (e.g., smm)
+* The starting number for CH- numbers with the `-c` option (check the Z:\Research\Genetics\Illumina Sequencing\GTSeq\MicrohapChinookNumbers directory for the appropriate number).
 
 Example command:
 ```
-makeSampleSheet.pl -m nextseq -g GT026 -u smm
+makeSampleSheet.pl -m nextseq -g GT026 -u smm -c 2883
 ```
 
 The script will always output a .csv file (default output = SampleSheet.csv) that should be used to both demultiplex your reads in bcl2fastq and process the demultiplexed reads in the snakemake pipeline. If you create a sample sheet for a MiSeq run, an additional file will be created (default output = SampleSheet.miseqrun.csv) that should be loaded onto the MiSeq for your run.
