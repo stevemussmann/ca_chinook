@@ -263,16 +263,16 @@ sub parsecom{
 	my %opts = %$params;
   
 	# set default values for command line arguments
-	my $chn = $opts{c} || "1"; #specify beginning CH- number.
-	my $gtn = $opts{g} || die "Must specify GT number.\n\n"; #specify nextseq or miseq.
+	my $chn = $opts{c} || die "\n-c option required. Must specify starting number for CH- numbers.\nCheck Z:\\Research\\Genetics\\Illumina Sequencing\\GTSeq\\MicrohapChinookNumbers directory for appropriate number.\n\n"; #specify beginning CH- number.
+	my $gtn = $opts{g} || die "\n-g option required. Must specify GT number.\n\n"; #specify nextseq or miseq.
 	my $imp = $opts{i} || "sample_imports.csv"; #used to specify input file name.
-	my $mac = $opts{m} || die "Must specify machine type (nextseq or miseq).\n\n"; #specify nextseq or miseq.
+	my $mac = $opts{m} || die "\n-m option required. Must specify machine type (nextseq or miseq).\n\n"; #specify nextseq or miseq.
 	my $out = $opts{o} || "SampleSheet.csv"; #used to specify output file name.
 	my $rl1 = $opts{r} || "76"; #specify length of Read 1.
 	my $rl2 = $opts{R} || "76"; #specify length of Read 2.
 	my $pan = $opts{p} || "ROSA, FullPanel"; #specify panel options
 	my $sum = $opts{s} || "project_summary.csv"; #used to specify input file name.
-	my $usr = $opts{u} || die "Must specify user's initials\n\n"; #used to specify input file name.
+	my $usr = $opts{u} || die "\n-u option required. Must specify user's initials\n\n"; #used to specify input file name.
 
 	my $rev;
 	if( $opts{v} ){
