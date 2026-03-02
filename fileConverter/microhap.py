@@ -47,8 +47,9 @@ class Microhap():
 			## exit with error if it doesn't exist
 			# only do this if colony2 conversion requested
 			if colonyBool == True or ckmrBool == True:
-				print("\nERROR. The following column is missing from your input file:", e)
-				print("The 'colony2' column should exist and contain information (status as potential male parent, female parent, or offspring) for all individuals.")
+				print("\nERROR. The colony2 column is missing from your input file.")
+				print("The 'colony2' column is needed when creating COLONY or CKMR outputs.")
+				print("See documentation at https://github.com/stevemussmann/ca_chinook/tree/main/fileConverter")
 				print("Exiting program...\n")
 				raise SystemExit(1)
 
