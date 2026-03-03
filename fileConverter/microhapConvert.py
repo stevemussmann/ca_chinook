@@ -51,7 +51,7 @@ def main():
 		mhFile.removeLoci(input.args.removeloci) # remove blacklisted loci (if invoked)
 
 	mhFile.runFilters() # run missing data filters
-	endIndsPerPop = mhFile.getFinalCounts(pops)
+	endIndsPerPop = mhFile.getFinalCounts(pops) # get count of remaining individuals after filtering
 	
 	# dump locus dictionary to text file (locusDictionary.json)
 	if input.args.colony == True:
@@ -64,8 +64,16 @@ def main():
 	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols, pops, input.args.snppitmap, snpDict)
 	conversion.convert(convDict)
 
-	print(startIndsPerPop)
-	print(endIndsPerPop)
+	# print starting and ending individuals per population
+	print("Printing number of individuals per population before/after filtering...")
+	print("Population\tPre-Filter\tPost-Filter")
+	popKeys = list(startIndsPerPop.keys())
+	popKeys.sort()
+	for pop in popKeys:
+		final = 0
+		if pop in endIndsPerPop:
+			final = endIndsPerPop[pop]
+		print(f"{pop}\t{startIndsPerPop[pop]}\t{final}")
 
 main()
 
