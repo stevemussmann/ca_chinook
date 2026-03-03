@@ -1,6 +1,7 @@
 from ckmrsim import CKMR
 from colony import Colony
 from csvf import CSVfiltered
+from genepop import Genepop
 from sequoia import Sequoia
 from snppit import Snppit
 
@@ -28,7 +29,7 @@ class MHconvert():
 		self.runname = runname
 		self.inbreed = inbreed
 		self.runlen = runlen
-		self.suffix = {'ckmr': 'tsv', 'colony': 'Dat', 'csv': 'csv', 'sequoia': 'sequoia', 'snppit': 'snppit'}
+		self.suffix = {'ckmr': 'tsv', 'colony': 'Dat', 'csv': 'csv', 'genepop': 'genepop', 'sequoia': 'sequoia', 'snppit': 'snppit'}
 		self.convertedDir = cdir # directory to hold converted files
 		self.snpdf = pandas.DataFrame() #dataframe to hold SNPs if SNP output option is used
 		self.alleleFreqs = afreqs
@@ -79,6 +80,12 @@ class MHconvert():
 		#print("This function will convert to colony format.")
 		cy = Colony(self.df, self.ldict, self.cDat, self.derr, self.gerr, self.pmale, self.pfemale, self.runname, self.inbreed, self.runlen)
 		output = cy.convert()
+		return output
+
+	def conv_genepop(self): 
+		#print("This function will convert to genepop format.")
+		gen = Genepop(self.df, self.pops, self.convertedDir, self.ldict)
+		output = gen.convert()
 		return output
 
 	def conv_sequoia(self):

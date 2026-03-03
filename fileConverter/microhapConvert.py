@@ -23,7 +23,7 @@ def main():
 	d = vars(input.args)
 	convDict = dict() # all file formats
 	snpDict = dict() # only snp file formats
-	convList = ['ckmr', 'colony', 'csv', 'sequoia', 'snppit']
+	convList = ['ckmr', 'colony', 'csv', 'genepop', 'sequoia', 'snppit']
 	snpList = ['sequoia', 'snppit']
 	for key, value in d.items():
 		if key in convList:
@@ -92,9 +92,9 @@ def main():
 	endIndsPerPop = mhFile.getFinalCounts(pops) # get count of remaining individuals after filtering
 	
 	# dump locus dictionary to text file (locusDictionary.json)
-	if input.args.colony == True:
+	if input.args.colony == True or input.args.genepop == True:
 		jsonpath = os.path.join(convertedDir, "locusDictionary.json")
-		print("\nPrinting locus dictionary used for COLONY format conversion to", str(jsonpath), "\n")
+		print("\nPrinting locus dictionary used for COLONY and genepop format conversions to", str(jsonpath), "\n")
 		with open(jsonpath, 'w') as jsonfile:
 			json.dump(locusdict, jsonfile, indent='\t')
 

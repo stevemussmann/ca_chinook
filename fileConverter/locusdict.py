@@ -27,8 +27,8 @@ class LocusDict():
 			# enumerate all alleles
 			tempdict = dict(enumerate(alleles))
 
-			# swap values and add 1 to original keys to make individual locus dict
-			swap = {value: str(key+1) for key, value in tempdict.items()}
+			# swap values and add 101 to original keys to make individual locus dict
+			swap = {value: str(key+101) for key, value in tempdict.items()}
 
 			self.recodeAlleles[locus] = swap
 			#print(swap)

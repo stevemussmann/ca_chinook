@@ -83,11 +83,6 @@ class ComLine():
 							default=0.5,
 							help="Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset."
 		)
-		#optional.add_argument("-o", "--outfile",
-		#					dest='outfile',
-		#					default="default.txt",
-		#					help="Specify output file name (default=default.txt)."
-		#)
 		conversion.add_argument("-c", "--csv",
 							dest='csv',
 							action='store_true',
@@ -97,6 +92,11 @@ class ComLine():
 							dest='colony',
 							action='store_true',
 							help="Write colony format file."
+		)
+		conversion.add_argument("-G", "--genepop",
+							dest='genepop',
+							action='store_true',
+							help="Write genepop format file."
 		)
 		conversion.add_argument("-t", "--ckmr",
 							dest='ckmr',
