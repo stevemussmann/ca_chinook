@@ -71,6 +71,7 @@ File format conversion output options (at least one required):
 * **`-c` / `--csv`:** Write filtered csv format file.
 * **`-C` / `--colony`:** Write colony format file.
 * **`-t` / `--ckmr`:** Write CKMRsim format files.
+* **`-G` / `--genepop`:** Write genepop format file.
 * **`-q` / `--sequoia`:** Prints a [sequoia](https://jiscah.github.io/) formatted genotype file.
 * **`-z` / `--snppit`:** Prints a file in [snppit](https://github.com/eriqande/snppit) format (-Z option is also required for snppit conversion as specified above).
 
@@ -97,6 +98,7 @@ The table below shows which file formats are output in microhaplotype (microhap)
 | Colony       | Colony2.Dat                                | `-C`             | microhap    |
 | CSV          | .csv                                       | `-c`             | microhap    |
 | CKMRsim      | ckmrsim.offspring.tsv; ckmrsim.parents.tsv | `-t`             | microhap    |
+| Genepop      | .genepop; genepopmap.txt                   | `-G`             | microhap    |
 | Sequoia      | .sequoia; sequoia.lh.txt                   | `-q`             | SNP         |
 | SNPPIT       | .snppit                                    | `-z`             | SNP         |
 
