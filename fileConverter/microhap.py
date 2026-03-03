@@ -1,7 +1,6 @@
-#import json
+import os
 import pandas
-#import os.path
-#import distutils.util
+import sys
 
 from locusdict import LocusDict
 
@@ -15,14 +14,33 @@ class Microhap():
 		self.pmissInd = pmissInd # allowable proportion of missing data individual
 		self.colonyData = pandas.DataFrame()
 		self.mono = mono # boolean to control monomorphic locus filter
+
+		# deal with input file name to create log file name
+		fn, ext = os.path.splitext(infile)
+		self.log = fn + ".log"
+		# remove old log file if still exists
+		if os.path.isfile(self.log):
+			os.remove(self.log)
+		# write command used to launch program
+		with open(self.log, 'a') as fh:
+			fh.write("#microhapConvert.py was launched with command:\n#")
+			comm = ' '.join(sys.argv)
+			fh.write(comm)
+			fh.write("\n\n")
 		
 		print("Reading input .csv file.")
 		print("")
 		self.df = pandas.read_csv(self.mhFile, index_col=0, header=0)
 
+
+	def getLog(self):
+		return self.log
+
+
 	def getCounts(self):
 		indsPerPop = self.df['Population ID'].value_counts().to_dict()
 		return indsPerPop
+
 
 	def getFinalCounts(self, pops):
 		column_labels = ["Population ID"]
@@ -31,16 +49,19 @@ class Microhap():
 		indsPerPop = mergedDF['Population ID'].value_counts().to_dict()
 		return indsPerPop
 
+
 	def getDict(self):
 		ld = LocusDict(self.df)
 		ldict = ld.getUnique()
 		#ld.countAlleles()
 		return ldict
 
+
 	def getFreqs(self):
 		ld = LocusDict(self.df)
 		freqs = ld.getFreqs()
 		return freqs
+
 
 	def parseFile(self, colonyBool, ckmrBool):
 		# remove unneeded columns
@@ -75,6 +96,7 @@ class Microhap():
 
 		return self.colonyData
 
+
 	def getPops(self):
 		print("Extracting Population IDs...\n")
 		try:
@@ -85,6 +107,7 @@ class Microhap():
 			raise SystemExit(1)
 
 		return pops
+
 
 	def removeSnppit(self):
 		print("Checking for presence of optional SNPPIT columns.")
@@ -110,13 +133,17 @@ class Microhap():
 
 		return snppitCols
 
+
 	def removeColumns(self, df, removelist):
 		junk = pandas.concat([df.pop(x) for x in removelist], axis=1)
 		return junk
 
+
 	def removeLoci(self, blacklist):
 		# remove blacklisted columns
 		print("\nRemoving blacklisted loci (if present):")
+		with open(self.log, 'a') as fh:
+			fh.write("\nRemoving blacklisted loci (if present):\n")
 		removeLoci = list()
 		with open(blacklist, 'r') as fh:
 			for line in fh:
@@ -125,11 +152,20 @@ class Microhap():
 			a1 = col + "_1"
 			a2 = col + "_2"
 			if a1 in self.df.columns:
-				print(a1)
+				print(a1) # print to stdout
+				# write to log
+				with open(self.log, 'a') as fh:
+					fh.write(a1)
+					fh.write("\n")
 				self.df.pop(a1)
 			if a2 in self.df.columns:
-				print(a2)
+				print(a2) # print to stdout
+				# write to log
+				with open(self.log, 'a') as fh:
+					fh.write(a1)
+					fh.write("\n")
 				self.df.pop(a2)
+
 
 	def runFilters(self):
 		# filter individuals
@@ -141,7 +177,8 @@ class Microhap():
 		# remove monomorphic loci
 		if self.mono == True:
 			self.filterMono()
-	
+
+
 	def filterMono(self):
 		removeLoci = list()
 		findMono = LocusDict(self.df)
@@ -154,18 +191,43 @@ class Microhap():
 			if len(mono[key]) == 1:
 				removeLoci.append(key)
 		print("\nRemoving monomorphic loci:")
+		with open(self.log, 'a') as fh:
+			fh.write("\nRemoving monomorphic loci:\n")
 		if removeLoci:
 			for col in removeLoci:
 				a1 = col + "_1"
 				a2 = col + "_2"
 				if a1 in self.df.columns:
-					print(a1)
+					print(a1) # write to stdout
+					# write to log
+					with open(self.log, 'a') as fh:
+						fh.write(a1)
+						fh.write("\n")
 					self.df.pop(a1)
 				if a2 in self.df.columns:
-					print(a2)
+					print(a2) # write to stdout
+					# write to log
+					with open(self.log, 'a') as fh:
+						fh.write(a1)
+						fh.write("\n")
 					self.df.pop(a2)
+			with open(self.log, 'a') as fh:
+				fh.write("\n")
 		else:
 			print("None found!")
+			with open(self.log, 'a') as fh:
+				fh.write("None found!\n")
+
+
+	def calcMissingLocPCT(self):
+		# get number of individuals
+		nInds = len(self.df)
+		
+		missLoc = self.df.isnull().sum(axis=0) # count missing genotypes per column (locus)
+		missLocPCT = missLoc / nInds # divide missing data series by number of individuals
+
+		return missLocPCT
+
 
 	def filterLoci(self):
 		# get number of loci
@@ -177,29 +239,32 @@ class Microhap():
 			print("Exiting program...\n")
 			raise SystemExit
 
-		# get number of individuals
-		nInds = len(self.df)
-
-		missLoc = self.df.isnull().sum(axis=0) # count missing genotypes per column (locus)
-		missLocPCT = missLoc / nInds # divide missing data series by number of individuals
+		missLocPCT = self.calcMissingLocPCT()
 		
 		## uncomment for debugging
 		#pandas.set_option('display.max_rows', None)
 		#print(missLoc)
 		
 		removeLocPCT = missLocPCT[missLocPCT > self.pmissLoc].index # get list of column indexes to remove
-		#print(removeLocPCT)
 
 		# print records that didn't pass missing data filter
 		missRecords = missLocPCT.loc[missLocPCT.index.intersection(removeLocPCT)]
 
-		print("\nMissing data proportion per removed locus:")
+		print("\nMissing data proportion per removed locus:") # write to stdout
+		# write to log
+		with open(self.log, 'a') as fh:
+			fh.write("\nMissing data proportion per removed locus:\n")
 		#pandas.set_option("display.max_rows", None, "display.max_columns", None)
-		print(missRecords.to_string(index=True))
+		print(missRecords.to_string(index=True)) # write to stdout
+		# write to log
+		with open(self.log, 'a') as fh:
+			fh.write(missRecords.to_string(index=True))
+			fh.write("\n")
 
 		self.df.drop(removeLocPCT, axis=1, inplace=True)
 
-	def filterInds(self):
+	
+	def calcMissingIndPCT(self):
 		# get number of individuals
 		nInds = len(self.df)
 		
@@ -213,14 +278,26 @@ class Microhap():
 
 		missInd = self.df.isnull().sum(axis=1) # count missing genotypes per individual
 		missIndPCT = missInd / nAlleles # divide missing data series by number of alleles
-		removeIndPCT = missIndPCT[missIndPCT > self.pmissInd].index # get list of row indexes to remove
 		
+		return missIndPCT
+		
+	
+	def filterInds(self):
+		missIndPCT = self.calcMissingIndPCT()
+
+		removeIndPCT = missIndPCT[missIndPCT > self.pmissInd].index # get list of row indexes to remove
 		# print records that didn't pass missing data filter
 		missRecords = missIndPCT.loc[missIndPCT.index.intersection(removeIndPCT)]
 
-		print("\nMissing data proportion per individual (indiv):")
+		print("\nMissing data proportion per individual (indiv):") # write to stdout
+		# write to log
+		with open(self.log, 'a') as fh:
+			fh.write("\nMissing data proportion per individual (indiv):\n")
 		#pandas.set_option("display.max_rows", None, "display.max_columns", None)
 		print(missRecords.to_string(index=True))
+		# write to log
+		with open(self.log, 'a') as fh:
+			fh.write(missRecords.to_string(index=True))
+			fh.write("\n")
 		
 		self.df.drop(removeIndPCT, axis=0, inplace=True)
-		

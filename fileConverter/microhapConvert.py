@@ -3,10 +3,12 @@
 from comline import ComLine
 from mhconvert import MHconvert
 from microhap import Microhap
+from stats import GTStats
 
 import argparse
 import json
 import os
+import pandas
 import sys
 
 def main():
@@ -30,6 +32,8 @@ def main():
 			snpDict[key] = value
 
 	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind, input.args.mono) #initialize new file
+	logfile = mhFile.getLog() # retrieve logfile name
+
 	startIndsPerPop = mhFile.getCounts() # get counts of individuals per population at beginning of analysis
 	
 	# pull out special columns
@@ -47,10 +51,44 @@ def main():
 		print("Make sure all locus columns in your input file end in _1 or _2.\n")
 		raise SystemExit(1)
 
+	# calculate beginning stats before removing any loci/individuals
+	mLocStart = mhFile.calcMissingLocPCT()
+	mIndStart = mhFile.calcMissingIndPCT()
+
+	mLocStartList = pandas.Series(mLocStart).to_list()
+	mIndStartList = pandas.Series(mIndStart).to_list()
+
+	mLocStartStats = GTStats(mLocStartList)
+	mIndStartStats = GTStats(mIndStartList)
+
+	mLocStartStats.calcStats()
+	mIndStartStats.calcStats()
+
+	mLocStartStats.printStats(logfile, "loci", "before", True) # boolean value should be true for loci; false for individuals
+	mIndStartStats.printStats(logfile, "individuals", "before", False)
+
+	# remove 
 	if input.args.removeloci:
 		mhFile.removeLoci(input.args.removeloci) # remove blacklisted loci (if invoked)
-
 	mhFile.runFilters() # run missing data filters
+
+	# calculate ending stats after running all filters
+	mLocEnd = mhFile.calcMissingLocPCT()
+	mIndEnd = mhFile.calcMissingIndPCT()
+
+	mLocEndList = pandas.Series(mLocEnd).to_list()
+	mIndEndList = pandas.Series(mIndEnd).to_list()
+
+	mLocEndStats = GTStats(mLocEndList)
+	mIndEndStats = GTStats(mIndEndList)
+
+	mLocEndStats.calcStats()
+	mIndEndStats.calcStats()
+
+	mLocEndStats.printStats(logfile, "loci", "after", True) # boolean value should be true for loci; false for individuals
+	mIndEndStats.printStats(logfile, "individuals", "after", False)
+
+	# calculate stats after running filters
 	endIndsPerPop = mhFile.getFinalCounts(pops) # get count of remaining individuals after filtering
 	
 	# dump locus dictionary to text file (locusDictionary.json)
@@ -67,6 +105,9 @@ def main():
 	# print starting and ending individuals per population
 	print("Printing number of individuals per population before/after filtering...")
 	print("Population\tPre-Filter\tPost-Filter")
+	with open(logfile, 'a') as fh:
+		fh.write("\nIndividuals per population before/after filtering:\n")
+		fh.write("Population\tPre-Filter\tPost-Filter\n")
 	popKeys = list(startIndsPerPop.keys())
 	popKeys.sort()
 	for pop in popKeys:
@@ -74,6 +115,14 @@ def main():
 		if pop in endIndsPerPop:
 			final = endIndsPerPop[pop]
 		print(f"{pop}\t{startIndsPerPop[pop]}\t{final}")
+		with open(logfile, 'a') as fh:
+			fh.write(str(pop))
+			fh.write("\t")
+			fh.write(str(startIndsPerPop[pop]))
+			fh.write("\t")
+			fh.write(str(final))
+			fh.write("\n")
+			
 
 main()
 
