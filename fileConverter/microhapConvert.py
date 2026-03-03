@@ -30,6 +30,7 @@ def main():
 			snpDict[key] = value
 
 	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind, input.args.mono) #initialize new file
+	startIndsPerPop = mhFile.getCounts() # get counts of individuals per population at beginning of analysis
 	
 	# pull out special columns
 	snppitCols = mhFile.removeSnppit() #removes optional columns for SNPPIT
@@ -50,6 +51,7 @@ def main():
 		mhFile.removeLoci(input.args.removeloci) # remove blacklisted loci (if invoked)
 
 	mhFile.runFilters() # run missing data filters
+	endIndsPerPop = mhFile.getFinalCounts(pops)
 	
 	# dump locus dictionary to text file (locusDictionary.json)
 	if input.args.colony == True:
@@ -61,6 +63,9 @@ def main():
 	# conversion process
 	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols, pops, input.args.snppitmap, snpDict)
 	conversion.convert(convDict)
+
+	print(startIndsPerPop)
+	print(endIndsPerPop)
 
 main()
 

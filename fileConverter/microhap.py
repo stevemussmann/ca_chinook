@@ -20,6 +20,16 @@ class Microhap():
 		print("")
 		self.df = pandas.read_csv(self.mhFile, index_col=0, header=0)
 
+	def getCounts(self):
+		indsPerPop = self.df['Population ID'].value_counts().to_dict()
+		return indsPerPop
+
+	def getFinalCounts(self, pops):
+		column_labels = ["Population ID"]
+		popDF = pandas.DataFrame.from_dict(pops, orient='index', columns=column_labels)
+		mergedDF = pandas.merge(self.df, popDF, how='left', left_index=True, right_index=True)
+		indsPerPop = mergedDF['Population ID'].value_counts().to_dict()
+		return indsPerPop
 
 	def getDict(self):
 		ld = LocusDict(self.df)
