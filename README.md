@@ -619,4 +619,16 @@ conda create -n colony
 conda activate colony
 conda install -c https://software.repos.intel.com/python/conda/ -c conda-forge impi_rt
 ```
+### Running Colony
+Make a new directory and put your Colony2.Dat file in it. Make a bash script containing something like the following:
+```
+#!/bin/bash
 
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate colony
+
+mpirun -np 16 colony
+
+exit
+```
+Then make the script executable and run it. The `mpirun -np 16` command tells it how many processor cores to use. 
