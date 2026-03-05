@@ -187,6 +187,12 @@ Qs <- simulate_Qij(PO_ckmr,
                    calc_relats = c("PO", "FS", "HS", "U"),
                    sim_relats = c("PO", "FS", "HS", "U"))
 
+# calculate series of lambda_star values for FPR
+lambda_0_50 <- mc_sample_simple(Qs, 
+                                nu = "PO",
+                                de = "U", 
+                                lambda_stars = seq(0, 50, by = .1))
+
 if (opt$auto == FALSE) {
   logl_threshold <- as.numeric(opt$logl)
   cat("Applying user-defined log-likelihood ratio threshold of", logl_threshold, "\n")
@@ -196,20 +202,14 @@ if (opt$auto == FALSE) {
   threshFPR <- .01*(length(parents)*length(offspring_ids))^(-1)
   print(threshFPR)
   
-  # calculate series of lambda_star values for FPR
-  lambda_0_50 <- mc_sample_simple(Qs, 
-                                   nu = "PO",
-                                   de = "U", 
-                                   lambda_stars = seq(0, 50, by = .1))
-  
-  print(lambda_0_50)
+  #print(lambda_0_50)
   
   filtLamb_star <- lambda_0_50 %>%
     filter(FPR > threshFPR) %>%
     arrange(FPR) %>%
     slice(1)
   
-  print(filtLamb_star)
+  #print(filtLamb_star)
   
   # test if lambda_star found; if not default to user input
   if( nrow(filtLamb_star) == 1){
@@ -222,6 +222,19 @@ if (opt$auto == FALSE) {
   }
 
 }
+
+# get FNR/FPR for final llr threshold
+filtLamb_star2 <- lambda_0_50 %>%
+  filter(Lambda_star >= logl_threshold) %>%
+  #arrange(FPR) %>%
+  slice(1)
+
+logfiledir = file.path(OUTDIR, "runCKMRsim.log")
+print("final FNR and FPR values written to runCKMRsim.log")
+sink(logfiledir)
+print("FNR and FPR for final llr threshold:")
+print(filtLamb_star2)
+sink()
 
 po_results_filtered <- po_results %>%
   filter(logl_ratio >= logl_threshold) %>%
