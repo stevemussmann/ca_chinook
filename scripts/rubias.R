@@ -77,7 +77,7 @@ if( "percMicroHap" %in% names(mixfile_char) ){
 }
 
 # drop columns that may or may not exist
-columns_to_drop <- c("sdy_sex", "hapstr", "rosa_pheno", "percMicroHap")
+columns_to_drop <- c("sdy_sex", "hapstr", "canonical_rosa_pheno", "percMicroHap")
 mixfile_char <- mixfile_char %>% select(-any_of(columns_to_drop))
 
 # Found a bug in close_matching_samples that doesn't like all fish being mixture
