@@ -2,18 +2,22 @@ import os
 import pandas
 import sys
 
+from duplicates import Duplicates
 from locusdict import LocusDict
 
 class Microhap():
 	'Class for operating on microhap genotype files'
 
-	def __init__(self, infile, pmissLoc, pmissInd, mono):
+	def __init__(self, infile, pmissLoc, pmissInd, mono, dup, t, k):
 		self.mhFile = infile #input file name
 		self.df = pandas.DataFrame()
 		self.pmissLoc = pmissLoc # allowable proportion of missing data locus
 		self.pmissInd = pmissInd # allowable proportion of missing data individual
 		self.colonyData = pandas.DataFrame()
 		self.mono = mono # boolean to control monomorphic locus filter
+		self.dup = dup # boolean to control duplicate identification
+		self.dupThresh = t # threshold for identifying duplicate individuals
+		self.keepDups = k # method for keeping duplicates
 
 		# deal with input file name to create log file name
 		fn, ext = os.path.splitext(infile)
@@ -31,6 +35,26 @@ class Microhap():
 		print("Reading input .csv file.")
 		print("")
 		self.df = pandas.read_csv(self.mhFile, index_col=0, header=0)
+
+
+	def runFilters(self):
+		# filter individuals
+		self.filterInds()
+		
+		# filter loci
+		self.filterLoci()
+
+		# find duplicates
+		if self.dup:
+			dups = Duplicates(self.df, self.dupThresh, self.keepDups, self.log)
+			dups.findDups()
+			removeList = dups.removeDups() # get list of individuals to remove
+			if removeList:
+				self.df.drop(removeList, axis=0, inplace=True) # drop duplicate individuals
+
+		# remove monomorphic loci
+		if self.mono == True:
+			self.filterMono()
 
 
 	def getLog(self):
@@ -165,18 +189,6 @@ class Microhap():
 					fh.write(a1)
 					fh.write("\n")
 				self.df.pop(a2)
-
-
-	def runFilters(self):
-		# filter individuals
-		self.filterInds()
-		
-		# filter loci
-		self.filterLoci()
-
-		# remove monomorphic loci
-		if self.mono == True:
-			self.filterMono()
 
 
 	def filterMono(self):

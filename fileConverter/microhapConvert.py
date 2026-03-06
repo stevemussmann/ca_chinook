@@ -31,7 +31,7 @@ def main():
 		if key in snpList:
 			snpDict[key] = value
 
-	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind, input.args.mono) #initialize new file
+	mhFile = Microhap(input.args.infile, input.args.pmissloc, input.args.pmissind, input.args.mono, input.args.dups, input.args.dupthresh, input.args.keepdups) #initialize new file
 	logfile = mhFile.getLog() # retrieve logfile name
 
 	startIndsPerPop = mhFile.getCounts() # get counts of individuals per population at beginning of analysis

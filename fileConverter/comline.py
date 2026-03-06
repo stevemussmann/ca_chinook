@@ -24,6 +24,24 @@ class ComLine():
 							required=True,
 							help="Provide a unique name for the Colony run. Output files from Colony will receive this name (required)."
 		)
+		filtering.add_argument("-D", "--dups",
+							dest='dups',
+							action='store_true',
+							help="Detect duplicate genotypes (can take a while on large files; default = False)."
+		)
+		filtering.add_argument("-k", "--keepdups",
+							dest='keepdups',
+							type=str,
+							default='none',
+							choices={'all','first','second','none'},
+							help="Methods for keeping duplicates. 'all' = keep all duplicates; 'first' = keep first encountered; 'second' = keep second; 'none' = keep none (default)"
+		)
+		filtering.add_argument("-T", "--dupthresh",
+							dest='dupthresh',
+							type=int,
+							default=3,
+							help="Maximum number of allelic mismatches for identifying duplicate individuals (default = 3)."
+		)
 		filtering.add_argument("-i", "--pmissind",
 							dest='pmissind',
 							type=float,
@@ -36,14 +54,14 @@ class ComLine():
 							default=0.3,
 							help="Enter the maximum allowable proportion of missing data for a locus (default = 0.3)."
 		)
-		filtering.add_argument("-R", "--removeloci",
-							dest='removeloci',
-							help='Specify a list of loci to remove.'
-		)
 		filtering.add_argument("-m", "--mono",
 							dest='mono',
 							action='store_false',
 							help="Remove monomorphic loci from final output (default = True)."
+		)
+		filtering.add_argument("-R", "--removeloci",
+							dest='removeloci',
+							help='Specify a list of loci to remove.'
 		)
 		colony.add_argument("-d", "--droperr",
 							dest='droperr',
