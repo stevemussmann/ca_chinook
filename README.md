@@ -544,7 +544,8 @@ conda activate snakemake
 
 2. Run the following to install rubias:
 ```
-R --slave -e "install.packages('rubias', dependencies=TRUE, repos='http://cran.rstudio.com')"
+wget -O rubias.zip https://github.com/eriqande/rubias/archive/master.zip
+R --slave -e "devtools::install_local('rubias.zip', upgrade='never')"
 ```
 
 <hr>
