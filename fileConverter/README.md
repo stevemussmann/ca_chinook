@@ -59,6 +59,7 @@ Filtering options:
 * **`-k` / `--keepdups`:** Choose method for which duplicate samples to retain if any are found. Options = 'all', 'first', 'second', and 'none' (default = 'none')
 * **`-l` / `--pmissloc`:** Enter the maximum allowable proportion of missing data for a locus (default = 0.3).
 * **`-m` / `--mono`:** Remove monomorphic loci from final output (default = True).
+* **`-N` / `--removeinds`:** Specify a list of individuals to remove (input = plain text file, one individual per line).
 * **`-R` / `--removeloci`:** Specify a list of loci to remove (input = plain text file, one locus per line).
 * **`-T` / `--dupthresh`:** Choose maximum number of allelic mismatches to allow for identifying duplicate individuals (default = 3).
 
