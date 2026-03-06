@@ -50,7 +50,7 @@ class Microhap():
 			dups.findDups()
 			removeList = dups.removeDups() # get list of individuals to remove
 			if removeList:
-				self.df.drop(removeList, axis=0, inplace=True) # drop duplicate individuals
+				self.dropRows(removeList) # drop duplicate individuals
 
 		# remove monomorphic loci
 		if self.mono == True:
@@ -161,6 +161,27 @@ class Microhap():
 	def removeColumns(self, df, removelist):
 		junk = pandas.concat([df.pop(x) for x in removelist], axis=1)
 		return junk
+
+	
+	def dropRows(self, removelist):
+		self.df.drop(removelist, axis=0, inplace=True) # remove individuals
+
+	
+	def removeInds(self, blacklist):
+		# remove blacklisted individuals
+		print("\nRemoving blacklisted individuals (if present):")
+		with open(self.log, 'a') as fh:
+			fh.write("\nRemoving blacklisted individuals (if present):\n")
+		removeInds = list()
+		with open(blacklist, 'r') as fh:
+			for line in fh:
+				print(line.strip())
+				removeInds.append(line.strip())
+				with open(self.log, 'a') as lfh:
+					lfh.write(line)
+					lfh.write("\n")
+		if removeInds:
+			self.dropRows(removeInds)
 
 
 	def removeLoci(self, blacklist):
@@ -297,7 +318,7 @@ class Microhap():
 	def filterInds(self):
 		missIndPCT = self.calcMissingIndPCT()
 
-		removeIndPCT = missIndPCT[missIndPCT > self.pmissInd].index # get list of row indexes to remove
+		removeIndPCT = missIndPCT[missIndPCT > self.pmissInd].index.to_list() # get list of row indexes to remove
 		# print records that didn't pass missing data filter
 		missRecords = missIndPCT.loc[missIndPCT.index.intersection(removeIndPCT)]
 
@@ -312,4 +333,4 @@ class Microhap():
 			fh.write(missRecords.to_string(index=True))
 			fh.write("\n")
 		
-		self.df.drop(removeIndPCT, axis=0, inplace=True)
+		self.dropRows(removeIndPCT)

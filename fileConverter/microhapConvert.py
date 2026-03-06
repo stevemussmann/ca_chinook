@@ -70,6 +70,8 @@ def main():
 	# remove 
 	if input.args.removeloci:
 		mhFile.removeLoci(input.args.removeloci) # remove blacklisted loci (if invoked)
+	if input.args.removeinds:
+		mhFile.removeInds(input.args.removeinds) # remove blacklisted individuals (if invoked)
 	mhFile.runFilters() # run missing data filters
 
 	# calculate ending stats after running all filters

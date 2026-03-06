@@ -63,6 +63,10 @@ class ComLine():
 							dest='removeloci',
 							help='Specify a list of loci to remove.'
 		)
+		filtering.add_argument("-N", "--removeinds",
+							dest='removeinds',
+							help='Specify a list of individuals to remove.'
+		)
 		colony.add_argument("-d", "--droperr",
 							dest='droperr',
 							type=float,
