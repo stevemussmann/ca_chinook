@@ -54,10 +54,13 @@ Required for SNPPIT conversion only:
 * **`-Z` / `--snppitmap`:** Specify a tab-delimited map in which the first column lists each population, the second column lists its status as POP or OFFSPRING, and the third column lists the potential parental POP(s) for each OFFSPRING.
 
 Filtering options:
+* **`-D` / `--dups`:** Detects potential duplicate genotypes in input file. Alleles must be sorted alphabetically per locus per individual to work. Turned off by default because it can run for a while (default = False).
 * **`-i` / `--pmissind`:** Enter the maximum allowable proportion of missing data for an individual (default = 0.3).
+* **`-k` / `--keepdups`:** Choose method for which duplicate samples to retain if any are found. Options = 'all', 'first', 'second', and 'none' (default = 'none')
 * **`-l` / `--pmissloc`:** Enter the maximum allowable proportion of missing data for a locus (default = 0.3).
-* **`-R` / `--removeloci`:** Specify a list of loci to remove (input = plain text file, one locus per line).
 * **`-m` / `--mono`:** Remove monomorphic loci from final output (default = True).
+* **`-R` / `--removeloci`:** Specify a list of loci to remove (input = plain text file, one locus per line).
+* **`-T` / `--dupthresh`:** Choose maximum number of allelic mismatches to allow for identifying duplicate individuals (default = 3).
 
 Arguments that apply to colony-format outputs only:
 * **`-d` / `--droperr`:** Enter the assumed allelic dropout rate (default = 0.0005).
