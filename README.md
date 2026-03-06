@@ -537,23 +537,30 @@ Indiv,sdy_sex,hapstr,canonical_rosa_pheno,percMicroHap,NC_037099.1:62937268-6293
 
 ## Genetic Stock ID
 ### First time setup <a name="installrubias"></a>
-1. Activate your `snakemake` conda environment (if not already active).
+1. Create a `rubias` conda environment.
 ```
-conda activate snakemake
+conda create -c conda-forge -c bioconda -c r -n rubias r-base=4.3.3 r-tidyverse r-remotes r-devtools r-optparse r-adegenet
 ```
 
-2. Run the following to install rubias:
+2. Activate the rubias conda environment.
 ```
-wget -O rubias.zip https://github.com/eriqande/rubias/archive/master.zip
-R --slave -e "devtools::install_local('rubias.zip', upgrade='never')"
+conda activate rubias
+```
+
+3. Run the following to install rubias:
+```
+wget https://cran.r-project.org/src/contrib/Archive/rubias/rubias_0.3.4.tar.gz
+R --slave -e "devtools::install_local('rubias_0.3.4.tar.gz', upgrade='never')"
 ```
 
 <hr>
 
 ### Running rubias <a name="rubias"></a>
-1. Place your baseline and mixture files together in the same directory. There is no need to remove the `sdy_sex`, `hapstr`, `rosa_pheno`, or `percMicroHap` columns from your mixture file. The `percMicroHap` column will be used to remove individuals with <50% of loci genotyped by default. You can change this value manually using the `-p` command-line option for the `rubias.R` script. 
+1. Make sure your rubias conda environment is active.
 
-2. Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
+2. Place your baseline and mixture files together in the same directory. There is no need to remove the `sdy_sex`, `hapstr`, `canonical_rosa_pheno`, or `percMicroHap` columns from your mixture file. The `percMicroHap` column will be used to remove individuals with <50% of loci genotyped by default. You can change this value manually using the `-p` command-line option for the `rubias.R` script. 
+
+3. Run rubias on these files with the following example command. Replace .csv file names with your actual file names:
 ```
 rubias.R -m mixtureFile.csv -b baselineFile.csv
 ```
