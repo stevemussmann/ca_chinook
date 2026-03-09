@@ -175,8 +175,9 @@ class Microhap():
 		removeInds = list()
 		with open(blacklist, 'r') as fh:
 			for line in fh:
-				print(line.strip())
-				removeInds.append(line.strip())
+				line = line.strip() # remove endline character
+				print(line)
+				removeInds.append(line)
 				with open(self.log, 'a') as lfh:
 					lfh.write(line)
 					lfh.write("\n")
