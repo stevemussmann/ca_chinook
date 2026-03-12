@@ -65,6 +65,7 @@ Filtering options:
 
 Arguments that apply to colony-format outputs only:
 * **`-d` / `--droperr`:** Enter the assumed allelic dropout rate (default = 0.0005).
+* **`-e` / `--genoerrfile`:** File containing marker-specific genotyping error rates. Values < `-g` will be converted to `-g` and rounded to 4 decimal places. File format = markerName<tab>errRate; one locus per line.
 * **`-g` / `--genoerr`:** Enter the assumed genotyping error rate (default = 0.0005).
 * **`-I` / `--inbreed`:** Accepts only 0 and 1 as input. 0 = inbreeding absent; 1 = inbreeding present (default = 0).
 * **`-L` / `--runlength`:** Accepts only 1, 2, 3, or 4 as input. 1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2).
