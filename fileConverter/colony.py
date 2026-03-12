@@ -1,3 +1,5 @@
+from decimal import Decimal, ROUND_HALF_EVEN
+
 import os
 import pandas
 import random
@@ -5,7 +7,7 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen):
+	def __init__(self, df, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, colErr):
 		self.df = df
 		self.ldict = ldict
 
@@ -20,6 +22,11 @@ class Colony():
 		self.runname = runname
 		self.inbreed = inbreed
 		self.runlen = runlen
+		self.colErr = colErr
+		self.errDict = dict() # dict of marker error values
+
+		if self.colErr != "None":
+			self.parseColErr()
 
 	def convert(self):
 		output = list()
@@ -84,7 +91,14 @@ class Colony():
 		output.append(adrString)
 
 		# print string of genotyping error rates
-		gerString = self.prepValues(loci, self.gerr)
+		if not self.errDict:
+			gerString = self.prepValues(loci, self.gerr)
+		else:
+			errList = list()
+			for l in locusNames:
+				val = Decimal(str(self.errDict[l])).quantize(Decimal('0.0001'), rounding=ROUND_HALF_EVEN)
+				errList.append(str(val))
+			gerString = " ".join(errList)
 		output.append(gerString)
 
 		
@@ -204,6 +218,20 @@ class Colony():
 		output.append("")
 
 		return output
+
+	def parseColErr(self):
+		print("Using user-specified error rates from", str(self.colErr))
+		with open(self.colErr, 'r') as fh:
+			for line in fh:
+				line = line.strip() # remove endline character
+				locusErr = line.split() # split line on whitespace
+				if float(locusErr[1]) < self.gerr:
+					self.errDict[locusErr[0]] = self.gerr # if locus error < self.gerr value, the locus will be set to self.gerr. This is because it is unlikely any locus actually has 0 genotyping error. 
+				else:
+					self.errDict[locusErr[0]] = locusErr[1]
+		#print(self.errDict)
+
+
 
 	def getLocusNames(self):
 		colNames = list(self.df.columns) #get column names from pandas dataframe

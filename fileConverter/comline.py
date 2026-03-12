@@ -73,6 +73,10 @@ class ComLine():
 							default=0.0005,
 							help="Enter the assumed allelic dropout rate (default = 0.0005)."
 		)
+		colony.add_argument("-e", "--genoerrfile",
+							dest='genoerrfile',
+							help='Specify a list of marker-specific genotyping error rates (optional).'
+		)
 		colony.add_argument("-g", "--genoerr",
 							dest='genoerr',
 							type=float,
@@ -178,6 +182,10 @@ class ComLine():
 		self.exists( str(self.args.infile) )
 		if self.args.removeloci:
 			self.exists( str(self.args.removeloci) )
+		if self.args.removeinds:
+			self.exists( str(self.args.removeinds) )
+		if self.args.genoerrfile:
+			self.exists( str(self.args.genoerrfile) )
 		if self.args.snppit == True:
 			if self.args.snppitmap is None:
 				print("")

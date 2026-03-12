@@ -101,7 +101,9 @@ def main():
 			json.dump(locusdict, jsonfile, indent='\t')
 
 	# conversion process
-	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols, pops, input.args.snppitmap, snpDict)
+	if not input.args.genoerrfile:
+		input.args.genoerrfile = 'None' # insert dummy value to feed if individual marker rates 
+	conversion = MHconvert(mhFile.df, input.args.infile, locusdict, colonyData, input.args.droperr, input.args.genoerr, input.args.pmale, input.args.pfemale, input.args.runname, input.args.inbreed, input.args.runlength, convertedDir, alleleFreqs, snppitCols, pops, input.args.snppitmap, snpDict, input.args.genoerrfile)
 	conversion.convert(convDict)
 
 	# print starting and ending individuals per population

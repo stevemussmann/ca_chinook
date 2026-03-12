@@ -17,7 +17,7 @@ warnings.simplefilter(action='ignore', category=pandas.errors.PerformanceWarning
 class MHconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs, snppitCols, pops, snppitmap, snpDict):
+	def __init__(self, df, infile, ldict, cDat, derr, gerr, pm, pf, runname, inbreed, runlen, cdir, afreqs, snppitCols, pops, snppitmap, snpDict, colErr):
 		self.df = df
 		self.ldict = ldict
 		self.infile = infile
@@ -37,6 +37,7 @@ class MHconvert():
 		self.pops = pops # dict of population information for all individuals
 		self.snppitmap = snppitmap
 		self.snpDict = snpDict # dict of booleans for snp file formats
+		self.colErr = colErr # file of marker-specific error rates for colony; 
 		#print("printing snpdict")
 		#print(self.snpDict)
 		
@@ -78,7 +79,7 @@ class MHconvert():
 
 	def conv_colony(self): 
 		#print("This function will convert to colony format.")
-		cy = Colony(self.df, self.ldict, self.cDat, self.derr, self.gerr, self.pmale, self.pfemale, self.runname, self.inbreed, self.runlen)
+		cy = Colony(self.df, self.ldict, self.cDat, self.derr, self.gerr, self.pmale, self.pfemale, self.runname, self.inbreed, self.runlen, self.colErr)
 		output = cy.convert()
 		return output
 
