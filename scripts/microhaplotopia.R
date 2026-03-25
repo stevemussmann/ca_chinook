@@ -398,11 +398,7 @@ print(paste("Count of loci per sample impacted by extra alleles written to ", fi
 
 indivPlot<-ggplot(data=indiv, aes(x=reorder(indiv.ID, count), y=count)) +
   geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size=2))
-ggsave("extraAllelesIndiv.png", path=repDir, dpi=600)
-
-source <- xtralleles %>% group_by(source) %>% summarise(count = n_distinct(indiv.ID)) #modified from Anthony's code to count the number of individuals per input file that were impacted by extra alleles
-write_csv(source, file = file.path(repDir, "extra_alleles_source.csv"))
-print(paste("Count of individuals per input file impacted by extra alleles written to ", file.path(repDir, "extra_alleles_source.csv")))
+ggsave("extra_alleles_plot.png", path=repDir, dpi=600)
 
 locus <- xtralleles %>% group_by(locus) %>% summarise(count = n_distinct(indiv.ID)) %>% arrange(desc(count)) #modified from Anthony's code to count the number of individuals per locus that were impacted by extra alleles
 write_csv(locus, file = file.path(repDir, "extra_alleles_locus.csv"))
@@ -421,15 +417,15 @@ loc_depth <- summarize_data(
   datafile = hap_fil1,
   group_var = "locus") %>% 
   arrange(., n_samples)
-write_csv(loc_depth, file = file.path(repDir, "locus_depth.csv"))
-print(paste("Locus depth summary written to ", file.path(repDir, "locus_depth.csv")))
+write_csv(loc_depth, file = file.path(repDir, "locus_depth_summary.csv"))
+print(paste("Locus depth summary written to ", file.path(repDir, "locus_depth_summary.csv")))
 
 ind_depth <- summarize_data(
   datafile = hap_fil1,
   group_var = "indiv.ID") %>% 
   arrange(., mean_depth)
-write_csv(ind_depth, file = file.path(repDir, "individual_depth.csv"))
-print(paste("Individual depth written to ", file.path(repDir, "individual_depth.csv")))
+write_csv(ind_depth, file = file.path(repDir, "individual_depth_summary.csv"))
+print(paste("Individual depth written to ", file.path(repDir, "individual_depth_summary.csv")))
 
 grps <- summarize_data(
   datafile = hap_fil1,

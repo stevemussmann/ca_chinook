@@ -394,12 +394,15 @@ microhaplotopia.R -r CH_run001_greb1_q20dp5.recode.vcf -R run001
 
 Most settings can be left as default. The only thing you should have to specify is the name of the VCF file you created in step 8. However, below I provide a comprehensive list of settings that can be modified (if desired) from the command line. 
 ```
-Usage: ./microhaplotopia.R [options]
+Usage: /home/mussmann/local/bin/microhaplotopia.R [options]
 
 
 Options:
         -a ALLELEBALANCE, --alleleBalance=ALLELEBALANCE
                 minimum allele balance threshold (default = 0.35)
+
+        -c CUTOFF, --cutoff=CUTOFF
+                probability cutoff for sex ID calls with regression model (default = 0.1)
 
         -d HAPDEPTH, --hapDepth=HAPDEPTH
                 minimum haplotype sequencing depth (default = 4)
@@ -421,6 +424,9 @@ Options:
 
         -m MICROHAPLOT, --microhaplot=MICROHAPLOT
                 microhaplot directory name (default = microhaplot)
+
+        -M MODAFTC, --modaftc=MODAFTC
+                .rds file containing logistic regression model for assigning sexID (default = ~/local/src/ca_chinook/example_files/AFTC_model.rds)
 
         -o OUTPUT, --output=OUTPUT
                 output directory name (default = output)
@@ -448,6 +454,7 @@ Options:
 
         -h, --help
                 Show this help message and exit
+
 ```
 
 Outputs from the `microhaplotopia.R` script are discussed in the next section.
@@ -477,14 +484,20 @@ processing
     ├── extra_alleles.csv
     ├── extra_alleles_individuals.csv
     ├── extra_alleles_locus.csv
-    ├── extra_alleles_source.csv
-    ├── individual_depth.csv
-    ├── locus_depth.csv
+    ├── extra_alleles_plot.png
+    ├── haplodepth_per_locus_per_indiv.tsv
+    ├── individual_depth_summary.csv
+    ├── locus_depth_summary.csv
     ├── missingData.png
     ├── nxa.csv
     ├── nxaCount.csv
+    ├── readsPlot.png
     ├── sdyHist.png
-    └── sdyPlot.png
+    ├── sdyPlot.png
+    ├── success_rate_v_total_reads_all.png
+    ├── success_rate_v_total_reads_zoomed.png
+    ├── totalDepth.png
+    └── totaldepth_per_locus_per_indiv.tsv
 ```
 
 ### Output Directory
@@ -499,38 +512,44 @@ Indiv   hapstr
 4330-005        ?NNLLNLLL??L
 ```
 
-2. `sdy_calls.csv` is a comma-delimited file that contains the total number of reads (sum_reads), the number of times the sdy marker was identified among the reads (sdy_I183), the proportion of reads represented by sdy_I183 (prop), and genetic sex calls (sdy_sex) for all individuals.
+2. `sdy_calls.csv` is a comma-delimited file that contains the total number of reads (sum_reads), the number of times the sdy marker was identified among the reads (sdy_I183), the proportion of reads represented by sdy_I183 (sex_marker_read_prop), genetic sex calls based on read proportion (sdy_prop_sex), probability of being male based on a logistic regression model (prob.male) and the sex call based on applying the default cutoff value of 0.1 to that mode (sdy_model_sex) for all individuals.
 ```
-Indiv,sum_reads,sdy_I183,prop,sdy_sex
-4330-001,122530,3001,0.024491961152370848,Male
-4330-002,124914,6,4.8033046736154476e-5,Female
-4330-003,125301,2507,0.020007821166630753,Male
-4330-004,119955,14,1.1671043307907132e-4,Female
-4330-005,147998,3411,0.023047608751469613,Male
+Indiv,sum_reads,sdy_I183,sex_marker_read_prop,sdy_prop_sex,prob.male,sdy_model_sex
+4330-001,75493,1379,0.018266594253771872,Male,0.9999937645241835,Male
+4330-002,69744,6,8.602890571231934e-5,Female,0.00380561020447908,Female
+4330-003,69651,1139,0.016352959756500265,Male,0.9999604419039475,Male
+4330-004,65208,2,3.067108330266225e-5,Female,0.00360826964148809,Female
+4330-005,61556,1113,0.018081096887387096,Male,0.9999925415691906,Male
 ```
 
-3. `haps_2col_final.csv` is a comma-delimited file that contains all genotype data for all individuals. The column percMicroHap reports the percentage of loci that amplified successfully for each individual.
+3. `haps_2col_final.csv` is a comma-delimited file that contains all genotype data for all individuals. The 'canonical_rosa_pheno' column reports the run-timing phenotype associated with the hapstr value. The column 'percMicroHap' reports the percentage of loci that amplified successfully for each individual. The 'perc_Xtra' column reports the proportion of loci discarded for an individual due to detection of 3 or more alleles at a locus. 
 ```
-Indiv,sdy_sex,hapstr,canonical_rosa_pheno,percMicroHap,NC_037099.1:62937268-62937373_1,NC_037099.1:62937268-62937373_2,NC_037104.1:55923357-55923657_1,NC_037104.1:55923357-55923657_2,...
-4330-001,Male,LNNLLNLLLLLL,Fall,92.74611398963731,T,T,A,A,...
-4330-002,Female,ENNEENEEEEEH,Spring,95.85492227979275,T,T,A,A,...
-4330-003,Male,LNNLLNLLLLLL,Fall,98.96373056994818,C,T,A,A,...
-4330-004,Female,LNNLLNLLLLLL,Fall,100,T,T,A,A,...
-4330-005,Male,?NNLLNLLL??L,Unknown,87.56476683937824,T,T,A,A,...
+indiv,sdy_model_sex,hapstr,canonical_rosa_pheno,percMicroHap,perc_Xtra,NC_037099.1:62937268-62937373_1,NC_037099.1:62937268-62937373_2,...
+4330-001,Male,LNNLLNLLLLLL,Fall,91.70984455958549,0,T,T,
+4330-002,Female,ENNEENEEEEEH,Spring,95.33678756476684,0,T,T,
+4330-003,Male,LNNLLNLLLLLL,Fall,98.44559585492227,0,C,T,
+4330-004,Female,LNNLLNLLLLLL,Fall,100,0,T,T,
+4330-005,Male,?NNLLNLLL??L,Unknown,86.01036269430051,0,T,T,
 ```
 
 ### Reports Directory
-1. `extra_alleles.csv`
-2. `extra_alleles_individuals.csv`
-3. `extra_alleles_locus.csv`
-4. `extra_alleles_source.csv`
-5. `individual_depth.csv`
-6. `locus_depth.csv`
-7. `missingData.png`
-8. `nxa.csv`
-9. `nxaCount.csv`
-10. `sdyHist.png`
-11. `sdyPlot.png`
+1. `extra_alleles.csv`: Report of all extra alleles detected for each individual at each locus. 
+2. `extra_alleles_individuals.csv`: Count of extra alleles detected per individual. Samples not reported here = 0 extra alleles detected. 
+3. `extra_alleles_locus.csv`: The number of times a locus was detected to have extra alleles. Loci not reported here = 0 extra alleles detected.
+4. `extra_alleles_plot.png`: Plot showing counts of extra alleles (y-axis) detected per individual (x-axis). 
+5. `haplodepth_per_locus_per_indiv.tsv`: The number of reads per allele per individual. Homozygous loci have a single number (e.g., 400) whereas heterozygous loci will display counts per allele (e.g., 201|199).
+6. `individual_depth_summary.csv`: Summary of sequencing depth per individual (mean, median, range).
+7. `locus_depth_summary.csv`: Summary of sequencing depth per locus (mean, median, range).
+8. `missingData.png`: Plot showing number of missing loci (y-axis) per individual (x-axis).
+9. `nxa.csv`: Report of all alleles detected for each individual at each locus that contain non-nucleotide characters (e.g., 'X' or 'N').
+10. `nxaCount.csv`: Report of the number of 'nxa' alleles detected per locus.
+11. `readsPlot.png`: Plot showing number of reads (y-axis) per individual (x-axis).
+12. `sdyHist.png`: Histogram showing counts of observed sex marker proportions. Colors show individuals called Male, Female, or undetermined (NA).
+13. `sdyPlot.png`: Scatterplot of each individual and their assigned sex. y-axis = proportion of observed sex marker reads; x-axis = total reads per individual.
+14. `success_rate_v_total_reads_all.png`: Scatterplot of genotyping success rate (y-axis) based on read count (x-axis). 
+15. `success_rate_v_total_reads_zoomed.png`: Scatterplot of genotyping success rate (y-axis) based on read count (x-axis). The x-axis is limited to 100k reads.
+16. `totalDepth.png`: Heat map showing sequencing depth (in bins) for each locus (y-axis) per individual (x-axis). 
+17. `totaldepth_per_locus_per_indiv.tsv`: The total number of reads per locus per individual.
 
 
 <hr>
