@@ -394,7 +394,7 @@ microhaplotopia.R -r CH_run001_greb1_q20dp5.recode.vcf -R run001
 
 Most settings can be left as default. The only thing you should have to specify is the name of the VCF file you created in step 8. However, below I provide a comprehensive list of settings that can be modified (if desired) from the command line. 
 ```
-Usage: /home/mussmann/local/bin/microhaplotopia.R [options]
+Usage: ./microhaplotopia.R [options]
 
 
 Options:
