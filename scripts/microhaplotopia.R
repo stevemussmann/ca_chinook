@@ -8,6 +8,7 @@ suppressPackageStartupMessages(library("microhaplotopia", quietly=TRUE))
 suppressPackageStartupMessages(library("vcfR", quietly=TRUE))
 suppressPackageStartupMessages(library("optparse", quietly=TRUE))
 suppressPackageStartupMessages(library("reshape2", quietly=TRUE))
+suppressPackageStartupMessages(library("stringdist", quietly=TRUE))
 suppressPackageStartupMessages(library("viridis", quietly=TRUE))
 
 # for setting working directory when debugging in Rstudio
@@ -250,26 +251,33 @@ write.table(ptypes, file=rosaStringFile, quote=F, sep="\t", row.names=F)
 ################################################################################
 rosaHapStr <- read.table(file=rosaStringFile, header=TRUE, sep="\t", stringsAsFactors = FALSE) %>% as_tibble()
 
-## canonical ROSA haplotype classifications
+canon_rosa_geno_list <- c("EWWEEWEEEEEL", "EWWEEWEEEEEH", "ENNEENEEEEEE", "ENNEENEEEEEL", "ENNEENEEEEEH", "EHHEEHEEEEEL", "EHHEEHEEEEEH", "LNNLLNLLLLLL", "LNNLLNLLLLLH", "HHHHHHHHHHHL", "HHHHHHHHHHHH", "HNNHHNHHHHHL", "HNNHHNHHHHHH")
+
+# match to canon_rosa_geno_list using Levenshtein distance and report values.
+rosaHapStr <- rosaHapStr %>% mutate(match_idx = amatch(hapstr, canon_rosa_geno_list, maxDist = 2, method="lv"),
+	hapstrMatch = canon_rosa_geno_list[match_idx]
+	) %>% mutate(lv_dist = stringdist(hapstr, hapstrMatch, method="lv"))
+
+## canonical ROSA phenotype classifications - match using the closest canonical genotype (max = 2 differences; Levenshtein distance)
 rosaHapStr <- rosaHapStr %>% mutate(canonical_rosa_pheno = case_when(
 	#Early/Early
-	hapstr == "EWWEEWEEEEEL" ~ "Winter",
-	hapstr == "EWWEEWEEEEEH" ~ "Winter",
-	hapstr == "ENNEENEEEEEE" ~ "Spring",
-	hapstr == "ENNEENEEEEEL" ~ "Spring",
-	hapstr == "ENNEENEEEEEH" ~ "Spring",
-	hapstr == "EHHEEHEEEEEL" ~ "Sp-Win",
-	hapstr == "EHHEEHEEEEEH" ~ "Sp-Win",
+	hapstrMatch == "EWWEEWEEEEEL" ~ "Winter",
+	hapstrMatch == "EWWEEWEEEEEH" ~ "Winter",
+	hapstrMatch == "ENNEENEEEEEE" ~ "Spring",
+	hapstrMatch == "ENNEENEEEEEL" ~ "Spring",
+	hapstrMatch == "ENNEENEEEEEH" ~ "Spring",
+	hapstrMatch == "EHHEEHEEEEEL" ~ "Sp-Win",
+	hapstrMatch == "EHHEEHEEEEEH" ~ "Sp-Win",
 
 	#Late/Late
-	hapstr == "LNNLLNLLLLLL" ~ "Fall",
-	hapstr == "LNNLLNLLLLLH" ~ "Fall",
+	hapstrMatch == "LNNLLNLLLLLL" ~ "Fall",
+	hapstrMatch == "LNNLLNLLLLLH" ~ "Fall",
 
 	#Early/Late
-	hapstr == "HHHHHHHHHHHL" ~ "Fall-Win",
-	hapstr == "HHHHHHHHHHHH" ~ "Fall-Win",
-	hapstr == "HNNHHNHHHHHL" ~ "Sp-Fall",
-	hapstr == "HNNHHNHHHHHH" ~ "Sp-Fall",
+	hapstrMatch == "HHHHHHHHHHHL" ~ "Fall-Win",
+	hapstrMatch == "HHHHHHHHHHHH" ~ "Fall-Win",
+	hapstrMatch == "HNNHHNHHHHHL" ~ "Sp-Fall",
+	hapstrMatch == "HNNHHNHHHHHH" ~ "Sp-Fall",
 
 	# all other cases
 	.default = "Unknown"
@@ -524,7 +532,7 @@ seqSucc <- left_join(readCount, percMicro, by = c("Indiv" = "Indiv")) # combine 
 print("If the next line is a warning about missing values just ignore it.")
 succPlotZoomed <- ggplot(seqSucc, aes(y=percMicroHap, x=sum_reads)) +
   # geom_smooth(method = "lm") + 
-  geom_point() + xlim(c(0,50000)) + theme_minimal() + xlab("Total Reads") + ylab("Percent Success") + ggtitle("Success Rate vs. Total Reads (Zoomed)")
+  geom_point() + xlim(c(0,80000)) + theme_minimal() + xlab("Total Reads") + ylab("Percent Success") + ggtitle("Success Rate vs. Total Reads (Zoomed)")
 ggsave("success_rate_v_total_reads_zoomed.png", path=repDir, dpi=600)
 
 # plot all individuals
@@ -559,7 +567,7 @@ haps_2col_final <- rename(haps_2col_final, indiv = Indiv) # rename indiv to Indi
 # I hate R, and especially tidyverse.
 print("Sorting alleles alphabetically per locus per individual. This part takes longer to run than it probably should.")
 n <- names(haps_2col_final) # get column names
-r <- c("count", "indiv", "sdy_model_sex", "hapstr", "canonical_rosa_pheno", "percMicroHap") # vector of columns to remove
+r <- c("count", "indiv", "sdy_model_sex", "hapstr", "match_idx", "hapstrMatch", "lv_dist", "canonical_rosa_pheno", "percMicroHap") # vector of columns to remove
 result <- setdiff(n, r) # remove columns
 result2 <- str_sub(result, end = -3) # remove _1 and _2 from end of allele names
 loci <- unique(result2) # reduce to only locus names
