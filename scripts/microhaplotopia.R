@@ -14,6 +14,10 @@ suppressPackageStartupMessages(library("viridis", quietly=TRUE))
 # for setting working directory when debugging in Rstudio
 #setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
+# sexID model options - make string for help menu
+modelOpts <- c("AFTC", "CDFW")
+modelOptsHelp <- paste0("rds file containing logistic regression model for assigning sexID (default = AFTC; Options = ", paste0(modelOpts, collapse = ", "), ")")
+
 ## command line option parsing
 option_list = list(
   make_option(
@@ -81,12 +85,11 @@ option_list = list(
     metavar="microhaplot"
   ),
   make_option(
-    c("-M", "--modaftc"), 
+    c("-M", "--sexidmodel"), 
     type="character", 
-    default="~/local/src/ca_chinook/example_files/AFTC_model.rds", 
-    #default="AFTC_model.rds", 
-    help=".rds file containing logistic regression model for assigning sexID (default = ~/local/src/ca_chinook/example_files/AFTC_model.rds)", 
-    metavar="modaftc"
+    default="AFTC", 
+    help=modelOptsHelp, 
+    metavar="sexidmodel"
   ),
   make_option(
     c("-o", "--output"), 
@@ -150,6 +153,13 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
+# check if model options specified correctly
+if(!(opt$sexidmodel %in% modelOpts)){
+	cat(paste0("Error: '--sexidmodel / -M' must be one of: ", paste(modelOpts, collapse = ", "), "\n\n"))
+	#print_help(opt_parser)
+	quit(status = 1)
+}
+
 if (is.null(opt$rosa)){
   print_help(opt_parser)
   stop("ROSA vcf file must be specified.", call.=FALSE)
@@ -172,8 +182,8 @@ sdyReadCounts <- opt$sdy
 vcfFile <- opt$rosa 
 #vcfFile <- "CH_gt027_greb1_q20dp5.recode.vcf"
 
-#logistic regression model for making sexID calls (distributed as .rds file)
-modelFile <- opt$modaftc 
+#location of logistic regression model for making sexID calls (distributed as .rds file)
+modelFile <- paste0("~/local/src/ca_chinook/example_files/", opt$sexidmodel, "_model.rds")
 #modelFile <- "AFTC_model.rds"
 
 # name of folder where output will be written (will be created if doesn't exist)
@@ -256,7 +266,7 @@ canon_rosa_geno_list <- c("EWWEEWEEEEEL", "EWWEEWEEEEEH", "ENNEENEEEEEE", "ENNEE
 # match to canon_rosa_geno_list using Levenshtein distance and report values.
 rosaHapStr <- rosaHapStr %>% mutate(match_idx = amatch(hapstr, canon_rosa_geno_list, maxDist = 2, method="lv"),
 	hapstrMatch = canon_rosa_geno_list[match_idx]
-	) %>% mutate(lv_dist = stringdist(hapstr, hapstrMatch, method="lv"))
+	) %>% mutate(hapstr_dist = stringdist(hapstr, hapstrMatch, method="lv"))
 
 ## canonical ROSA phenotype classifications - match using the closest canonical genotype (max = 2 differences; Levenshtein distance)
 rosaHapStr <- rosaHapStr %>% mutate(canonical_rosa_pheno = case_when(
@@ -351,24 +361,28 @@ sdy_out <- sdy_out %>% mutate(sdy_model_sex = case_when(
 write_csv(sdy_out, file = sdyOutFile)
 
 # count proportion male and female
-sdy_out %>% summarise(prop_male = sum(sdy_model_sex == "Male", na.rm = TRUE) / n())
-sdy_out %>% summarise(prop_female = sum(sdy_model_sex == "Female", na.rm = TRUE) / n())
+proportion_m <- sdy_out %>% summarise(prop_male = sum(sdy_model_sex == "Male", na.rm = TRUE) / n())
+proportion_f <- sdy_out %>% summarise(prop_female = sum(sdy_model_sex == "Female", na.rm = TRUE) / n())
+proportion_u <- 1.0 - (proportion_m$prop_male + proportion_f$prop_female) # calculate unknown sex
+comb_sex <- bind_cols(proportion_m, proportion_f) %>% mutate(prop_unk = proportion_u)
+cat("\nSex proportions:\n")
+print(comb_sex)
+cat("\n\n")
 
 # make scatterplot showing sexID calls by number of reads
 sdyPlot<-ggplot(data=sdy_out, aes(x=sum_reads, y=sex_marker_read_prop, color = sdy_model_sex)) +
 	geom_point()
-ggsave("sdyPlot.png", path=repDir, dpi=600)
+suppressMessages(ggsave("sdyPlot.png", path=repDir, dpi=600))
 
 # make histogram showing sexID calls by proportion
 sdyHisto<-ggplot(data=sdy_out, aes(x=sex_marker_read_prop, fill=sdy_model_sex)) + 
 	geom_histogram(position="identity") + 
 	scale_x_continuous(n.breaks = 10)
-ggsave("sdyHist.png", path=repDir, dpi=600)
+suppressMessages(ggsave("sdyHist.png", path=repDir, dpi=600))
 
 readsPlot<-ggplot(data=sdy_out, aes(x=reorder(Indiv, sum_reads), y=sum_reads)) +
   geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size=2))
-ggsave("readsPlot.png", path=repDir, dpi=600)
-
+suppressMessages(ggsave("readsPlot.png", path=repDir, dpi=600))
 
 ################################################################################
 ## filtering microhaplotypes
@@ -381,7 +395,7 @@ hap_fil <- filter_raw_microhap_data(
   allele_balance = alleleBalance
 )
 locCount <- hap_fil %>% group_by(source) %>% summarise(count = n_distinct(locus))
-locCount
+#locCount
 
 # Find and drop N/X alleles
 nxa <- find_NXAlleles(hap_fil)
@@ -397,28 +411,24 @@ hap_fil_nxa <- nxa %>%
 # Find and drop extra alleles
 xtralleles <- find_contaminated_samples(hap_fil_nxa)
 write_csv(xtralleles, file = file.path(repDir, "extra_alleles.csv"))
-print(paste("Samples/loci with extra alleles written to ", file.path(repDir, "extra_alleles.csv")))
+cat(paste0("Samples and loci with extra alleles written to ", file.path(repDir, "extra_alleles.csv\n\n")))
 
 # And am curious about indiv, run and locus effects
 indiv <- xtralleles %>% group_by(indiv.ID) %>% summarise(count = n_distinct(locus)) #modified from Anthony's code to count the number of loci impacted by extra alleles per individual
 write_csv(indiv, file = file.path(repDir, "extra_alleles_individuals.csv"))
-print(paste("Count of loci per sample impacted by extra alleles written to ", file.path(repDir, "extra_alleles_individuals.csv")))
+cat(paste0("Count of loci per sample impacted by extra alleles written to ", file.path(repDir, "extra_alleles_individuals.csv\n\n")))
 
 indivPlot<-ggplot(data=indiv, aes(x=reorder(indiv.ID, count), y=count)) +
   geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size=2))
-ggsave("extra_alleles_plot.png", path=repDir, dpi=600)
+suppressMessages(ggsave("extra_alleles_plot.png", path=repDir, dpi=600))
 
 locus <- xtralleles %>% group_by(locus) %>% summarise(count = n_distinct(indiv.ID)) %>% arrange(desc(count)) #modified from Anthony's code to count the number of individuals per locus that were impacted by extra alleles
 write_csv(locus, file = file.path(repDir, "extra_alleles_locus.csv"))
-print(paste("Count of number of individuals with extra alleles per locus written to ", file.path(repDir, "extra_alleles_locus.csv")))
+cat(paste0("Count of number of individuals with extra alleles per locus written to ", file.path(repDir, "extra_alleles_locus.csv\n\n")))
 
 # remove genotypes with >2 alleles
 hap_fil1 <- hap_fil_nxa %>% 
   anti_join(xtralleles)
-
-# these statistics can be examined before/after subsequent filtering steps
-# Check for chinookie
-#hap_fil1 %>% filter(str_detect(locus,"^OkiOts")) %>%  pull(haplo) %>% table()
 
 ## Summarize sequencing depth
 loc_depth <- summarize_data(
@@ -426,14 +436,14 @@ loc_depth <- summarize_data(
   group_var = "locus") %>% 
   arrange(., n_samples)
 write_csv(loc_depth, file = file.path(repDir, "locus_depth_summary.csv"))
-print(paste("Locus depth summary written to ", file.path(repDir, "locus_depth_summary.csv")))
+cat(paste0("Locus depth summary written to ", file.path(repDir, "locus_depth_summary.csv\n\n")))
 
 ind_depth <- summarize_data(
   datafile = hap_fil1,
   group_var = "indiv.ID") %>% 
   arrange(., mean_depth)
 write_csv(ind_depth, file = file.path(repDir, "individual_depth_summary.csv"))
-print(paste("Individual depth written to ", file.path(repDir, "individual_depth_summary.csv")))
+cat(paste0("Individual depth written to ", file.path(repDir, "individual_depth_summary.csv\n\n")))
 
 grps <- summarize_data(
   datafile = hap_fil1,
@@ -449,7 +459,7 @@ ind_depth_table_total <- pivot_wider(
   names_from = locus,
   values_from = depth, values_fn = list(depth = sum),
 )
-print(paste("Depth per locus per individual written to ", file.path(repDir, "totaldepth_per_locus_per_indiv.tsv")))
+cat(paste("Depth per locus per individual written to ", file.path(repDir, "totaldepth_per_locus_per_indiv.tsv\n\n")))
 write_tsv(ind_depth_table_total,file = file.path(repDir, "totaldepth_per_locus_per_indiv.tsv"))
 
 # plot total depth
@@ -467,7 +477,7 @@ totalDepthPlot <- ggplot(totaldepth_long, aes(x = indiv.ID, y = variable, fill =
   theme_minimal() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size=1),
         axis.text.y = element_text(size=4))
-ggsave("totalDepth.png", path=repDir, dpi=1200)
+suppressMessages(ggsave("totalDepth.png", path=repDir, dpi=1200))
 
 # table with haplotype depths
 ind_depth_table_haplo <- pivot_wider(
@@ -475,7 +485,7 @@ ind_depth_table_haplo <- pivot_wider(
   names_from = locus,
   values_from = depth, values_fn = function(x) paste(x, collapse = "|"),
 )
-print(paste("Depth per haplotype per individual written to ", file.path(repDir, "haplodepth_per_locus_per_indiv.tsv")))
+cat(paste("Depth per haplotype per individual written to ", file.path(repDir, "haplodepth_per_locus_per_indiv.tsv\n\n")))
 write_tsv(ind_depth_table_haplo,file = file.path(repDir, "haplodepth_per_locus_per_indiv.tsv"))
 
 # find samples that were removed by filters
@@ -508,39 +518,43 @@ names(haps_2col_final) <- c("indiv", addnums)
 
 # add back in missing individuals
 haps_2col_final <- haps_2col_final %>% add_row(indiv=missing_samples$indiv.ID)
-
 haps_2col_final <- rename(haps_2col_final, Indiv = indiv) # rename indiv to Indiv for combining tibbles
 
-# calculate and plot missing data now that missing individuals have been added back
+# add back any mising loci
+columnOrder <- c("Indiv", "NC_037099.1:62937268-62937373_1", "NC_037099.1:62937268-62937373_2", "NC_037104.1:55923357-55923657_1", "NC_037104.1:55923357-55923657_2", "NC_037104.1:56552815-56552925_1", "NC_037104.1:56552815-56552925_2", "NC_037104.1:56552952-56553042_1", "NC_037104.1:56552952-56553042_2", "NC_037108.1:73543706-73544006_1", "NC_037108.1:73543706-73544006_2", "NC_037112.1:24542569-24542869_1", "NC_037112.1:24542569-24542869_2", "NC_037130.1:1062935-1063235_1", "NC_037130.1:1062935-1063235_2", "NC_037130.1:864908-865208_1", "NC_037130.1:864908-865208_2", "OkiOts_120255-113_1", "OkiOts_120255-113_2", "Ots_100884-287_1", "Ots_100884-287_2", "Ots_101119-381_1", "Ots_101119-381_2", "Ots_101704-143_1", "Ots_101704-143_2", "Ots_102213-210_1", "Ots_102213-210_2", "Ots_102414-395_1", "Ots_102414-395_2", "Ots_102457-132_1", "Ots_102457-132_2", "Ots_102801-308_1", "Ots_102801-308_2", "Ots_102867-609_1", "Ots_102867-609_2", "Ots_103041-52_1", "Ots_103041-52_2", "Ots_104063-132_1", "Ots_104063-132_2", "Ots_104569-86_1", "Ots_104569-86_2", "Ots_105105-613_1", "Ots_105105-613_2", "Ots_105132-200_1", "Ots_105132-200_2", "Ots_105401-325_1", "Ots_105401-325_2", "Ots_105407-117_1", "Ots_105407-117_2", "Ots_106499-70_1", "Ots_106499-70_2", "Ots_106747-239_1", "Ots_106747-239_2", "Ots_107074-284_1", "Ots_107074-284_2", "Ots_107285-93_1", "Ots_107285-93_2", "Ots_107806-821_1", "Ots_107806-821_2", "Ots_108007-208_1", "Ots_108007-208_2", "Ots_108390-329_1", "Ots_108390-329_2", "Ots_109693-392_1", "Ots_109693-392_2", "Ots_110064-383_1", "Ots_110064-383_2", "Ots_110495-380_1", "Ots_110495-380_2", "Ots_110551-64_1", "Ots_110551-64_2", "Ots_111312-435_1", "Ots_111312-435_2", "Ots_111666-408_1", "Ots_111666-408_2", "Ots_111681-657_1", "Ots_111681-657_2", "Ots_112301-43_1", "Ots_112301-43_2", "Ots_112419-131_1", "Ots_112419-131_2", "Ots_112820-284_1", "Ots_112820-284_2", "Ots_112876-371_1", "Ots_112876-371_2", "Ots_113242-216_1", "Ots_113242-216_2", "Ots_117043-255_1", "Ots_117043-255_2", "Ots_117242-136_1", "Ots_117242-136_2", "Ots_117432-409_1", "Ots_117432-409_2", "Ots_118175-479_1", "Ots_118175-479_2", "Ots_118205-61_1", "Ots_118205-61_2", "Ots_118938-325_1", "Ots_118938-325_2", "Ots_122414-56_1", "Ots_122414-56_2", "Ots_123048-521_1", "Ots_123048-521_2", "Ots_123921-111_1", "Ots_123921-111_2", "Ots_124774-477_1", "Ots_124774-477_2", "Ots_127236-62_1", "Ots_127236-62_2", "Ots_128302-57_1", "Ots_128302-57_2", "Ots_128693-461_1", "Ots_128693-461_2", "Ots_128757-61_1", "Ots_128757-61_2", "Ots_129144-472_1", "Ots_129144-472_2", "Ots_129170-683_1", "Ots_129170-683_2", "Ots_129458-451_1", "Ots_129458-451_2", "Ots_130720-99_1", "Ots_130720-99_2", "Ots_131460-584_1", "Ots_131460-584_2", "Ots_94857-232_1", "Ots_94857-232_2", "Ots_96222-525_1", "Ots_96222-525_2", "Ots_96500-180_1", "Ots_96500-180_2", "Ots_97077-179_1", "Ots_97077-179_2", "Ots_99550-204_1", "Ots_99550-204_2", "Ots_AldB1-122_1", "Ots_AldB1-122_2", "Ots_AldoB4-183_1", "Ots_AldoB4-183_2", "Ots_AsnRS-60_1", "Ots_AsnRS-60_2", "Ots_aspat-196_1", "Ots_aspat-196_2", "Ots_BMP-2-SNP1_1", "Ots_BMP-2-SNP1_2", "Ots_CD59-2_1", "Ots_CD59-2_2", "Ots_CD63_1", "Ots_CD63_2", "Ots_EP-529_1", "Ots_EP-529_2", "Ots_mybp-85_1", "Ots_mybp-85_2", "Ots_myoD-364_1", "Ots_myoD-364_2", "Ots_NAML12_1-SNP1_1", "Ots_NAML12_1-SNP1_2", "Ots_PGK-54_1", "Ots_PGK-54_2", "Ots_Prl2_1", "Ots_Prl2_2", "Ots_S71-336_1", "Ots_S71-336_2", "Ots_SClkF2R2-135_1", "Ots_SClkF2R2-135_2", "Ots_SWS1op-182_1", "Ots_SWS1op-182_2", "Ots_u07-07.161_1", "Ots_u07-07.161_2", "Ots_u07-49.290_1", "Ots_u07-49.290_2", "Ots_u4-92_1", "Ots_u4-92_2", "Ots_unk_526_1", "Ots_unk_526_2", "tag_id_1030_1", "tag_id_1030_2", "tag_id_1079_1", "tag_id_1079_2", "tag_id_1126_1", "tag_id_1126_2", "tag_id_1144_1", "tag_id_1144_2", "tag_id_1191_1", "tag_id_1191_2", "tag_id_120_1", "tag_id_120_2", "tag_id_1243_1", "tag_id_1243_2", "tag_id_1276_1", "tag_id_1276_2", "tag_id_1281_1", "tag_id_1281_2", "tag_id_1363_1", "tag_id_1363_2", "tag_id_1413_1", "tag_id_1413_2", "tag_id_1425_1", "tag_id_1425_2", "tag_id_1470_1", "tag_id_1470_2", "tag_id_1551_1", "tag_id_1551_2", "tag_id_1554_1", "tag_id_1554_2", "tag_id_1692_1", "tag_id_1692_2", "tag_id_1733_1", "tag_id_1733_2", "tag_id_186_1", "tag_id_186_2", "tag_id_1872_1", "tag_id_1872_2", "tag_id_2_1016_1", "tag_id_2_1016_2", "tag_id_2_1158_1", "tag_id_2_1158_2", "tag_id_2_123_1", "tag_id_2_123_2", "tag_id_2_1268_1", "tag_id_2_1268_2", "tag_id_2_136_1", "tag_id_2_136_2", "tag_id_2_1382_1", "tag_id_2_1382_2", "tag_id_2_1539_1", "tag_id_2_1539_2", "tag_id_2_1579_1", "tag_id_2_1579_2", "tag_id_2_1586_1", "tag_id_2_1586_2", "tag_id_2_1693_1", "tag_id_2_1693_2", "tag_id_2_188_1", "tag_id_2_188_2", "tag_id_2_1887_1", "tag_id_2_1887_2", "tag_id_2_20_1", "tag_id_2_20_2", "tag_id_2_206_1", "tag_id_2_206_2", "tag_id_2_2222_1", "tag_id_2_2222_2", "tag_id_2_234_1", "tag_id_2_234_2", "tag_id_2_2632_1", "tag_id_2_2632_2", "tag_id_2_2741_1", "tag_id_2_2741_2", "tag_id_2_2787_1", "tag_id_2_2787_2", "tag_id_2_284_1", "tag_id_2_284_2", "tag_id_2_3026_1", "tag_id_2_3026_2", "tag_id_2_3094_1", "tag_id_2_3094_2", "tag_id_2_311_1", "tag_id_2_311_2", "tag_id_2_321_1", "tag_id_2_321_2", "tag_id_2_332_1", "tag_id_2_332_2", "tag_id_2_3452_1", "tag_id_2_3452_2", "tag_id_2_3471_1", "tag_id_2_3471_2", "tag_id_2_40_1", "tag_id_2_40_2", "tag_id_2_414_1", "tag_id_2_414_2", "tag_id_2_419_1", "tag_id_2_419_2", "tag_id_2_487_1", "tag_id_2_487_2", "tag_id_2_502_1", "tag_id_2_502_2", "tag_id_2_58_1", "tag_id_2_58_2", "tag_id_2_633_1", "tag_id_2_633_2", "tag_id_2_661_1", "tag_id_2_661_2", "tag_id_2_694_1", "tag_id_2_694_2", "tag_id_2_700_1", "tag_id_2_700_2", "tag_id_2_705_1", "tag_id_2_705_2", "tag_id_2_749_1", "tag_id_2_749_2", "tag_id_2_786_1", "tag_id_2_786_2", "tag_id_2_855_1", "tag_id_2_855_2", "tag_id_2_859_1", "tag_id_2_859_2", "tag_id_2_9_1", "tag_id_2_9_2", "tag_id_2_911_1", "tag_id_2_911_2", "tag_id_2_935_1", "tag_id_2_935_2", "tag_id_2_939_1", "tag_id_2_939_2", "tag_id_2_953_1", "tag_id_2_953_2", "tag_id_2_978_1", "tag_id_2_978_2", "tag_id_2_98_1", "tag_id_2_98_2", "tag_id_235_1", "tag_id_235_2", "tag_id_251_1", "tag_id_251_2", "tag_id_275_1", "tag_id_275_2", "tag_id_278_1", "tag_id_278_2", "tag_id_282_1", "tag_id_282_2", "tag_id_3194_1", "tag_id_3194_2", "tag_id_32_1", "tag_id_32_2", "tag_id_3221_1", "tag_id_3221_2", "tag_id_381_1", "tag_id_381_2", "tag_id_384_1", "tag_id_384_2", "tag_id_3920_1", "tag_id_3920_2", "tag_id_423_1", "tag_id_423_2", "tag_id_425_1", "tag_id_425_2", "tag_id_427_1", "tag_id_427_2", "tag_id_430_1", "tag_id_430_2", "tag_id_481_1", "tag_id_481_2", "tag_id_4969_1", "tag_id_4969_2", "tag_id_542_1", "tag_id_542_2", "tag_id_5617_1", "tag_id_5617_2", "tag_id_5720_1", "tag_id_5720_2", "tag_id_600_1", "tag_id_600_2", "tag_id_603_1", "tag_id_603_2", "tag_id_650_1", "tag_id_650_2", "tag_id_664_1", "tag_id_664_2", "tag_id_669_1", "tag_id_669_2", "tag_id_684_1", "tag_id_684_2", "tag_id_695_1", "tag_id_695_2", "tag_id_70_1", "tag_id_70_2", "tag_id_716_1", "tag_id_716_2", "tag_id_744_1", "tag_id_744_2", "tag_id_757_1", "tag_id_757_2", "tag_id_773_1", "tag_id_773_2", "tag_id_787_1", "tag_id_787_2", "tag_id_819_1", "tag_id_819_2", "tag_id_826_1", "tag_id_826_2", "tag_id_871_1", "tag_id_871_2", "tag_id_945_1", "tag_id_945_2", "tag_id_999_1", "tag_id_999_2")
+
+# insert missing locus columns and populate with 'NA' values
+haps_2col_final <- haps_2col_final %>%
+	bind_cols(setNames(rep(list(NA), length(columnOrder)), columnOrder)[!columnOrder %in% names(.)]) %>%
+	select(all_of(columnOrder), everything())
+
+# calculate and plot missing data per individual now that missing individuals and loci have been added back
 himiss <- haps_2col_final %>% mutate(n_miss = rowSums(is.na(haps_2col_final)/2)) # count missing loci and add as n_miss field
 himiss <- select(himiss, Indiv, n_miss) # select only Indiv and n_miss fields
 hm<-ggplot(data=himiss, aes(x=reorder(Indiv, n_miss), y=n_miss)) +
-  geom_bar(stat="identity")
-ggsave("missingData.png", path=repDir, dpi=600)
+	geom_bar(stat="identity")
+suppressMessages(ggsave("missingData.png", path=repDir, dpi=600))
 
-# calculate percent of microhaps genotyped per individual
+# calculate percent of microhaps genotyped per individual and add to the tibble as column 'percMicroHap'
 percentLoci <- unlist(as_tibble(((ncol(haps_2col_final)-1)-rowSums(is.na(haps_2col_final)))/(ncol(haps_2col_final)-1))*100)
-# add to tibble and move to first column after individual name
 haps_2col_final <- haps_2col_final %>% mutate(percMicroHap = percentLoci)
-haps_2col_final <- haps_2col_final %>% relocate(percMicroHap, .after = Indiv)
 
 ## plot depth vs. percMicroHap
 percMicro <- select(haps_2col_final, Indiv, percMicroHap) # get relevant columns
 seqSucc <- left_join(readCount, percMicro, by = c("Indiv" = "Indiv")) # combine relevant columns
 
 # make zoomed-in plot
-print("If the next line is a warning about missing values just ignore it.")
+cat("If one of the next few lines is a warning about 'rows containing missing values or values outside the scale range,' just ignore it.\n\n")
 succPlotZoomed <- ggplot(seqSucc, aes(y=percMicroHap, x=sum_reads)) +
-  # geom_smooth(method = "lm") + 
-  geom_point() + xlim(c(0,80000)) + theme_minimal() + xlab("Total Reads") + ylab("Percent Success") + ggtitle("Success Rate vs. Total Reads (Zoomed)")
-ggsave("success_rate_v_total_reads_zoomed.png", path=repDir, dpi=600)
+	# geom_smooth(method = "lm") + 
+	geom_point() + xlim(c(0,80000)) + theme_minimal() + xlab("Total Reads") + ylab("Percent Success") + ggtitle("Success Rate vs. Total Reads (Zoomed)")
+suppressMessages(ggsave("success_rate_v_total_reads_zoomed.png", path=repDir, dpi=600))
 
 # plot all individuals
 succPlot <- ggplot(seqSucc, aes(y=percMicroHap, x=sum_reads)) +
-  # geom_smooth(method = "lm") + 
-  geom_point() + theme_minimal() + xlab("Total Reads") + ylab("Percent Success") + ggtitle("Success Rate vs. Total Reads (All)")
-ggsave("success_rate_v_total_reads_all.png", path=repDir, dpi=600)
-
+	# geom_smooth(method = "lm") + 
+	geom_point() + theme_minimal() + xlab("Total Reads") + ylab("Percent Success") + ggtitle("Success Rate vs. Total Reads (All)")
+suppressMessages(ggsave("success_rate_v_total_reads_all.png", path=repDir, dpi=600))
 
 
 # add the sex and ROSA columns
@@ -553,28 +567,22 @@ haps_2col_final <- full_join(xtraAlleles,haps_2col_final, by="Indiv")
 haps_2col_final <- haps_2col_final %>% mutate(count = replace_na(count, 0))
 
 # remove extra columns added by sdy_out
-haps_2col_final <- haps_2col_final %>% select(!c(sdy_I183))
-haps_2col_final <- haps_2col_final %>% select(!c(sum_reads))
-haps_2col_final <- haps_2col_final %>% select(!c(sex_marker_read_prop))
-haps_2col_final <- haps_2col_final %>% select(!c(sdy_prop_sex))
-haps_2col_final <- haps_2col_final %>% select(!c(prob.male))
+haps_2col_final <- haps_2col_final %>% select(!c(sdy_I183, sum_reads, sex_marker_read_prop, sdy_prop_sex, prob.male))
 
 haps_2col_final <- arrange(haps_2col_final, Indiv) # sort by Indiv column
 
 haps_2col_final <- rename(haps_2col_final, indiv = Indiv) # rename indiv to Indiv for combining tibbles
 
 ## sort alleles alphabetically per locus
-# I hate R, and especially tidyverse.
-print("Sorting alleles alphabetically per locus per individual. This part takes longer to run than it probably should.")
+cat("\nSorting alleles alphabetically per locus per individual. This part takes longer to run than it probably should...\n\n")
 n <- names(haps_2col_final) # get column names
-r <- c("count", "indiv", "sdy_model_sex", "hapstr", "match_idx", "hapstrMatch", "lv_dist", "canonical_rosa_pheno", "percMicroHap") # vector of columns to remove
+r <- c("count", "indiv", "sdy_model_sex", "hapstr", "match_idx", "hapstrMatch", "hapstr_dist", "canonical_rosa_pheno", "percMicroHap") # vector of columns to remove
 result <- setdiff(n, r) # remove columns
 result2 <- str_sub(result, end = -3) # remove _1 and _2 from end of allele names
 loci <- unique(result2) # reduce to only locus names
 
 # calculate proportion of loci that had extra alleles
 haps_2col_final <- haps_2col_final %>% mutate(perc_Xtra = (count/length(loci))*100) # calculate percent loci that had extra alleles
-haps_2col_final <- haps_2col_final %>% relocate(perc_Xtra, .after = percMicroHap) # move location
 haps_2col_final <- arrange(haps_2col_final, indiv) # sort by indiv column
 haps_2col_final <- haps_2col_final %>% select(!c(count)) # remove count column
 
@@ -601,7 +609,16 @@ for (locus in loci) {
   haps_2col_final[[allele2]] <- cols2[[allele2]]
   
 }
-print("Done sorting.")
+cat("Done sorting.\n\n")
+
+# prepare the final column order that we want
+columnOrder <- columnOrder[-1] # drop first element of previous list
+frontColumns <- c("indiv", "sdy_model_sex", "hapstr", "hapstr_dist", "canonical_rosa_pheno", "percMicroHap", "perc_Xtra") # get columns that we want appearing in first few columns of the output table
+columnOrder <- c(frontColumns, columnOrder) # combine the two lists
+
+# do the sorting and insert missing columns as 'NA' values
+haps_2col_final <- haps_2col_final %>%
+	select(all_of(columnOrder))
 
 # write final genotype file
 write_csv(haps_2col_final, file=file.path(outDir, opt$finalOut))
