@@ -425,8 +425,8 @@ Options:
         -m MICROHAPLOT, --microhaplot=MICROHAPLOT
                 microhaplot directory name (default = microhaplot)
 
-        -M MODAFTC, --modaftc=MODAFTC
-                .rds file containing logistic regression model for assigning sexID (default = ~/local/src/ca_chinook/example_files/AFTC_model.rds)
+        -M SEXIDMODEL, --sexidmodel=SEXIDMODEL
+                rds file containing logistic regression model for assigning sexID (default = AFTC; Options = AFTC, CDFW)
 
         -o OUTPUT, --output=OUTPUT
                 output directory name (default = output)
