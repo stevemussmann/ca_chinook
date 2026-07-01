@@ -504,7 +504,7 @@ processing
 This directory contains the main outputs, including the final genotypes file.
 1. `greb1rosa_all_hapstr.txt` is a tab-delimited file that contains haplotype strings for the greb1rosa loci. See example below:
 ```
-Indiv   hapstr
+Indiv           hapstr
 4330-001        LNNLLNLLLLLL
 4330-002        ENNEENEEEEEH
 4330-003        LNNLLNLLLLLL
@@ -514,22 +514,29 @@ Indiv   hapstr
 
 2. `sdy_calls.csv` is a comma-delimited file that contains the total number of reads (sum_reads), the number of times the sdy marker was identified among the reads (sdy_I183), the proportion of reads represented by sdy_I183 (sex_marker_read_prop), genetic sex calls based on read proportion (sdy_prop_sex), probability of being male based on a logistic regression model (prob.male) and the sex call based on applying the default cutoff value of 0.1 to that mode (sdy_model_sex) for all individuals.
 ```
-Indiv,sum_reads,sdy_I183,sex_marker_read_prop,sdy_prop_sex,prob.male,sdy_model_sex
-4330-001,75493,1379,0.018266594253771872,Male,0.9999937645241835,Male
-4330-002,69744,6,8.602890571231934e-5,Female,0.00380561020447908,Female
-4330-003,69651,1139,0.016352959756500265,Male,0.9999604419039475,Male
-4330-004,65208,2,3.067108330266225e-5,Female,0.00360826964148809,Female
-4330-005,61556,1113,0.018081096887387096,Male,0.9999925415691906,Male
+Indiv           sum_reads  sdy_I183  sex_marker_read_prop   sdy_prop_sex  prob.male              sdy_model_sex
+4330-001        75493      1379      0.018266594253771872   Male          0.9999937645241835     Male
+4330-002        69744      6         8.602890571231934e-5   Female        0.00380561020447908    Female
+4330-003        69651      1139      0.016352959756500265   Male          0.9999604419039475     Male
+4330-004        65208      2         3.067108330266225e-5   Female        0.00360826964148809    Female
+4330-005        61556      1113      0.018081096887387096   Male          0.9999925415691906     Male
 ```
 
-3. `haps_2col_final.csv` is a comma-delimited file that contains all genotype data for all individuals. The 'canonical_rosa_pheno' column reports the run-timing phenotype associated with the hapstr value. The column 'percMicroHap' reports the percentage of loci that amplified successfully for each individual. The 'perc_Xtra' column reports the proportion of loci discarded for an individual due to detection of 3 or more alleles at a locus. 
+3. `haps_2col_final.csv` is a comma-delimited file that contains all genotype data for all individuals. The columns include the following data:
+  * `indiv` = individual identifier
+  * `sdy_model_sex` = individual sex ID based on a logistic regression model
+  * `hapstr` = RoSA haplotype string 
+  * `hapstr_dist` = Levenshtein distance between the observed haplotype string and the closest matching canonical haplotype string. 0 = exact match. >2 differences reported as NA. If you only want to call canonical RoSA phenotypes with observed haplotype strings exactly matching canonical haplotype strings, then replace values in the `canonical_rosa_pheno` column with `Unknown` for all individuals with a non-0 `hapstr_dist` value.
+  * `canonical_rosa_pheno` column reports the run-timing phenotype associated with the `hapstr` value (or the closest matching hapstr if hapstr_dist > 0).
+  * `percMicroHap` reports the percentage of loci that amplified successfully for each individual.
+  * `perc_Xtra` reports the percentage of loci discarded for an individual due to detection of 3 or more alleles at a locus.
 ```
-indiv,sdy_model_sex,hapstr,canonical_rosa_pheno,percMicroHap,perc_Xtra,NC_037099.1:62937268-62937373_1,NC_037099.1:62937268-62937373_2,...
-4330-001,Male,LNNLLNLLLLLL,Fall,91.70984455958549,0,T,T,
-4330-002,Female,ENNEENEEEEEH,Spring,95.33678756476684,0,T,T,
-4330-003,Male,LNNLLNLLLLLL,Fall,98.44559585492227,0,C,T,
-4330-004,Female,LNNLLNLLLLLL,Fall,100,0,T,T,
-4330-005,Male,?NNLLNLLL??L,Unknown,86.01036269430051,0,T,T,
+indiv           sdy_model_sex  hapstr        hapstr_dist  canonical_rosa_pheno  percMicroHap        perc_Xtra           NC_037099.1:62937268-62937373_1  NC_037099.1:62937268-62937373_2
+4330-001        Male           LNNLLNLLLLLL  0            Fall                  91.70984455958549   0                   T                                T
+4330-002        Female         ENNEENEEEEEH  0            Spring                95.33678756476684   0                   T                                T
+4330-003        Male           LNNLLNLLLLLL  0            Fall                  98.44559585492227   0                   C                                T
+4330-004        Female         LNNLLNLLLLLL  0            Fall                  100                 0                   T                                T
+4330-005        Male           ?NNLLNLLL??L  NA           Unknown               86.01036269430051   0                   T                                T
 ```
 
 ### Reports Directory
