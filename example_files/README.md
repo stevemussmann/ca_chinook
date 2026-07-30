@@ -19,3 +19,7 @@ Recommendations and Troubleshooting for a NextSeq run:
 ## greb1_roha_alleles_reordered_wr.txt
 Description:
 * This file was provided by Anthony Clemento and is used by the pipeline to ensure all loci in the ROSA haplotype string are correctly coded and output in the correct order.
+
+## project_summary.csv and sample_imports.csv
+Description:
+* These files are examples of the inputs required by the `makeSampleSheet.pl` script. 
