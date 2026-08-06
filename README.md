@@ -169,23 +169,32 @@ for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 <hr>
 
 ### Pipeline updates <a name="update"></a>
-1. To update the ca_chinook scripts to the latest versions, navigate to your `~/local/src/ca_chinook` directory, run `git pull`, verify that all scripts are executable, and make links in the `~/local/bin` directory. This should pull in the latest versions of any scripts used for processing.
+1. Some pipeline dependencies may have changed since the last version. To check that you have all necessary dependencies for the latest version, run the code below. This will activate your `snakemake` pipeline and run an `install` command. It should figure out which dependencies are already installed and which need to be added. If prompted, agree to install the new software packages. Talk to me if you receive any errors.
 ```
+conda activate snakemake
+conda install -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse r-adegenet r-vcfr r-reshape2 r-stringdist r-viridis vcftools zlib liblzma-devel samtools=1.22 matplotlib openpyxl
+```
+
+2. Update the `ca_chinook` scripts to the latest versions. The code below will navigate to your `~/local/src/ca_chinook` directory, run `git pull`, verify that all scripts are executable, and make links in the `~/local/bin` directory for any new processing scripts.
+```
+# change directories and pull in the latest pipeline version
 cd ~/local/src/ca_chinook
 git pull
-cd ~/local/src/ca_chinook/scripts
 
+# verify all scripts are executable
+cd ~/local/src/ca_chinook/scripts
 chmod u+x *.pl
 chmod u+x *.R
 chmod u+x *.sh
 
+# make links for any new scripts
 cd ~/local/bin
 for file in ~/local/src/ca_chinook/scripts/*.pl; do ln -s $file; done;
 for file in ~/local/src/ca_chinook/scripts/*.R; do ln -s $file; done;
 for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 ```
 
-You may receive a failure message if a symbolic link already exists for a script. These error messages can be ingored.
+You may receive a failure message if a symbolic link already exists for a script. Error messages that look like the message below can be safely ignored, but talk to me if you receive any other errors.
 ```
 ## Example error message:
 # ln: failed to create symbolic link './caChinookPipeline.sh': File exists
