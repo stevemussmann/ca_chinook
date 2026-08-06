@@ -172,7 +172,7 @@ for file in ~/local/src/ca_chinook/scripts/*.sh; do ln -s $file; done;
 1. Some pipeline dependencies may have changed since you last installed this pipeline. To check that you have all necessary dependencies for the latest version, run the code below. This will activate your `snakemake` pipeline and run a `conda install` command that should figure out which dependencies are already installed and which need to be added. If prompted, agree to install the new software packages. Talk to me if you receive any errors.
 ```
 conda activate snakemake
-conda install -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse r-adegenet r-vcfr r-reshape2 r-stringdist r-viridis vcftools zlib liblzma-devel samtools=1.22 matplotlib openpyxl
+conda install -c conda-forge -c bioconda -c r snakemake r-base r-tidyverse r-remotes r-devtools r-optparse r-adegenet r-vcfr r-reshape2 r-stringdist r-viridis vcftools zlib liblzma-devel samtools=1.22 matplotlib openpyxl
 ```
 
 2. Update the `ca_chinook` scripts to the latest versions. The code below will navigate to your `~/local/src/ca_chinook` directory, remove your old installation of this repository, run `git clone` to pull in the latest version, verify that all scripts are executable, and make links in the `~/local/bin` directory for any new processing scripts.
