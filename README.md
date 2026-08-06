@@ -180,7 +180,7 @@ conda install -c conda-forge -c bioconda -c r snakemake r-base r-tidyverse r-rem
 # change directories and pull in the latest pipeline version
 cd ~/local/src
 rm -rf ca_chinook
-git clone https://github.com/stevemussmann/mega-simple-microhap-snakeflow.git
+git clone https://github.com/stevemussmann/ca_chinook.git
 
 # verify all scripts are executable
 cd ~/local/src/ca_chinook/scripts
