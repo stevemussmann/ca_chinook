@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# increase maximum number of files that can be open simultaneously
+ulimit -n 8192
+
 # activate snakemake conda environment
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate snakemake
@@ -28,11 +31,11 @@ fi
 # change directories into run data location
 cd $HOME/local/src/mega-simple-microhap-snakeflow/data/$RUN
 
+# make sure SampleSheet.csv has unix line breaks
+sed -i 's/\r//g' SampleSheet.csv
+
 # run preprocess.R script
 preprocess.R -f SampleSheet.csv
-
-# set ulimit
-ulimit -n 8192
 
 # run snakemake pipeline
 cd $HOME/local/src/mega-simple-microhap-snakeflow
