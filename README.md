@@ -175,11 +175,12 @@ conda activate snakemake
 conda install -c conda-forge -c bioconda -c r -n snakemake snakemake r-base r-tidyverse r-remotes r-devtools r-optparse r-adegenet r-vcfr r-reshape2 r-stringdist r-viridis vcftools zlib liblzma-devel samtools=1.22 matplotlib openpyxl
 ```
 
-2. Update the `ca_chinook` scripts to the latest versions. The code below will navigate to your `~/local/src/ca_chinook` directory, run `git pull`, verify that all scripts are executable, and make links in the `~/local/bin` directory for any new processing scripts.
+2. Update the `ca_chinook` scripts to the latest versions. The code below will navigate to your `~/local/src/ca_chinook` directory, remove your old installation of this repository, run `git clone` to pull in the latest version, verify that all scripts are executable, and make links in the `~/local/bin` directory for any new processing scripts.
 ```
 # change directories and pull in the latest pipeline version
-cd ~/local/src/ca_chinook
-git pull
+cd ~/local/src
+rm -rf ca_chinook
+git clone https://github.com/stevemussmann/mega-simple-microhap-snakeflow.git
 
 # verify all scripts are executable
 cd ~/local/src/ca_chinook/scripts
