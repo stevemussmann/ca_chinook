@@ -26,6 +26,8 @@ Scripts and documentation for California Chinook microhaplotypes. This repositor
 
 ### CKMRsim
 1. [Install CKMRsim](#installCKMRsim)
+2. [Running CKMRsim](#runCKMRsim)
+3. [CKMRsim Outputs](#ckmrsimout)
 
 ### Colony
 1. [Install Colony](#installColony)
