@@ -89,11 +89,13 @@ class Microhap():
 
 	def parseFile(self, colonyBool, ckmrBool):
 		# remove unneeded columns
-		toRemove = ["sdy_sex", "hapstr", "rosa_pheno", "canonical_rosa_pheno", "percMicroHap"] # summary columns inserted by genotyping pipeline
+		toRemove = ["sdy_model_sex", "hapstr", "hapstr_dist", "canonical_rosa_pheno", "percMicroHap", "perc_Xtra"] # summary columns inserted by genotyping pipeline
 		for col in toRemove:
 			if col in self.df.columns:
 				print("Removing", col, "column from input.")
 				self.df.pop(col) # remove column
+
+		## FUTURE IMPROVEMENT: REMOVE perc_Xtra COLUMN FOR LATER FILTERING
 
 		## extract colony2 column if it exists
 		if 'colony2' in self.df.columns:
