@@ -622,6 +622,7 @@ Error: Check that your mixture and baseline files use the same locus names.
 Execution halted
 ```
 
+<hr>
 
 ## CKMRsim
 ### First time setup <a name="installCKMRsim"></a>
