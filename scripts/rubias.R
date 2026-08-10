@@ -94,6 +94,14 @@ common <- intersect(colnames(baseline) , colnames(mixfile_char))
 baseline_ready <- baseline %>% select(all_of(common))
 mixfile_char_ready <- mixfile_char %>% select(all_of(common))
 
+## test if there are any loci remaining that are common to both inputs and exit if <=4
+# This is intended to catch cases in which no locus names are shared by the two inputs
+if( length( common ) <= 4){
+	cat("\nThese are the only columns shared by the mixture and baseline files:\n")
+	print(common)
+	stop("Check that your mixture and baseline files use the same locus names.\n\n")
+}
+
 # calculate the genetic mixture
 mix_est <- infer_mixture(reference = baseline_ready, 
                          mixture = mixfile_char_ready,
