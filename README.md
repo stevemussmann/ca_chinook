@@ -626,17 +626,62 @@ Execution halted
 
 ## CKMRsim
 ### First time setup <a name="installCKMRsim"></a>
-Activate your `snakemake` conda environment (if not already active).
+1. Activate your `snakemake` conda environment (if not already active).
 ```
 conda activate snakemake
 ```
 
-Download and install CKMRsim package
+2. Download and install CKMRsim package
 ```
 wget -O CKMRsim.zip https://github.com/eriqande/CKMRsim/archive/master.zip
 R --slave -e "devtools::install_local('CKMRsim.zip', upgrade='never')"
 R --slave -e "install.packages('gRbase', dependencies=TRUE, repos='http://cran.rstudio.com')"
 ```
+
+3. Make sure the file converter program (`microhapConvert.py`) from this repository is installed. It should have been pulled to your computer when you cloned the `ca_chinook` repository, but you need to complete the rest of the setup steps listed under the `Installation` heading [here](https://github.com/stevemussmann/ca_chinook/tree/main/fileConverter). This program will let you properly format inputs for CKMRsim.
+
+<hr>
+
+### Running CKMRsim <a name="runCKMRsim"></a>
+1. Activate your `snakemake` conda environment (if not already active).
+```
+conda activate snakemake
+```
+
+2. Prepare your input files with the `microhapConvert.py` program. Take the output of the snakemake pipeline (i.e., `haps_2col_final.csv`) and add a column to the file titled exactly `colony2`. In this column, identify all potential offspring as offspring and all candidate parents by their sex (male or female). The terms offspring, male, and female are all case-insensitive. Then do the file conversion with a command such as the following (note that this command also does filtering with the `-i` and `-l` options to remove individuals with >25% missing data and loci with >10% missing data).
+```
+microhapConvert.py -f haps_2col_final.csv -r project_name -i 0.25 -l 0.1 --ckmr
+```
+
+3. The `microhapConvert.py` command should have created a directory named `convertedFiles`, and in that directory should be two `.tsv` files. `ckmrsim.offspring.tsv` contains all potential offspring and `ckmrsim.parents.tsv` contains all potential parents. Provide these as input to the `runCKMRsim.R` script. The `-l` option in this case is used to provide a log likelihood ratio (LLR = 10.4) threshold for assigning relationships. This value was determined through simulation work. 
+```
+runCKMRsim.R --name project_name --offspring ckmrsim.offspring.tsv --parents ckmrsim.parents.tsv -l 10.4
+```
+
+4. From here, I usually filter the outputs to check that parental assignments match biological expectations (check that both parents were identified for an offspring; ensure that these are the only two parents assigned to the offspring; the parents are of opposite sex; Mendelian incompatibilities are below a certain threshold; etc.). Code for this purpose will be forthcoming, but a lot of this can probably be accomplished in Excel if your number of parental assignments is not too large. 
+
+<hr>
+
+### CKMRsim Outputs <a name="ckmrsimout"></a>
+The `runCKMRsim.R` script will create a directory named `ckmrsim_output`. This will contain the following files:
+
+1. `FNR_FPRplot.png` - a plot showing the relationship of false positive rates (FPR) to false negative rates (FNR) for parent-offspring (PO) relationships.
+2. `logLplot.png` - a plot showing the overlap in distributions of LLR values (x-axis) for different familial relationships (see key; FS = full siblings; HS = half siblings; PO = parent-offspring; U = unrelated).
+3. `project_name_PO_results.tsv` - this is the main output file of potential parental assignments, and it will be named according to the input to the `--name` option for the `runCKMRsim.R` script.
+4. `runCKMRsim.log` - text file that reports the estimated FNR and FPR for your chosen LLR threshold.
+
+Here's a more detailed look at the `*_PO_results.tsv` file:
+```
+D2_indiv    D1_indiv  logl_ratio          num_loc  total_incompat  total_compat  fraction_incompat
+C240265USR  22-12241  38.522738973389224  180      0               180           0
+C240265USR  22-12242  38.748125588702734  180      0               180           0
+C240269USR  21-12139  46.79115732677331   185      1               184           0.005405405405405406
+C240269USR  21-12140  44.060512620517045  185      0               185           0
+C240269USR  21-12234  24.426310288307228  181      4               177           0.022099447513812154
+C240275USR  21-12246  18.985491661726538  180      5               175           0.027777777777777776
+```
+
+Each pairwise relationship is listed on a separate line. The first column (`D2_indiv`) lists the offspring, while the second column (`D1_indiv`) reports the potential parent. In this case, C240265USR had two individuals assigned as potential parents (22-12241 and 22-12242). Individual C240269USR had three potential parents - one of which might be erroneous (21-12234) because it has several more Mendelian incompatibilities (column `total_incompat`) with C240269USR than either of the other two candidate parents (21-12139 and 21-12140). Individual C240275USR only had one parent assigned (21-12246). Many of the parental assignments can be vetted by checking if they are compatible with hatchery metadata (e.g., check sex of parents, verify the candidate parents spawned on the same day) and potentially applying a maximum Mendelian incompatibility threshold. 
 
 <hr>
 
