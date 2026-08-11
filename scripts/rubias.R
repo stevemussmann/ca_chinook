@@ -137,6 +137,9 @@ rep_indiv_ests <- mix_est$indiv_posteriors %>%
   arrange(desc(rep_pofz)) %>% 
   slice(1)
 
+# add back in number of present and missing loci
+rep_indiv_ests <- left_join(rep_indiv_ests, topassign %>% select(indiv, n_non_miss_loci, n_miss_loci, missing_loci), by = "indiv")
+
 repOut <- file.path(outDir, "all_top_repgroup_sumPofZ.csv")
 write_csv(rep_indiv_ests, repOut)
 
