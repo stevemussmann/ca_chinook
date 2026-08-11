@@ -577,7 +577,7 @@ indiv           sdy_model_sex  hapstr        hapstr_dist  canonical_rosa_pheno  
 ### First time setup <a name="installrubias"></a>
 1. Create a `rubias` conda environment.
 ```
-conda create -c conda-forge -c bioconda -c r -n rubias r-base=4.3.3 r-tidyverse r-remotes r-devtools r-optparse r-adegenet
+conda create -c conda-forge -c bioconda -c r -n rubias r-base=4.3.3 r-tidyverse r-remotes r-devtools r-optparse r-adegenet cmake
 ```
 
 2. Activate the rubias conda environment.
