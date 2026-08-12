@@ -76,6 +76,14 @@ if( "percMicroHap" %in% names(mixfile_char) ){
 	mixfile_char <- mixfile_char %>% filter(percMicroHap >= opt$missing)
 }
 
+# extract ROSA info to use later for final assignments
+rosa_columns <- c("indiv", "hapstr", "hapstr_dist", "canonical_rosa_pheno")
+rosa_data <- mixfile_char %>% select(all_of(rosa_columns)) 
+
+# extract LFAR markers to use later for final assignments
+lfar_columns <- c("indiv", "NC_037130.1:864908-865208", "NC_037130.1:1062935-1063235")
+lfar_data <- mixfile_char %>% select(contains(lfar_columns)) %>% mutate(lfar_na_count = rowSums(is.na(.)))
+
 # drop columns that may or may not exist
 columns_to_drop <- c("sdy_model_sex", "hapstr", "hapstr_dist", "canonical_rosa_pheno", "percMicroHap", "perc_Xtra")
 mixfile_char <- mixfile_char %>% select(-any_of(columns_to_drop))
@@ -136,6 +144,54 @@ rep_indiv_ests <- mix_est$indiv_posteriors %>%
   group_by(indiv) %>% 
   arrange(desc(rep_pofz)) %>% 
   slice(1)
+
+# combine topassign and rep_indiv_ests with rosa_data
+temp <- left_join(rep_indiv_ests, topassign, by = "indiv") %>% 
+  select(-c(mixture_collection.x, mixture_collection.y, repunit.y, log_likelihood, z_score, missing_loci)) %>%
+  rename(repunit = repunit.x) %>% rename(collection_PofZ = PofZ)
+temp2 <- left_join(temp, rosa_data, by="indiv")
+classification_data <- left_join(temp2, lfar_data, by="indiv")
+
+finalClass <- classification_data %>% mutate(final_reporting_group = case_when(
+  ## GSI = Winter
+  repunit == "winter" ~ "Winter",
+  
+  ## GSI = Late fall
+  repunit == "sacfall" & collection == "ColemanLF" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") ~ "FRLspring", #ROSA = early/early
+  repunit == "sacfall" & collection == "ColemanLF" & (canonical_rosa_pheno == "Sp-Fall" | canonical_rosa_pheno == "Sp-Win") ~ "Lfall", #ROSA = early/late
+  repunit == "sacfall" & collection == "ColemanLF" & canonical_rosa_pheno == "Fall" ~ "Lfall", #ROSA = late/late
+  # sacfall & ColemanLF with missing ROSA will be handled by .default = "Unknown"
+  
+  ## GSI = Fall
+  repunit == "sacfall" & collection != "ColemanLF" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") & lfar_na_count < 4 ~ "FRLspring", # early/early
+  repunit == "sacfall" & collection != "ColemanLF" & (canonical_rosa_pheno == "Sp-Fall" | canonical_rosa_pheno == "Sp-Win") & lfar_na_count < 4 ~ "Fall", #ROSA = early/late
+  repunit == "sacfall" & collection != "ColemanLF" & canonical_rosa_pheno == "Fall" & lfar_na_count < 4 ~ "Fall", #ROSA = late/late
+  # sacfall missing ROSA will be handled by .default = "Unknown"
+  repunit == "sacfall" & collection != "ColemanLF" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") & lfar_na_count == 4 ~ "FRLspring", #early/early
+  repunit == "sacfall" & collection != "ColemanLF" & canonical_rosa_pheno == "Fall" & lfar_na_count == 4 ~ "Fall or Late fall", #ROSA = late/late
+  # sacfall missing ROSA and missing LFAR will be handled by .default = "Unknown"
+  
+  ## GSI = MDspring
+  repunit == "sacspring" & collection == "MillDeerSp" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") ~ "MDspring", # ROSA = early/early
+  repunit == "sacspring" & collection == "MillDeerSp" & (canonical_rosa_pheno == "Sp-Fall" | canonical_rosa_pheno == "Sp-Win") ~ "MDspring", #ROSA = early/late
+  repunit == "sacspring" & collection == "MillDeerSp" & canonical_rosa_pheno == "Fall" ~ "Fall", #ROSA = late/late
+  # sacspring & MDspring with missing ROSA will be handled by .default = "Unknown"
+  
+  ## GSI = Bspring
+  repunit == "sacspring" & collection == "ButteSp" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") ~ "Bspring", # early/early
+  repunit == "sacspring" & collection == "ButteSp" & (canonical_rosa_pheno == "Sp-Fall" | canonical_rosa_pheno == "Sp-Win") ~ "Bspring", #ROSA = early/late
+  repunit == "sacspring" & collection == "ButteSp" & canonical_rosa_pheno == "Fall" ~ "Fall", #ROSA = late/late
+  # sacspring & ButteSp with missing ROSA will be handled by .default = "Unknown"
+  
+  # all other cases
+  .default = "Unassigned"
+))
+
+# write final classifications
+finalOut <- file.path(outDir, "final_classifications.csv")
+write_csv(finalClass, finalOut)
+
+cat("\n\nFinal output written to", finalOut, "\n\n")
 
 # add back in number of present and missing loci
 rep_indiv_ests <- left_join(rep_indiv_ests, topassign %>% select(indiv, n_non_miss_loci, n_miss_loci, missing_loci), by = "indiv")
