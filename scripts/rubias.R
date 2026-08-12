@@ -160,28 +160,28 @@ finalClass <- classification_data %>% mutate(final_reporting_group = case_when(
   repunit == "sacfall" & collection == "ColemanLF" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") ~ "FRLspring", #ROSA = early/early
   repunit == "sacfall" & collection == "ColemanLF" & (canonical_rosa_pheno == "Sp-Fall" | canonical_rosa_pheno == "Fall-Win") ~ "Lfall", #ROSA = early/late
   repunit == "sacfall" & collection == "ColemanLF" & canonical_rosa_pheno == "Fall" ~ "Lfall", #ROSA = late/late
-  # sacfall & ColemanLF with missing ROSA will be handled by .default = "Unknown"
+  # sacfall & ColemanLF with missing ROSA will be handled by .default = "Unassigned"
   
   ## GSI = Fall
   repunit == "sacfall" & collection != "ColemanLF" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") & lfar_na_count < 4 ~ "FRLspring", # early/early
   repunit == "sacfall" & collection != "ColemanLF" & (canonical_rosa_pheno == "Sp-Fall" | canonical_rosa_pheno == "Fall-Win") & lfar_na_count < 4 ~ "Fall", #ROSA = early/late
   repunit == "sacfall" & collection != "ColemanLF" & canonical_rosa_pheno == "Fall" & lfar_na_count < 4 ~ "Fall", #ROSA = late/late
-  # sacfall missing ROSA will be handled by .default = "Unknown"
+  # sacfall missing ROSA will be handled by .default = "Unassigned"
   repunit == "sacfall" & collection != "ColemanLF" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") & lfar_na_count == 4 ~ "FRLspring", #early/early
   repunit == "sacfall" & collection != "ColemanLF" & canonical_rosa_pheno == "Fall" & lfar_na_count == 4 ~ "Fall or Late fall", #ROSA = late/late
-  # sacfall missing ROSA and missing LFAR will be handled by .default = "Unknown"
+  # sacfall missing ROSA and missing LFAR will be handled by .default = "Unassigned"
   
   ## GSI = MDspring
   repunit == "sacspring" & collection == "MillDeerSp" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") ~ "MDspring", # ROSA = early/early
   repunit == "sacspring" & collection == "MillDeerSp" & (canonical_rosa_pheno == "Sp-Fall" | canonical_rosa_pheno == "Fall-Win") ~ "MDspring", #ROSA = early/late
   repunit == "sacspring" & collection == "MillDeerSp" & canonical_rosa_pheno == "Fall" ~ "Fall", #ROSA = late/late
-  # sacspring & MDspring with missing ROSA will be handled by .default = "Unknown"
+  # sacspring & MDspring with missing ROSA will be handled by .default = "Unassigned"
   
   ## GSI = Bspring
   repunit == "sacspring" & collection == "ButteSp" & (canonical_rosa_pheno == "Spring" | canonical_rosa_pheno == "Winter" | canonical_rosa_pheno == "Sp-Win") ~ "Bspring", # early/early
   repunit == "sacspring" & collection == "ButteSp" & (canonical_rosa_pheno == "Sp-Fall" | canonical_rosa_pheno == "Fall-Win") ~ "Bspring", #ROSA = early/late
   repunit == "sacspring" & collection == "ButteSp" & canonical_rosa_pheno == "Fall" ~ "Fall", #ROSA = late/late
-  # sacspring & ButteSp with missing ROSA will be handled by .default = "Unknown"
+  # sacspring & ButteSp with missing ROSA will be handled by .default = "Unassigned"
   
   # all other cases
   .default = "Unassigned"
