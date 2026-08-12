@@ -610,7 +610,8 @@ The `output_final` directory will be created in the folder from which you execut
 1. `all_top_repgroup_sumPofZ.csv` - provides the reporting unit assigned to each individual and associated PofZ (rep_pofz) value.
 2. `all_top3pops.csv` - this will list the top three populations (collection) to which each individual was assigned, and associated PofZ value.
 3. `all_toppop.csv` - this will list the top population (collection) to which each individual was assigned, and associated PofZ value.
-4. `final_duplicates.csv` - lists pairs of individuals in your input data which are likely duplicates of one another (i.e., having identical or near-identical genotypes)
+4. `final_classifications.csv` - **this is the main output file** that provides genetic assignments that combine rubias-assigned reporting group data with ROSA phenotypes and LFAR marker data. 
+5. `final_duplicates.csv` - lists pairs of individuals in your input data which are likely duplicates of one another (i.e., having identical or near-identical genotypes)
 
 <hr>
 
