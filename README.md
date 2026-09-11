@@ -616,7 +616,7 @@ The `output_final` directory will be created in the folder from which you execut
 <hr>
 
 ### Troubleshooting Rubias Errors
-If you experience an error message such as the example below, it means that the loci in your mixture and baseline files likely have different names. This could happen because each locus in the microhap panel has two potentially different names. See the `AmpliconName` and `OtherName` fields in the [.csv file which can be found here](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv).
+If you experience an error message such as the example below, it means that the loci in your mixture and baseline files likely have different names. This could happen because each locus in the microhap panel has two potentially different names. See the `AmpliconName` and `OtherName` fields in the .csv file which can be found [here](https://github.com/eriqande/california-chinook-microhaps/blob/main/inputs/Calif-Chinook-Amplicon-Panel-Information.csv).
 ```
 These are the only columns shared by the mixture and baseline files:
 [1] "indiv"       "repunit"     "collection"  "sample_type"
